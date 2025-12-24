@@ -14,7 +14,8 @@ const currentLink = computed(() => settingsNavItems.find(link => link.url === cu
 <template>
   <nav class="flex flex-col gap-2">
     <router-link
-      v-for="link in settingsNavItems" :key="link.url"
+      v-for="link in settingsNavItems"
+      :key="link.url"
       :to="link.url"
       class="items-center hidden px-2 py-1 rounded-md lg:flex hover:bg-primary/5"
       :class="link.url === currentPath ? activeClass : ''"
@@ -33,7 +34,8 @@ const currentLink = computed(() => settingsNavItems.find(link => link.url === cu
       </UiDropdownMenuTrigger>
       <UiDropdownMenuContent class="w-48" align="start">
         <UiDropdownMenuItem
-          v-for="link in settingsNavItems" :key="link.url"
+          v-for="link in settingsNavItems"
+          :key="link.url"
           @click="$router.push(link.url)"
         >
           <component :is="link.icon" class="size-4 mr-1" />

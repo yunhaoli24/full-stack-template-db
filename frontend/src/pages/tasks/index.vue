@@ -9,11 +9,7 @@ import tasks from './data/tasks.json'
 </script>
 
 <template>
-  <BasicPage
-    title="Tasks"
-    description="Tasks description"
-    sticky
-  >
+  <BasicPage title="Tasks" description="Tasks description" sticky>
     <template #actions>
       <TaskImport />
       <TaskCreate />

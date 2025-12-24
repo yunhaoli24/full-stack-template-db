@@ -49,15 +49,18 @@ async function onSubmit(values: any) {
 
 <template>
   <div>
-    <h3 class="text-lg font-medium">
-      Account
-    </h3>
+    <h3 class="text-lg font-medium">Account</h3>
     <p class="text-sm text-muted-foreground">
       Update your account settings. Set your preferred language and timezone.
     </p>
   </div>
   <Separator class="my-4" />
-  <Form v-slot="{ setFieldValue }" :validation-schema="accountFormSchema" class="space-y-8" @submit="onSubmit">
+  <Form
+    v-slot="{ setFieldValue }"
+    :validation-schema="accountFormSchema"
+    class="space-y-8"
+    @submit="onSubmit"
+  >
     <FormField v-slot="{ componentField }" name="name">
       <FormItem>
         <FormLabel>Name</FormLabel>
@@ -78,13 +81,16 @@ async function onSubmit(values: any) {
           <PopoverTrigger as-child>
             <FormControl>
               <Button
-                variant="outline" :class="cn(
+                variant="outline"
+                :class="cn(
                   'w-[240px] justify-start text-left font-normal',
                   !value && 'text-muted-foreground',
                 )"
               >
                 <CalendarDays class="size-4 opacity-50" />
-                <span>{{ value ? df.format(toDate(dateValue, getLocalTimeZone())) : "Pick a date" }}</span>
+                <span
+                  >{{ value ? df.format(toDate(dateValue, getLocalTimeZone())) : "Pick a date" }}</span
+                >
               </Button>
             </FormControl>
           </PopoverTrigger>
@@ -109,12 +115,10 @@ async function onSubmit(values: any) {
             />
           </PopoverContent>
         </Popover>
-        <FormDescription>
-          Your date of birth is used to calculate your age.
-        </FormDescription>
+        <FormDescription> Your date of birth is used to calculate your age. </FormDescription>
         <FormMessage />
       </FormItem>
-      <input type="hidden" v-bind="field">
+      <input type="hidden" v-bind="field" />
     </FormField>
 
     <FormField v-slot="{ value }" name="language">
@@ -125,7 +129,10 @@ async function onSubmit(values: any) {
           <PopoverTrigger as-child>
             <FormControl>
               <Button
-                variant="outline" role="combobox" :aria-expanded="open" :class="cn(
+                variant="outline"
+                role="combobox"
+                :aria-expanded="open"
+                :class="cn(
                   'w-[200px] justify-between',
                   !value && 'text-muted-foreground',
                 )"
@@ -145,7 +152,9 @@ async function onSubmit(values: any) {
               <CommandList>
                 <CommandGroup>
                   <CommandItem
-                    v-for="language in languages" :key="language.value" :value="language.label"
+                    v-for="language in languages"
+                    :key="language.value"
+                    :value="language.label"
                     @select="() => {
                       setFieldValue('language', language.value)
                       open = false
@@ -173,9 +182,7 @@ async function onSubmit(values: any) {
     </FormField>
 
     <div class="flex justify-start">
-      <Button type="submit">
-        Update account
-      </Button>
+      <Button type="submit"> Update account </Button>
     </div>
   </Form>
 </template>

@@ -53,9 +53,7 @@ const secondRow = ref(reviews.slice(reviews.length / 2))
   <h4 class="text-center mb-4">
     {{ $t('marketing.evaluation.subtitle') }}
   </h4>
-  <div
-    class="relative flex w-full flex-col items-center justify-center overflow-hidden"
-  >
+  <div class="relative flex w-full flex-col items-center justify-center overflow-hidden">
     <Marquee pause-on-hover class="[--duration:50s]">
       <MarqueeReviewCard
         v-for="review in firstRow"

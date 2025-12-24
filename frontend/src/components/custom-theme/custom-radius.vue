@@ -15,12 +15,11 @@ watchEffect(() => {
 
 <template>
   <div class="space-y-1.5 pt-6">
-    <UiLabel for="radius" class="text-xs">
-      Radius
-    </UiLabel>
+    <UiLabel for="radius" class="text-xs"> Radius </UiLabel>
     <div class="grid grid-cols-5 gap-2 py-1.5">
       <UiButton
-        v-for="rayon in RADIUS" :key="rayon"
+        v-for="rayon in RADIUS"
+        :key="rayon"
         variant="outline"
         class="justify-center h-8 px-3"
         :class="rayon === radius ? 'border-foreground border-2' : ''"

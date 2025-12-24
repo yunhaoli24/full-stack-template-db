@@ -35,7 +35,9 @@ defineProps<Props>()
 
     <CardContent>
       <div class="flex items-center gap-1 mb-2 text-xs">
-        <span v-if="discount" class="text-xl line-through text-muted-foreground">${{ discount }}</span>
+        <span v-if="discount" class="text-xl line-through text-muted-foreground"
+          >${{ discount }}</span
+        >
         <span class="text-3xl font-bold text-primary">${{ price }}</span>
         <div class="text-muted-foreground">
           <span>/</span>
@@ -43,7 +45,8 @@ defineProps<Props>()
         </div>
       </div>
       <div
-        v-for="(feature, index) in features" :key="feature + index"
+        v-for="(feature, index) in features"
+        :key="feature + index"
         class="flex items-center gap-3 mb-2 text-muted-foreground"
       >
         <BadgeCheck class="size-5 text-primary" />

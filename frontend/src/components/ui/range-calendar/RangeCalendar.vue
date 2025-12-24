@@ -35,24 +35,23 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       <RangeCalendarGrid v-for="month in grid" :key="month.value.toString()">
         <RangeCalendarGridHead>
           <RangeCalendarGridRow>
-            <RangeCalendarHeadCell
-              v-for="day in weekDays" :key="day"
-            >
+            <RangeCalendarHeadCell v-for="day in weekDays" :key="day">
               {{ day }}
             </RangeCalendarHeadCell>
           </RangeCalendarGridRow>
         </RangeCalendarGridHead>
         <RangeCalendarGridBody>
-          <RangeCalendarGridRow v-for="(weekDates, index) in month.rows" :key="`weekDate-${index}`" class="mt-2 w-full">
+          <RangeCalendarGridRow
+            v-for="(weekDates, index) in month.rows"
+            :key="`weekDate-${index}`"
+            class="mt-2 w-full"
+          >
             <RangeCalendarCell
               v-for="weekDate in weekDates"
               :key="weekDate.toString()"
               :date="weekDate"
             >
-              <RangeCalendarCellTrigger
-                :day="weekDate"
-                :month="month.value"
-              />
+              <RangeCalendarCellTrigger :day="weekDate" :month="month.value" />
             </RangeCalendarCell>
           </RangeCalendarGridRow>
         </RangeCalendarGridBody>

@@ -1,4 +1,4 @@
-<script lang='ts' setup generic="T">
+<script lang="ts" setup generic="T">
 import type { Table as VueTable } from '@tanstack/vue-table'
 
 import { XIcon } from 'lucide-vue-next'
@@ -34,7 +34,8 @@ function handleClearSelection() {
     )"
   >
     <section
-      v-if="selectedCount" :class="cn(
+      v-if="selectedCount"
+      :class="cn(
         'p-2 shadow-xl',
         'rounded-xl border',
         'bg-background/95 supports-backdrop-filter:bg-background/60 backdrop-blur-lg',
@@ -60,27 +61,16 @@ function handleClearSelection() {
         </TooltipContent>
       </Tooltip>
 
-      <Separator
-        class="h-5"
-        orientation="vertical"
-        aria-hidden="true"
-      />
+      <Separator class="h-5" orientation="vertical" aria-hidden="true" />
 
       <section id="bulk-actions-description" class="flex items-center gap-x-1 text-sm">
-        <UiBadge
-          class="min-w-8 rounded-lg"
-          :aria-label="`${selectedCount} selected`"
-        >
+        <UiBadge class="min-w-8 rounded-lg" :aria-label="`${selectedCount} selected`">
           {{ selectedCount }}
         </UiBadge>
         {{ entityName }} selected
       </section>
 
-      <Separator
-        class="h-5"
-        orientation="vertical"
-        aria-hidden="true"
-      />
+      <Separator class="h-5" orientation="vertical" aria-hidden="true" />
 
       <slot />
     </section>

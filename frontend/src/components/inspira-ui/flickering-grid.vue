@@ -172,10 +172,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    ref="containerRef"
-    :class="cn('w-full h-full', props.class)"
-  >
+  <div ref="containerRef" :class="cn('w-full h-full', props.class)">
     <canvas
       ref="canvasRef"
       class="pointer-events-none"

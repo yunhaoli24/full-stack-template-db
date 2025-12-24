@@ -153,8 +153,6 @@ const onSubmit = handleSubmit((values) => {
       </FormItem>
     </FormField>
 
-    <Button type="submit" class="w-full">
-      SaveChanges
-    </Button>
+    <Button type="submit" class="w-full"> SaveChanges </Button>
   </form>
 </template>

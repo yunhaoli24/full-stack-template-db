@@ -26,35 +26,23 @@ function handleSubmit() {
     <InputGroupAddon align="block-end">
       <TalkType @update:type="handleTypeChange" />
 
-      <InputGroupButton
-        variant="ghost"
-        class="rounded-full"
-        size="icon-xs"
-      >
+      <InputGroupButton variant="ghost" class="rounded-full" size="icon-xs">
         <Paperclip class="size-4" />
         <span class="sr-only">Add File</span>
       </InputGroupButton>
 
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <InputGroupButton variant="ghost">
-            Auto
-          </InputGroupButton>
+          <InputGroupButton variant="ghost"> Auto </InputGroupButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          side="top"
-          align="start"
-          class="[--radius:0.95rem]"
-        >
+        <DropdownMenuContent side="top" align="start" class="[--radius:0.95rem]">
           <DropdownMenuItem>Auto</DropdownMenuItem>
           <DropdownMenuItem>Agent</DropdownMenuItem>
           <DropdownMenuItem>Manual</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <InputGroupText class="ml-auto">
-        52% used
-      </InputGroupText>
+      <InputGroupText class="ml-auto"> 52% used </InputGroupText>
       <Separator orientation="vertical" class="h-4!" />
 
       <InputGroupButton

@@ -18,7 +18,9 @@ const { contentLayout } = storeToRefs(themeStore)
 <template>
   <UiSidebarProvider :default-open="defaultOpen.get(SIDEBAR_COOKIE_NAME)">
     <AppSidebar />
-    <UiSidebarInset class="w-full max-w-full peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)] peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))]">
+    <UiSidebarInset
+      class="w-full max-w-full peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)] peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))]"
+    >
       <header
         class="flex items-center gap-3 sm:gap-4 h-16 p-4 shrink-0 transition-[width,height] ease-linear"
       >

@@ -18,10 +18,7 @@ const colorConfig = computed(() => {
 </script>
 
 <template>
-  <Primitive
-    v-if="colorConfig.length"
-    as="style"
-  >
+  <Primitive v-if="colorConfig.length" as="style">
     {{ Object.entries(THEMES)
       .map(
         ([theme, prefix]) => `

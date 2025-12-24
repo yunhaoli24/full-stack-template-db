@@ -17,24 +17,18 @@ function handleRemove() {
 <template>
   <div>
     <UiDialogTitle>
-      <UiDialogTitle>
-        Delete this task: {{ task.id }} ?
-      </UiDialogTitle>
+      <UiDialogTitle> Delete this task: {{ task.id }} ? </UiDialogTitle>
       <UiDialogDescription class="mt-2 font-medium">
         You are about to delete a task with the ID {{ task.id }}.This action cannot be undone.
       </UiDialogDescription>
     </UiDialogTitle>
     <UiDialogFooter>
       <UiDialogClose as-child>
-        <UiButton variant="outline">
-          Cancel
-        </UiButton>
+        <UiButton variant="outline"> Cancel </UiButton>
       </UiDialogClose>
 
       <UiDialogClose as-child>
-        <UiButton variant="destructive" @click="handleRemove">
-          Delete
-        </UiButton>
+        <UiButton variant="destructive" @click="handleRemove"> Delete </UiButton>
       </UiDialogClose>
     </UiDialogFooter>
   </div>

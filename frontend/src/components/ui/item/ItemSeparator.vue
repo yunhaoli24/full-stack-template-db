@@ -10,9 +10,5 @@ const props = defineProps<
 </script>
 
 <template>
-  <Separator
-    data-slot="item-separator"
-    orientation="horizontal"
-    :class="cn('my-0', props.class)"
-  />
+  <Separator data-slot="item-separator" orientation="horizontal" :class="cn('my-0', props.class)" />
 </template>

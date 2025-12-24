@@ -1,1 +1,1 @@
-export type TSort = 'asc' | 'desc'
+export type TSort = "asc" | "desc";

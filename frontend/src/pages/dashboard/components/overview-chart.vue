@@ -187,9 +187,7 @@ const filterRange = computed(() => {
     <CardHeader class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
       <div class="grid flex-1 gap-1">
         <CardTitle>Area Chart - Interactive</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 3 months
-        </CardDescription>
+        <CardDescription> Showing total visitors for the last 3 months </CardDescription>
       </div>
       <Select v-model="timeRange">
         <SelectTrigger
@@ -199,15 +197,9 @@ const filterRange = computed(() => {
           <SelectValue placeholder="Last 3 months" />
         </SelectTrigger>
         <SelectContent class="rounded-xl">
-          <SelectItem value="90d" class="rounded-lg">
-            Last 3 months
-          </SelectItem>
-          <SelectItem value="30d" class="rounded-lg">
-            Last 30 days
-          </SelectItem>
-          <SelectItem value="7d" class="rounded-lg">
-            Last 7 days
-          </SelectItem>
+          <SelectItem value="90d" class="rounded-lg"> Last 3 months </SelectItem>
+          <SelectItem value="30d" class="rounded-lg"> Last 30 days </SelectItem>
+          <SelectItem value="7d" class="rounded-lg"> Last 7 days </SelectItem>
         </SelectContent>
       </Select>
     </CardHeader>
@@ -246,12 +238,7 @@ const filterRange = computed(() => {
               })
             }"
           />
-          <VisAxis
-            type="y"
-            :num-ticks="3"
-            :tick-line="false"
-            :domain-line="false"
-          />
+          <VisAxis type="y" :num-ticks="3" :tick-line="false" :domain-line="false" />
           <ChartTooltip />
           <ChartCrosshair
             :template="componentToString(chartConfig, ChartTooltipContent, {

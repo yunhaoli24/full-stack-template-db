@@ -32,9 +32,7 @@ const { isMobile, open } = useSidebar()
           >
             <UiAvatar class="size-8 rounded-lg">
               <UiAvatarImage :src="user.avatar" :alt="user.name" />
-              <UiAvatarFallback class="rounded-lg">
-                CN
-              </UiAvatarFallback>
+              <UiAvatarFallback class="rounded-lg"> CN </UiAvatarFallback>
             </UiAvatar>
             <div class="grid flex-1 text-sm leading-tight text-left">
               <span class="font-semibold truncate">{{ user.name }}</span>
@@ -53,9 +51,7 @@ const { isMobile, open } = useSidebar()
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <UiAvatar class="size-8 rounded-lg">
                 <UiAvatarImage :src="user.avatar" :alt="user.name" />
-                <UiAvatarFallback class="rounded-lg">
-                  CN
-                </UiAvatarFallback>
+                <UiAvatarFallback class="rounded-lg"> CN </UiAvatarFallback>
               </UiAvatar>
               <div class="grid flex-1 text-sm leading-tight text-left">
                 <span class="font-semibold truncate">{{ user.name }}</span>

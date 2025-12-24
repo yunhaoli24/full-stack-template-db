@@ -47,9 +47,7 @@
     "pcss",
     "postcss"
   ],
-  "i18n-ally.localesPaths": [
-    "src/plugins/i18n"
-  ],
+  "i18n-ally.localesPaths": ["src/plugins/i18n"],
   "i18n-ally.keystyle": "flat",
   "cSpell.words": [
     "formkit",

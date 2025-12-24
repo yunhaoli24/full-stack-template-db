@@ -1,7 +1,7 @@
-import type { App } from 'vue'
+import type { App } from "vue";
 
-import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 
 export function setupAutoAnimate(app: App) {
-  app.use(autoAnimatePlugin)
+  app.use(autoAnimatePlugin);
 }

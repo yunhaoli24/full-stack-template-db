@@ -1,22 +1,22 @@
-import { createApp } from 'vue'
+import { createApp } from "vue";
 
-import App from './App.vue'
-import { setupPlugins } from './plugins'
+import App from "./App.vue";
+import { setupPlugins } from "./plugins";
 
-import '@/assets/index.css'
-import '@/assets/scrollbar.css'
-import '@/assets/themes.css'
-import '@/assets/chart-theme.css'
-import 'vue-sonner/style.css' // vue sonner style
+import "@/assets/index.css";
+import "@/assets/scrollbar.css";
+import "@/assets/themes.css";
+import "@/assets/chart-theme.css";
+import "vue-sonner/style.css"; // vue sonner style
 
-import '@/utils/env'
+import "@/utils/env";
 
 function bootstrap() {
-  const app = createApp(App)
+  const app = createApp(App);
 
-  setupPlugins(app)
+  setupPlugins(app);
 
-  app.mount('#app')
+  app.mount("#app");
 }
 
-bootstrap()
+bootstrap();

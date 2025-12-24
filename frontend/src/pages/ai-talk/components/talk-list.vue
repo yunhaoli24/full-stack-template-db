@@ -13,7 +13,8 @@ defineProps<Props>()
 <template>
   <div class="">
     <TalkItem
-      v-for="talk, index in talks" :key="`${index}${talk.content}`"
+      v-for="talk, index in talks"
+      :key="`${index}${talk.content}`"
       :talk="talk"
       class="mb-2"
     />

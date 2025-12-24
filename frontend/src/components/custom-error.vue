@@ -21,12 +21,8 @@ defineProps<{
     <footer class="mt-8">
       <slot>
         <div class="flex justify-center gap-2">
-          <UiButton variant="outline" @click="$router.back()">
-            Go Back
-          </UiButton>
-          <UiButton @click="$router.push('/')">
-            Back to Home
-          </UiButton>
+          <UiButton variant="outline" @click="$router.back()"> Go Back </UiButton>
+          <UiButton @click="$router.push('/')"> Back to Home </UiButton>
         </div>
       </slot>
     </footer>

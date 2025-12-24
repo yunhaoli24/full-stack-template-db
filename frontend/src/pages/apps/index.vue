@@ -50,11 +50,7 @@ watch(appType, (newValue) => {
 </script>
 
 <template>
-  <BasicPage
-    title="Apps"
-    description="Apps description"
-    sticky
-  >
+  <BasicPage title="Apps" description="Apps description" sticky>
     <div class="flex items-end justify-between sm:items-center">
       <div class="flex flex-col gap-4 sm:flex-row">
         <UiInput
@@ -78,10 +74,7 @@ watch(appType, (newValue) => {
       <SortSelect v-model:sort="sort" />
     </div>
     <main class="grid grid-cols-1 gap-4 mt-2 lg:grid-cols-3">
-      <AppCard
-        v-for="(app, index) in appList" :key="index"
-        :app="app"
-      />
+      <AppCard v-for="(app, index) in appList" :key="index" :app="app" />
     </main>
   </BasicPage>
 </template>

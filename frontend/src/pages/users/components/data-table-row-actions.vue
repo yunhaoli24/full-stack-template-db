@@ -31,19 +31,14 @@ function handleSelect(command: TCommand) {
   <UiDialog v-model:open="isOpen">
     <UiDropdownMenu>
       <UiDropdownMenuTrigger as-child>
-        <UiButton
-          variant="ghost"
-          class="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-        >
+        <UiButton variant="ghost" class="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
           <Ellipsis class="size-4" />
           <span class="sr-only">Open menu</span>
         </UiButton>
       </UiDropdownMenuTrigger>
       <UiDropdownMenuContent align="end" class="w-[160px]">
         <UiDialogTrigger as-child>
-          <UiDropdownMenuItem @click.stop="handleSelect('edit')">
-            Edit
-          </UiDropdownMenuItem>
+          <UiDropdownMenuItem @click.stop="handleSelect('edit')"> Edit </UiDropdownMenuItem>
         </UiDialogTrigger>
 
         <UiDialogTrigger as-child>

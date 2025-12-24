@@ -6,10 +6,7 @@ const props = defineProps<CalendarGridBodyProps>()
 </script>
 
 <template>
-  <CalendarGridBody
-    data-slot="calendar-grid-body"
-    v-bind="props"
-  >
+  <CalendarGridBody data-slot="calendar-grid-body" v-bind="props">
     <slot />
   </CalendarGridBody>
 </template>

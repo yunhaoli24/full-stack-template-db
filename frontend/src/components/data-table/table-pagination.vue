@@ -109,13 +109,8 @@ function goToLastPage() {
     <div class="flex-1" />
     <div class="flex items-center space-x-6 lg:space-x-8">
       <div class="flex items-center space-x-2">
-        <p class="hidden text-sm font-medium line-clamp-1 md:block">
-          Rows per page
-        </p>
-        <UiSelect
-          :model-value="`${currentPageSize}`"
-          @update:model-value="handlePageSizeChange"
-        >
+        <p class="hidden text-sm font-medium line-clamp-1 md:block">Rows per page</p>
+        <UiSelect :model-value="`${currentPageSize}`" @update:model-value="handlePageSizeChange">
           <UiSelectTrigger class="h-8 w-[70px]">
             <UiSelectValue :placeholder="`${currentPageSize}`" />
           </UiSelectTrigger>

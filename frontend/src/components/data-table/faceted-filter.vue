@@ -28,10 +28,7 @@ const filterFunction = (list: DataTableFacetedFilter['options'], term: string) =
         {{ title }}
         <template v-if="selectedValues.size > 0">
           <UiSeparator orientation="vertical" class="h-4 mx-2" />
-          <UiBadge
-            variant="secondary"
-            class="px-1 font-normal rounded-sm lg:hidden"
-          >
+          <UiBadge variant="secondary" class="px-1 font-normal rounded-sm lg:hidden">
             {{ selectedValues.size }}
           </UiBadge>
           <div class="hidden space-x-1 lg:flex">
@@ -59,9 +56,7 @@ const filterFunction = (list: DataTableFacetedFilter['options'], term: string) =
       </UiButton>
     </UiPopoverTrigger>
     <UiPopoverContent class="w-[200px] p-0" align="start">
-      <UiCommand
-        :filter-function="filterFunction as unknown as any"
-      >
+      <UiCommand :filter-function="filterFunction as unknown as any">
         <UiCommandInput :placeholder="title" />
         <UiCommandList>
           <UiCommandEmpty>No results found.</UiCommandEmpty>
@@ -93,11 +88,20 @@ const filterFunction = (list: DataTableFacetedFilter['options'], term: string) =
                     : 'opacity-50 [&_svg]:invisible',
                 )"
               >
-                <Check :class="cn('h-4 w-4', selectedValues.has(option.value) ? 'text-primary-foreground' : '')" />
+                <Check
+                  :class="cn('h-4 w-4', selectedValues.has(option.value) ? 'text-primary-foreground' : '')"
+                />
               </div>
-              <component :is="option.icon" v-if="option.icon" class="size-4 mr-2 text-muted-foreground" />
+              <component
+                :is="option.icon"
+                v-if="option.icon"
+                class="size-4 mr-2 text-muted-foreground"
+              />
               <span>{{ option.label }}</span>
-              <span v-if="facets?.get(option.value)" class="flex items-center justify-center size-4 ml-auto font-mono text-xs">
+              <span
+                v-if="facets?.get(option.value)"
+                class="flex items-center justify-center size-4 ml-auto font-mono text-xs"
+              >
                 {{ facets.get(option.value) }}
               </span>
             </UiCommandItem>

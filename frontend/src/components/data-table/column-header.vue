@@ -23,11 +23,7 @@ export default {
   <div v-if="column.getCanSort()" :class="cn('flex items-center space-x-2', $attrs.class ?? '')">
     <UiDropdownMenu>
       <UiDropdownMenuTrigger as-child>
-        <UiButton
-          variant="ghost"
-          size="sm"
-          class="-ml-3 h-8 data-[state=open]:bg-accent"
-        >
+        <UiButton variant="ghost" size="sm" class="-ml-3 h-8 data-[state=open]:bg-accent">
           <span>{{ title }}</span>
           <ArrowDown v-if="column.getIsSorted() === 'desc'" class="size-4 ml-2" />
           <ArrowUp v-else-if=" column.getIsSorted() === 'asc'" class="size-4 ml-2" />

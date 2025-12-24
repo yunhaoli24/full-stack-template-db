@@ -10,11 +10,7 @@ useForwardExpose()
 </script>
 
 <template>
-  <SplitterPanel
-    v-slot="slotProps"
-    data-slot="resizable-panel"
-    v-bind="forwarded"
-  >
+  <SplitterPanel v-slot="slotProps" data-slot="resizable-panel" v-bind="forwarded">
     <slot v-bind="slotProps" />
   </SplitterPanel>
 </template>

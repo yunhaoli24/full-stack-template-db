@@ -57,7 +57,12 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
             })
           }"
         >
-          <NativeSelectOption v-for="(month) in createYear({ dateObj: date })" :key="month.toString()" :value="month.month" :selected="date.month === month.month">
+          <NativeSelectOption
+            v-for="(month) in createYear({ dateObj: date })"
+            :key="month.toString()"
+            :value="month.month"
+            :selected="date.month === month.month"
+          >
             {{ formatter.custom(toDate(month), { month: 'short' }) }}
           </NativeSelectOption>
         </NativeSelect>
@@ -79,7 +84,12 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
             })
           }"
         >
-          <NativeSelectOption v-for="(year) in yearRange" :key="year.toString()" :value="year.year" :selected="date.year === year.year">
+          <NativeSelectOption
+            v-for="(year) in yearRange"
+            :key="year.toString()"
+            :value="year.year"
+            :selected="date.year === year.year"
+          >
             {{ formatter.custom(toDate(year), { year: 'numeric' }) }}
           </NativeSelectOption>
         </NativeSelect>
@@ -104,7 +114,12 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         </CalendarNextButton>
       </nav>
 
-      <slot name="calendar-heading" :date="date" :month="ReuseMonthTemplate" :year="ReuseYearTemplate">
+      <slot
+        name="calendar-heading"
+        :date="date"
+        :month="ReuseMonthTemplate"
+        :year="ReuseYearTemplate"
+      >
         <template v-if="layout === 'month-and-year'">
           <div class="flex items-center justify-center gap-1">
             <ReuseMonthTemplate :date="date" />
@@ -133,24 +148,19 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       <CalendarGrid v-for="month in grid" :key="month.value.toString()">
         <CalendarGridHead>
           <CalendarGridRow>
-            <CalendarHeadCell
-              v-for="day in weekDays" :key="day"
-            >
+            <CalendarHeadCell v-for="day in weekDays" :key="day">
               {{ day }}
             </CalendarHeadCell>
           </CalendarGridRow>
         </CalendarGridHead>
         <CalendarGridBody>
-          <CalendarGridRow v-for="(weekDates, index) in month.rows" :key="`weekDate-${index}`" class="mt-2 w-full">
-            <CalendarCell
-              v-for="weekDate in weekDates"
-              :key="weekDate.toString()"
-              :date="weekDate"
-            >
-              <CalendarCellTrigger
-                :day="weekDate"
-                :month="month.value"
-              />
+          <CalendarGridRow
+            v-for="(weekDates, index) in month.rows"
+            :key="`weekDate-${index}`"
+            class="mt-2 w-full"
+          >
+            <CalendarCell v-for="weekDate in weekDates" :key="weekDate.toString()" :date="weekDate">
+              <CalendarCellTrigger :day="weekDate" :month="month.value" />
             </CalendarCell>
           </CalendarGridRow>
         </CalendarGridBody>

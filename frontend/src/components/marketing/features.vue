@@ -40,11 +40,7 @@ const gridItems = computed(() => [
     <ul
       class="grid grid-cols-1 grid-rows-none gap-4 overflow-auto xl:max-h-[56rem] xl:grid-rows-2 lg:gap-4 md:grid-cols-2 md:grid-rows-3"
     >
-      <li
-        v-for="item in gridItems"
-        :key="item.title"
-        :class="cn('min-h-[14rem] list-none')"
-      >
+      <li v-for="item in gridItems" :key="item.title" :class="cn('min-h-[14rem] list-none')">
         <div class="rounded-2.5xl relative h-full border p-2 md:rounded-3xl md:p-3">
           <GlowingEffect
             :spread="40"
@@ -58,10 +54,7 @@ const gridItems = computed(() => [
           >
             <div class="relative flex flex-1 flex-col justify-between gap-3">
               <div class="w-fit rounded-lg border border-gray-600 p-2">
-                <Icon
-                  class="size-4 text-black dark:text-neutral-500"
-                  :icon="item.icon"
-                />
+                <Icon class="size-4 text-black dark:text-neutral-500" :icon="item.icon" />
               </div>
               <div class="space-y-3">
                 <h3

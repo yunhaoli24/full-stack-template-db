@@ -16,12 +16,11 @@ watchEffect(() => {
 
 <template>
   <div class="space-y-1.5 pt-6">
-    <UiLabel for="radius" class="text-xs">
-      Color
-    </UiLabel>
+    <UiLabel for="radius" class="text-xs"> Color </UiLabel>
     <div class="grid grid-cols-2 gap-2 py-1.5">
       <UiButton
-        v-for="theme in THEME_PRIMARY_COLORS" :key="theme.theme"
+        v-for="theme in THEME_PRIMARY_COLORS"
+        :key="theme.theme"
         variant="outline"
         class="justify-center h-8 px-3"
         :class="t === theme.theme ? 'border-foreground border-2' : ''"

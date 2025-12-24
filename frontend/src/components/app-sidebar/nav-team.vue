@@ -54,7 +54,8 @@ function isActive(menu: NavItem): boolean {
           <!-- sidebar expanded -->
           <UiCollapsible
             v-if="state !== 'collapsed' || isMobile"
-            as-child :default-open="isCollapsed(menu)"
+            as-child
+            :default-open="isCollapsed(menu)"
             class="group/collapsible"
           >
             <UiSidebarMenuItem>

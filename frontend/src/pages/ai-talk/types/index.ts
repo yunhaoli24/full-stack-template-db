@@ -1,14 +1,14 @@
-export type TalkRole = 'user' | 'system'
+export type TalkRole = "user" | "system";
 
 export interface IMessage {
-  role: TalkRole
-  content: string
+  role: TalkRole;
+  content: string;
 }
 
-type TAIModel = 'deepseek-chat'
+type TAIModel = "deepseek-chat";
 
 export interface IChatReq {
-  model: TAIModel
-  stream: boolean
-  messages: IMessage[]
+  model: TAIModel;
+  stream: boolean;
+  messages: IMessage[];
 }

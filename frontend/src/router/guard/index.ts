@@ -1,8 +1,8 @@
-import type { Router } from 'vue-router'
+import type { Router } from "vue-router";
 
-import nprogress from 'nprogress'
+import nprogress from "nprogress";
 
-import { authGuard } from './auth-guard'
+import { authGuard } from "./auth-guard";
 
 /**
  * global router guard
@@ -10,16 +10,16 @@ import { authGuard } from './auth-guard'
  */
 function setupCommonGuard(router: Router) {
   router.beforeEach(() => {
-    nprogress.start()
-    return true
-  })
+    nprogress.start();
+    return true;
+  });
   router.afterEach(() => {
-    nprogress.done()
-    return true
-  })
+    nprogress.done();
+    return true;
+  });
 }
 
 export function createRouterGuard(router: Router) {
-  setupCommonGuard(router)
-  authGuard(router)
+  setupCommonGuard(router);
+  authGuard(router);
 }

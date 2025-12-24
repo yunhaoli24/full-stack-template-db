@@ -17,7 +17,8 @@ const currentLink = computed(() => props.nav.find(link => link.url === currentPa
 <template>
   <nav class="flex flex-col gap-2">
     <router-link
-      v-for="link in props.nav" :key="link.url"
+      v-for="link in props.nav"
+      :key="link.url"
       :to="link.url"
       class="items-center hidden px-2 py-1 rounded-md lg:flex hover:bg-primary/5"
       :class="link.url === currentPath ? activeClass : ''"
@@ -36,7 +37,8 @@ const currentLink = computed(() => props.nav.find(link => link.url === currentPa
       </UiDropdownMenuTrigger>
       <UiDropdownMenuContent class="w-48" align="start">
         <UiDropdownMenuItem
-          v-for="link in props.nav" :key="link.url"
+          v-for="link in props.nav"
+          :key="link.url"
           @click="$router.push(link.url)"
         >
           <component :is="link.icon" class="size-4 mr-1" />

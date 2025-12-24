@@ -39,10 +39,7 @@ const taskDeleteBatchOpen = ref(false)
       </UiTooltipContent>
     </UiTooltip>
 
-    <TaskDeleteBatch
-      v-model:open="taskDeleteBatchOpen"
-      :table
-    />
+    <TaskDeleteBatch v-model:open="taskDeleteBatchOpen" :table />
   </BulkActions>
 
   <DataTable :columns :table :data :loading>

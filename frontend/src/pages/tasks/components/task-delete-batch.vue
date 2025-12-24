@@ -48,21 +48,16 @@ function handleConfirm() {
     :disabled="confirmValue.trim() !== CONFIRM_WORD"
     @confirm="handleConfirm"
   >
-    <template #title>
-      Delete {{ selectedCount }} tasks?
-    </template>
+    <template #title> Delete {{ selectedCount }} tasks? </template>
     <template #description>
-      Are you sure you want to delete the selected tasks? <br>
+      Are you sure you want to delete the selected tasks? <br />
       This action cannot be undone.
     </template>
 
     <template #default>
       <UiLabel class="my-4 flex flex-col items-start gap-1.5">
         <span>Confirm by typing {{ CONFIRM_WORD }}:</span>
-        <UiInput
-          v-model="confirmValue"
-          :placeholder="`Type &quot;${CONFIRM_WORD}&quot; to confirm.`"
-        />
+        <UiInput v-model="confirmValue" :placeholder='`Type "${CONFIRM_WORD}" to confirm.`' />
       </UiLabel>
 
       <UiAlert variant="destructive">

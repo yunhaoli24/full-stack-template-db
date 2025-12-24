@@ -20,17 +20,11 @@ function mockLoading() {
 </script>
 
 <template>
-  <BasicPage
-    title="Users"
-    description="Users description"
-    sticky
-  >
+  <BasicPage title="Users" description="Users description" sticky>
     <template #actions>
       <UserInvite />
       <UserCreate />
-      <UiButton variant="outline" @click="mockLoading">
-        <Loader />Mock Loading
-      </UiButton>
+      <UiButton variant="outline" @click="mockLoading"> <Loader />Mock Loading </UiButton>
     </template>
     <div class="overflow-x-auto">
       <DataTable :loading :data="users" :columns="columns" />

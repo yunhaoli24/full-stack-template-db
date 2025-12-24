@@ -12,14 +12,12 @@ import TermsOfServiceButton from './components/terms-of-service-button.vue'
       <AuthTitle />
       <UiCard class="max-w-sm mx-auto">
         <UiCardHeader>
-          <UiCardTitle class="text-xl">
-            Sign Up
-          </UiCardTitle>
+          <UiCardTitle class="text-xl"> Sign Up </UiCardTitle>
           <UiCardDescription>
-            Enter your email and password to create an account.
-            Already have an account?
+            Enter your email and password to create an account. Already have an account?
             <UiButton
-              variant="link" class="px-0 text-muted-foreground"
+              variant="link"
+              class="px-0 text-muted-foreground"
               @click="$router.push('/auth/sign-in')"
             >
               Sign In
@@ -30,44 +28,27 @@ import TermsOfServiceButton from './components/terms-of-service-button.vue'
           <div class="grid gap-4">
             <div class="grid grid-cols-2 gap-4">
               <div class="grid gap-2">
-                <UiLabel for="first-name">
-                  First name
-                </UiLabel>
+                <UiLabel for="first-name"> First name </UiLabel>
                 <UiInput id="first-name" placeholder="Max" required />
               </div>
               <div class="grid gap-2">
-                <UiLabel for="last-name">
-                  Last name
-                </UiLabel>
+                <UiLabel for="last-name"> Last name </UiLabel>
                 <UiInput id="last-name" placeholder="Robinson" required />
               </div>
             </div>
             <div class="grid gap-2">
-              <UiLabel for="email">
-                Email
-              </UiLabel>
-              <UiInput
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
+              <UiLabel for="email"> Email </UiLabel>
+              <UiInput id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div class="grid gap-2">
-              <UiLabel for="password">
-                Password
-              </UiLabel>
+              <UiLabel for="password"> Password </UiLabel>
               <UiInput id="password" type="password" placeholder="******" />
             </div>
             <div class="grid gap-2">
-              <UiLabel for="password">
-                Confirm Password
-              </UiLabel>
+              <UiLabel for="password"> Confirm Password </UiLabel>
               <UiInput id="password" type="password" placeholder="******" />
             </div>
-            <UiButton type="submit" class="w-full">
-              Create Account
-            </UiButton>
+            <UiButton type="submit" class="w-full"> Create Account </UiButton>
 
             <UiSeparator label="Or continue with" />
 

@@ -4,11 +4,7 @@ import Error from '@/components/custom-error.vue'
 
 <template>
   <div class="flex items-center justify-center h-screen">
-    <Error
-      :code="403"
-      subtitle="Forbidden"
-      error="You are not authorized to access this page."
-    />
+    <Error :code="403" subtitle="Forbidden" error="You are not authorized to access this page." />
   </div>
 </template>
 

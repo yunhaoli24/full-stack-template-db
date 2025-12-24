@@ -23,11 +23,7 @@ function resetColumnVisible() {
 <template>
   <UiDropdownMenu>
     <UiDropdownMenuTrigger as-child>
-      <UiButton
-        variant="outline"
-        size="sm"
-        class="hidden h-8 ml-auto lg:flex"
-      >
+      <UiButton variant="outline" size="sm" class="hidden h-8 ml-auto lg:flex">
         <Settings2 class="size-4 mr-2" />
         Columns View
       </UiButton>
@@ -47,10 +43,7 @@ function resetColumnVisible() {
       </UiDropdownMenuCheckboxItem>
 
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem
-        class="capitalize"
-        @click="resetColumnVisible"
-      >
+      <UiDropdownMenuItem class="capitalize" @click="resetColumnVisible">
         <RefreshCcw />
         Reset
       </UiDropdownMenuItem>
