@@ -50,4 +50,12 @@ export default defineConfig({
     drop: ["debugger"],
     pure: ["console.log"],
   },
+  server: {
+    proxy: {
+      "/api/v1": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
+  },
 });
