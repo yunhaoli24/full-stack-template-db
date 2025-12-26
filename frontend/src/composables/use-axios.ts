@@ -16,7 +16,7 @@ function createAxiosInstance() {
   instance.interceptors.request.use(
     (config) => {
       // 添加token到请求头
-      const token = authStore.accessToken.value;
+      const token = authStore.accessToken.valueOf;
       if (token) {
         config.headers = config.headers ?? {};
         config.headers.Authorization = `Bearer ${token}`;
