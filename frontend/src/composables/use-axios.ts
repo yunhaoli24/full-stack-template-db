@@ -1,23 +1,24 @@
-import type { AxiosError } from "axios";
+import axios, { type AxiosError, type AxiosInstance } from "axios";
 
-import axios from "axios";
-
-import env from "@/utils/env";
 import pinia from "@/plugins/pinia/setup";
 import { useAuthStore } from "@/stores/auth";
+import env from "@/utils/env";
 
-export function useAxios() {
+let axiosInstance: AxiosInstance | null = null;
+
+function createAxiosInstance() {
   const authStore = useAuthStore(pinia);
-  const axiosInstance = axios.create({
+  const instance = axios.create({
     baseURL: env.VITE_SERVER_API_URL + env.VITE_SERVER_API_PREFIX,
     timeout: env.VITE_SERVER_API_TIMEOUT,
   });
 
-  axiosInstance.interceptors.request.use(
+  instance.interceptors.request.use(
     (config) => {
       // 添加token到请求头
       const token = authStore.accessToken.value;
       if (token) {
+        config.headers = config.headers ?? {};
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
@@ -27,7 +28,7 @@ export function useAxios() {
     },
   );
 
-  axiosInstance.interceptors.response.use(
+  instance.interceptors.response.use(
     (response) => {
       return response;
     },
@@ -39,14 +40,28 @@ export function useAxios() {
           // 清除认证信息
           authStore.clearAuthInfo();
           // 跳转到登录页
-          window.location.href = "/auth/sign-in";
+          if (typeof window !== "undefined") {
+            window.location.href = "/auth/sign-in";
+          }
         }
       }
       return Promise.reject(error);
     },
   );
 
+  return instance;
+}
+
+function getAxiosInstance() {
+  if (!axiosInstance) {
+    axiosInstance = createAxiosInstance();
+  }
+
+  return axiosInstance;
+}
+
+export function useAxios() {
   return {
-    axiosInstance,
+    axiosInstance: getAxiosInstance(),
   };
 }
