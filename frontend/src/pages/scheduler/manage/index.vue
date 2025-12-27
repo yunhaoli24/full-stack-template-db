@@ -280,7 +280,6 @@ function formatDate(dateStr: string | null) {
             </UiSelectTrigger>
             <UiSelectContent>
               <UiSelectGroup>
-                <UiSelectItem value="">All types</UiSelectItem>
                 <UiSelectItem v-for="option in schedulerTypeOptions" :key="option.value" :value="String(option.value)">
                   {{ option.label }}
                 </UiSelectItem>

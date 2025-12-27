@@ -26,7 +26,9 @@
 }
 
 #nprogress .spinner-icon {
-  @apply border-t-primary border-l-primary size-4 rounded-full border-[2px] border-solid border-transparent;
+  @apply size-4 rounded-full border-[2px] border-solid border-transparent;
+  border-top-color: hsl(var(--primary)) !important;
+  border-left-color: hsl(var(--primary)) !important;
 
   animation: nprogress-spinner 400ms linear infinite;
 }
