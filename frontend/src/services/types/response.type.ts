@@ -1,19 +1,22 @@
-export interface IResponse<T, E = Record<string, any>> {
-  data: T;
-  extra: E;
+export interface BackendResponse<T> {
   code: number;
-  message: string;
-  success: boolean;
+  msg: string;
+  data: T;
 }
 
-export interface IPaginationRequestQuery {
-  page?: number;
-  pageSize?: number;
+export interface PaginationLinks {
+  first: string;
+  last: string;
+  self: string;
+  next: string | null;
+  prev: string | null;
 }
 
-export type IRequestQuery<T extends Record<string, any>> = {
-  page?: number;
-  pageSize?: number;
-} & {
-  [K in keyof T]?: T[K];
-};
+export interface PageData<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+  total_pages: number;
+  links: PaginationLinks;
+}
