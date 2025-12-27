@@ -27,6 +27,7 @@ const dialogOpen = ref(false)
 const deleteDialogOpen = ref(false)
 const editingDept = ref<DeptTreeNode | null>(null)
 const deleteTarget = ref<DeptTreeNode | null>(null)
+const ROOT_PARENT_VALUE = '__root__'
 
 const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
 const isDeleting = computed(() => deleteMutation.isPending.value)
@@ -36,7 +37,7 @@ const deptFormSchema = toTypedSchema(
     name: z.string().trim().min(1, 'Please enter a department name.'),
     parent_id: z.preprocess(
       (value) => {
-        if (value === '' || value === null || value === undefined) {
+        if (value === ROOT_PARENT_VALUE || value === '' || value === null || value === undefined) {
           return null
         }
         const parsed = Number(value)
@@ -56,7 +57,7 @@ const { handleSubmit, resetForm } = useForm({
   validationSchema: deptFormSchema,
   initialValues: {
     name: '',
-    parent_id: '',
+    parent_id: ROOT_PARENT_VALUE,
     sort: 0,
     leader: '',
     phone: '',
@@ -81,10 +82,10 @@ function flattenDept(nodes: DeptTreeNode[], depth = 0): Array<{ node: DeptTreeNo
 const flatDeptList = computed(() => flattenDept(deptTree.value))
 
 const parentOptions = computed(() => [
-  { label: 'Root', value: null },
+  { label: 'Root', value: ROOT_PARENT_VALUE },
   ...flatDeptList.value.map(({ node, depth }) => ({
     label: `${depth ? `${'-'.repeat(depth)} ` : ''}${node.name}`,
-    value: node.id,
+    value: String(node.id),
   })),
 ])
 
@@ -110,7 +111,7 @@ function openCreate(parent?: DeptTreeNode | null) {
   resetForm({
     values: {
       name: '',
-      parent_id: parent?.id ? String(parent.id) : '',
+      parent_id: parent?.id ? String(parent.id) : ROOT_PARENT_VALUE,
       sort: 0,
       leader: '',
       phone: '',
@@ -126,7 +127,7 @@ function openEdit(dept: DeptTreeNode) {
   resetForm({
     values: {
       name: dept.name,
-      parent_id: dept.parent_id ? String(dept.parent_id) : '',
+      parent_id: dept.parent_id ? String(dept.parent_id) : ROOT_PARENT_VALUE,
       sort: dept.sort ?? 0,
       leader: dept.leader ?? '',
       phone: dept.phone ?? '',
@@ -258,7 +259,7 @@ async function handleDeleteConfirm() {
           <UiDialogDescription> Update department details and hierarchy. </UiDialogDescription>
         </UiDialogHeader>
 
-        <form class="space-y-4" @submit="onSubmit">
+        <form class="space-y-4" @submit.prevent="onSubmit">
           <FormField v-slot="{ componentField }" name="name">
             <UiFormItem>
               <UiFormLabel>Name</UiFormLabel>
@@ -287,7 +288,7 @@ async function handleDeleteConfirm() {
                     <UiSelectItem
                       v-for="option in parentOptions"
                       :key="String(option.value)"
-                      :value="option.value === null ? '' : String(option.value)"
+                      :value="option.value"
                     >
                       {{ option.label }}
                     </UiSelectItem>
@@ -364,9 +365,7 @@ async function handleDeleteConfirm() {
           </FormField>
 
           <UiDialogFooter class="gap-2">
-            <UiDialogClose as-child>
-              <UiButton type="button" variant="outline" :disabled="isSaving"> Cancel </UiButton>
-            </UiDialogClose>
+            <UiButton type="button" variant="outline" @click="dialogOpen = false"> Cancel </UiButton>
             <UiButton type="submit" :disabled="isSaving">
               {{ editingDept ? 'Save Changes' : 'Create Department' }}
             </UiButton>

@@ -38,6 +38,7 @@ const menuTypeOptions = [
   { label: 'Iframe', value: 3 },
   { label: 'External Link', value: 4 },
 ] as const
+const ROOT_PARENT_VALUE = '__root__'
 
 const menuFormSchema = toTypedSchema(
   z.object({
@@ -46,7 +47,7 @@ const menuFormSchema = toTypedSchema(
     path: z.string().optional(),
     parent_id: z.preprocess(
       (value) => {
-        if (value === '' || value === null || value === undefined) {
+        if (value === ROOT_PARENT_VALUE || value === '' || value === null || value === undefined) {
           return null
         }
         const parsed = Number(value)
@@ -73,7 +74,7 @@ const { handleSubmit, resetForm } = useForm({
     title: '',
     name: '',
     path: '',
-    parent_id: '',
+    parent_id: ROOT_PARENT_VALUE,
     sort: 0,
     icon: '',
     type: '1',
@@ -103,10 +104,10 @@ function flattenMenu(nodes: MenuTreeNode[], depth = 0): Array<{ node: MenuTreeNo
 const flatMenuList = computed(() => flattenMenu(menuTree.value))
 
 const parentOptions = computed(() => [
-  { label: 'Root', value: null },
+  { label: 'Root', value: ROOT_PARENT_VALUE },
   ...flatMenuList.value.map(({ node, depth }) => ({
     label: `${depth ? `${'-'.repeat(depth)} ` : ''}${node.title}`,
-    value: node.id,
+    value: String(node.id),
   })),
 ])
 
@@ -134,7 +135,7 @@ function openCreate(parent?: MenuTreeNode | null) {
       title: '',
       name: '',
       path: '',
-      parent_id: parent?.id ? String(parent.id) : '',
+      parent_id: parent?.id ? String(parent.id) : ROOT_PARENT_VALUE,
       sort: 0,
       icon: '',
       type: '1',
@@ -157,7 +158,7 @@ function openEdit(menu: MenuTreeNode) {
       title: menu.title,
       name: menu.name,
       path: menu.path ?? '',
-      parent_id: menu.parent_id ? String(menu.parent_id) : '',
+      parent_id: menu.parent_id ? String(menu.parent_id) : ROOT_PARENT_VALUE,
       sort: menu.sort ?? 0,
       icon: menu.icon ?? '',
       type: String(menu.type ?? 1),
@@ -307,7 +308,7 @@ function formatType(type: number) {
           <UiDialogDescription> Configure navigation entries and permissions. </UiDialogDescription>
         </UiDialogHeader>
 
-        <form class="space-y-4" @submit="onSubmit">
+        <form class="space-y-4" @submit.prevent="onSubmit">
           <div class="grid gap-4 md:grid-cols-2">
             <FormField v-slot="{ componentField }" name="title">
               <UiFormItem>
@@ -359,7 +360,7 @@ function formatType(type: number) {
                       <UiSelectItem
                         v-for="option in parentOptions"
                         :key="String(option.value)"
-                        :value="option.value === null ? '' : String(option.value)"
+                        :value="option.value"
                       >
                         {{ option.label }}
                       </UiSelectItem>
@@ -513,9 +514,7 @@ function formatType(type: number) {
           </div>
 
           <UiDialogFooter class="gap-2">
-            <UiDialogClose as-child>
-              <UiButton type="button" variant="outline" :disabled="isSaving"> Cancel </UiButton>
-            </UiDialogClose>
+            <UiButton type="button" variant="outline" @click="dialogOpen = false"> Cancel </UiButton>
             <UiButton type="submit" :disabled="isSaving">
               {{ editingMenu ? 'Save Changes' : 'Create Menu' }}
             </UiButton>
