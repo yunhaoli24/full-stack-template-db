@@ -1,18 +1,29 @@
 <script lang="ts" setup>
+import { useDark } from '@vueuse/core'
+
 import { useSidebar } from '@/composables/use-sidebar'
 
 import NavFooter from './nav-footer.vue'
 import NavTeam from './nav-team.vue'
-import TeamSwitcher from './team-switcher.vue'
 
-const { navData, teams, user } = useSidebar()
+const { navData, user } = useSidebar()
 const navMain = computed(() => navData.value || [])
+const isDark = useDark()
 </script>
 
 <template>
   <UiSidebar collapsible="icon" class="z-50">
     <UiSidebarHeader>
-      <TeamSwitcher :teams="teams" />
+      <div class="flex items-center gap-2 px-2 py-2">
+        <img
+          :src="isDark ? '/logo.svg' : '/logo-black.svg'"
+          alt="Logo"
+          class="size-8 shrink-0"
+        />
+        <div class="grid flex-1 text-sm leading-tight">
+          <span class="font-semibold truncate">shadcn-vue-admin</span>
+        </div>
+      </div>
     </UiSidebarHeader>
 
     <UiSidebarContent>
