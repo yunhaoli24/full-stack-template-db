@@ -16,15 +16,32 @@ const props = defineProps<{
 const emits = defineEmits(['close'])
 
 const formSchema = toTypedSchema(z.object({
-  title: z.string().min(2).max(50).default(props.task?.title ?? ''),
-  status: z.string().default(props.task?.status ?? ''),
-  label: z.string().default(props.task?.label ?? ''),
-  priority: z.string().default(props.task?.priority ?? ''),
+  title: z.string().min(2).max(50),
+  status: z.string(),
+  label: z.string(),
+  priority: z.string(),
 }))
 
-const { isFieldDirty, handleSubmit } = useForm({
+function getInitialValues() {
+  return {
+    title: props.task?.title ?? '',
+    status: props.task?.status ?? '',
+    label: props.task?.label ?? '',
+    priority: props.task?.priority ?? '',
+  }
+}
+
+const { isFieldDirty, handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
+  initialValues: getInitialValues(),
 })
+
+watch(
+  () => props.task,
+  () => {
+    resetForm({ values: getInitialValues() })
+  },
+)
 const onSubmit = handleSubmit((values) => {
   toast('You submitted the following values:', {
     description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),

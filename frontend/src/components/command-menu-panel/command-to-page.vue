@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { useSidebar } from '@/composables/use-sidebar'
 
 import type { NavGroup, NavItem } from '../app-sidebar/types'
@@ -26,12 +28,16 @@ function getFlatNavItems(navData: NavGroup[]): NavItem[] {
   return flatItems
 }
 
-const commands = getFlatNavItems([...navData.value!, ...otherPages.value!])
+const commands = computed(() => getFlatNavItems([...(navData.value || []), ...(otherPages.value || [])]))
 
 const router = useRouter()
 const route = useRoute()
-function commandItemClick(url: string) {
+function commandItemClick(url: string, external?: boolean) {
   emit('click')
+  if (external) {
+    window.open(url, '_blank', 'noreferrer')
+    return
+  }
   if (route.fullPath !== url) {
     router.push(url)
   }
@@ -44,7 +50,7 @@ function commandItemClick(url: string) {
       v-for="command in commands"
       :key="command.title"
       :value="command.title"
-      @click="commandItemClick(command.url!)"
+      @click="commandItemClick(command.url!, command.external)"
     >
       <CommandItemHasIcon :name="command.title" :icon="command.icon" />
     </UiCommandItem>

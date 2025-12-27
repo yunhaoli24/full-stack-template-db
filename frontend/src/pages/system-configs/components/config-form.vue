@@ -18,11 +18,11 @@ const emits = defineEmits<{
 
 const formSchema = toTypedSchema(z.object({
   name: z.string().trim().min(1, 'Please enter a name.'),
-  type: z.string().optional().default(''),
+  type: z.string().optional(),
   key: z.string().trim().min(1, 'Please enter a key.'),
   value: z.string().trim().min(1, 'Please enter a value.'),
-  is_frontend: z.boolean().default(false),
-  remark: z.string().optional().default(''),
+  is_frontend: z.boolean(),
+  remark: z.string().optional(),
 }))
 
 function getInitialValues(config: SystemConfig | null) {

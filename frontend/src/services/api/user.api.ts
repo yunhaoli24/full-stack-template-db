@@ -1,6 +1,7 @@
 import type { AxiosError } from "axios";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
@@ -32,8 +33,9 @@ function ensureSuccess<T>(response: BackendResponse<T>): BackendResponse<T> {
   return response;
 }
 
-export function useGetCurrentUserQuery() {
+export function useGetCurrentUserQuery(enabled?: MaybeRefOrGetter<boolean>) {
   const { axiosInstance } = useAxios();
+  const isEnabled = computed(() => (enabled === undefined ? true : toValue(enabled)));
 
   return useQuery<BackendResponse<CurrentUser>, AxiosError>({
     queryKey: CURRENT_USER_QUERY_KEY,
@@ -41,6 +43,7 @@ export function useGetCurrentUserQuery() {
       const response = await axiosInstance.get<BackendResponse<CurrentUser>>("/sys/users/me");
       return ensureSuccess(response.data);
     },
+    enabled: isEnabled,
     refetchOnWindowFocus: false,
   });
 }

@@ -213,6 +213,20 @@ declare module "vue-router/auto-routes" {
       Record<never, never>,
       never
     >;
+    "/system/dept/": RouteRecordInfo<
+      "/system/dept/",
+      "/system/dept",
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >;
+    "/system/menu/": RouteRecordInfo<
+      "/system/menu/",
+      "/system/menu",
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >;
     "/system-configs/": RouteRecordInfo<
       "/system-configs/",
       "/system-configs",
@@ -375,6 +389,14 @@ declare module "vue-router/auto-routes" {
     };
     "src/pages/sva-components/index.vue": {
       routes: "/sva-components/";
+      views: never;
+    };
+    "src/pages/system/dept/index.vue": {
+      routes: "/system/dept/";
+      views: never;
+    };
+    "src/pages/system/menu/index.vue": {
+      routes: "/system/menu/";
       views: never;
     };
     "src/pages/system-configs/index.vue": {

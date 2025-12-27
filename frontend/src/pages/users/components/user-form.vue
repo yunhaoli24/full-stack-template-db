@@ -26,20 +26,39 @@ const status = ['active', 'inactive', 'invited', 'suspended'] as const
 
 const formSchema = z.object({
   id: z.string().optional(),
-  firstName: z.string().min(1).default(user?.firstName || ''),
-  lastName: z.string().min(1).default(user?.lastName || ''),
-  username: z.string().min(1).default(user?.username || ''),
-  email: z.email().min(1).default(user?.email || ''),
-  phoneNumber: z.string().min(1).default(user?.phoneNumber || ''),
-  status: userStatusSchema.default(user?.status || 'active'),
-  role: userRoleSchema.default(user?.role || 'cashier'),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  username: z.string().min(1),
+  email: z.email().min(1),
+  phoneNumber: z.string().min(1),
+  status: userStatusSchema,
+  role: userRoleSchema,
 })
 
+function getInitialValues() {
+  return {
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    username: user?.username || '',
+    email: user?.email || '',
+    phoneNumber: user?.phoneNumber || '',
+    status: user?.status || 'active',
+    role: user?.role || 'cashier',
+  }
+}
+
 const userInviteFormSchema = toTypedSchema(formSchema)
-const { handleSubmit } = useForm({
+const { handleSubmit, resetForm } = useForm({
   validationSchema: userInviteFormSchema,
-  initialValues: {},
+  initialValues: getInitialValues(),
 })
+
+watch(
+  () => user,
+  () => {
+    resetForm({ values: getInitialValues() })
+  },
+)
 
 const onSubmit = handleSubmit((values) => {
   const submitUser = { ...values }

@@ -6,6 +6,7 @@ type NavIcon = FunctionalComponent<LucideProps, Record<any, any>, any, Record<an
 interface BaseNavItem {
   title: string;
   icon?: NavIcon;
+  external?: boolean;
 }
 
 export type NavItem =
