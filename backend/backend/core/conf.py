@@ -132,6 +132,12 @@ class Settings(BaseSettings):
         'X-Request-ID',
     ]
 
+    # OpenAI
+    OPENAI_API_KEY: str = ''
+    OPENAI_BASE_URL: str | None = None
+    OPENAI_DEFAULT_MODEL: str = ''
+    OPENAI_TIMEOUT_SECONDS: int = 60
+
     # 中间件配置
     MIDDLEWARE_CORS: bool = True
 

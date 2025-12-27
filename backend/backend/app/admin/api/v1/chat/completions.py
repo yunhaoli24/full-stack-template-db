@@ -1,0 +1,29 @@
+from typing import Any
+
+from fastapi import APIRouter
+from starlette.responses import StreamingResponse
+
+from backend.app.admin.schema.chat import ChatCompletionPayload
+from backend.app.admin.service.chat_service import chat_service
+from backend.common.exception.errors import RequestError
+from backend.core.conf import settings
+
+router = APIRouter()
+
+
+@router.post('/completions', summary='Chat completions (SSE)', response_model=None)
+async def chat_completions(payload: ChatCompletionPayload) -> StreamingResponse | dict[str, Any]:
+    if not settings.OPENAI_API_KEY:
+        raise RequestError(msg='OPENAI_API_KEY is not configured')
+
+    payload_data = chat_service.normalize_payload(payload.to_payload())
+    if payload_data['stream']:
+        stream = await chat_service.create_stream(payload_data)
+        headers = {
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no',
+        }
+        return StreamingResponse(chat_service.iter_stream(stream), media_type='text/event-stream', headers=headers)
+
+    return await chat_service.create_completion(payload_data)
