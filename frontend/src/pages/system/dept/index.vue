@@ -28,7 +28,6 @@ const deleteDialogOpen = ref(false)
 const editingDept = ref<DeptTreeNode | null>(null)
 const deleteTarget = ref<DeptTreeNode | null>(null)
 
-
 const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
 const isDeleting = computed(() => deleteMutation.isPending.value)
 
@@ -89,13 +88,11 @@ const parentOptions = computed(() => [
   })),
 ])
 
-function handleDialogChange(open: boolean) {
-  dialogOpen.value = open
+watch(dialogOpen, (open) => {
   if (!open) {
     editingDept.value = null
   }
-}
-
+})
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
@@ -254,7 +251,7 @@ async function handleDeleteConfirm() {
       </UiCardContent>
     </UiCard>
 
-    <UiDialog :open="dialogOpen" @update:open="handleDialogChange">
+    <UiDialog v-model:open="dialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
           <UiDialogTitle>{{ editingDept ? 'Edit Department' : 'New Department' }}</UiDialogTitle>
