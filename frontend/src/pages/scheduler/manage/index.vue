@@ -360,7 +360,7 @@ function formatDate(dateStr: string | null) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!schedulers.length" colspan="8">
+            <UiTableEmpty v-if="!schedulers.length" :colspan="8">
               No schedulers found.
             </UiTableEmpty>
           </UiTableBody>

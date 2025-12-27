@@ -338,7 +338,7 @@ watch(dialogOpen, (open) => {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!users.length" colspan="8">
+            <UiTableEmpty v-if="!users.length" :colspan="8">
               No users found.
             </UiTableEmpty>
           </UiTableBody>

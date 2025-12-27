@@ -255,7 +255,7 @@ function formatExpression(expression: string) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!dataRules.length" colspan="8">
+            <UiTableEmpty v-if="!dataRules.length" :colspan="8">
               No data rules found.
             </UiTableEmpty>
           </UiTableBody>

@@ -293,7 +293,7 @@ function showDetail(log: LoginLog) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!logs.length" colspan="10"> No login logs found. </UiTableEmpty>
+            <UiTableEmpty v-if="!logs.length" :colspan="10"> No login logs found. </UiTableEmpty>
           </UiTableBody>
         </UiTable>
 

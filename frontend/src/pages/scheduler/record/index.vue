@@ -256,7 +256,7 @@ function showDetail(result: TaskResult) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!results.length" colspan="9"> No task records found. </UiTableEmpty>
+            <UiTableEmpty v-if="!results.length" :colspan="9"> No task records found. </UiTableEmpty>
           </UiTableBody>
         </UiTable>
 

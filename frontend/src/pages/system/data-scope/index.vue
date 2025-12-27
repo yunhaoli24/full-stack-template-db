@@ -221,7 +221,7 @@ async function handleRulesSave() {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!dataScopes.length" colspan="4">
+            <UiTableEmpty v-if="!dataScopes.length" :colspan="4">
               No data scopes found.
             </UiTableEmpty>
           </UiTableBody>

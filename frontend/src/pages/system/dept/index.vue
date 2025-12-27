@@ -244,7 +244,7 @@ async function handleDeleteConfirm() {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!flatDeptList.length" colspan="6">
+            <UiTableEmpty v-if="!flatDeptList.length" :colspan="6">
               No departments found.
             </UiTableEmpty>
           </UiTableBody>

@@ -295,7 +295,7 @@ function formatType(type: number) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!flatMenuList.length" colspan="7"> No menus found. </UiTableEmpty>
+            <UiTableEmpty v-if="!flatMenuList.length" :colspan="7"> No menus found. </UiTableEmpty>
           </UiTableBody>
         </UiTable>
       </UiCardContent>

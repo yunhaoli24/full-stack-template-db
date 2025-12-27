@@ -181,7 +181,7 @@ function getExpireTime(expireTime: string) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!onlineUsers.length" colspan="7">
+            <UiTableEmpty v-if="!onlineUsers.length" :colspan="7">
               No online users found.
             </UiTableEmpty>
           </UiTableBody>
