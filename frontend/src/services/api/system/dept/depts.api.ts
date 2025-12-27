@@ -5,39 +5,9 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type { BackendResponse, DeptPayload, DeptParams, DeptTreeNode } from "@/services/types";
 
-export interface DeptTreeNode {
-  id: number;
-  name: string;
-  parent_id: number | null;
-  sort: number;
-  leader: string | null;
-  phone: string | null;
-  email: string | null;
-  status: number;
-  del_flag: boolean;
-  created_time: string;
-  updated_time: string | null;
-  children?: DeptTreeNode[] | null;
-}
-
-export interface DeptParams {
-  name?: string;
-  leader?: string;
-  phone?: string;
-  status?: number;
-}
-
-export interface DeptPayload {
-  name: string;
-  parent_id?: number | null;
-  sort: number;
-  leader?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  status: number;
-}
+export type { DeptPayload, DeptParams, DeptTreeNode };
 
 const DEPT_TREE_QUERY_KEY = ["dept-tree"];
 

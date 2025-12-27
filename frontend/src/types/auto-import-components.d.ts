@@ -15,8 +15,6 @@ declare module 'vue' {
     AppSidebar: typeof import('./../components/app-sidebar/index.vue')['default']
     AppSidebarNavFooter: typeof import('./../components/app-sidebar/nav-footer.vue')['default']
     AppSidebarNavTeam: typeof import('./../components/app-sidebar/nav-team.vue')['default']
-    AppSidebarNavTeamAdd: typeof import('./../components/app-sidebar/nav-team-add.vue')['default']
-    AppSidebarTeamSwitcher: typeof import('./../components/app-sidebar/team-switcher.vue')['default']
     CommandMenuPanel: typeof import('./../components/command-menu-panel/index.vue')['default']
     CommandMenuPanelCommandChangeTheme: typeof import('./../components/command-menu-panel/command-change-theme.vue')['default']
     CommandMenuPanelCommandItemHasIcon: typeof import('./../components/command-menu-panel/command-item-has-icon.vue')['default']
@@ -41,33 +39,10 @@ declare module 'vue' {
     GlobalLayoutBasicPage: typeof import('./../components/global-layout/basic-page.vue')['default']
     GlobalLayoutTwoCol: typeof import('./../components/global-layout/two-col.vue')['default']
     GlobalLayoutTwoColAside: typeof import('./../components/global-layout/two-col-aside.vue')['default']
-    InspiraUiFlickeringGrid: typeof import('./../components/inspira-ui/flickering-grid.vue')['default']
-    InspiraUiGlowingEffect: typeof import('./../components/inspira-ui/glowing-effect.vue')['default']
-    InspiraUiMarquee: typeof import('./../components/inspira-ui/marquee/index.vue')['default']
-    InspiraUiMarqueeReviewCard: typeof import('./../components/inspira-ui/marquee/review-card.vue')['default']
-    InspiraUiRipple: typeof import('./../components/inspira-ui/ripple/index.vue')['default']
-    InspiraUiRippleCircle: typeof import('./../components/inspira-ui/ripple/circle.vue')['default']
-    InspiraUiRippleContainer: typeof import('./../components/inspira-ui/ripple/container.vue')['default']
-    LanguageChange: typeof import('./../components/language-change.vue')['default']
     Loading: typeof import('./../components/loading.vue')['default']
-    MarketingEvaluation: typeof import('./../components/marketing/evaluation.vue')['default']
-    MarketingFeatures: typeof import('./../components/marketing/features.vue')['default']
-    MarketingHero: typeof import('./../components/marketing/hero.vue')['default']
-    MarketingLayoutTheFooter: typeof import('./../components/marketing-layout/the-footer.vue')['default']
-    MarketingLayoutTheHeader: typeof import('./../components/marketing-layout/the-header.vue')['default']
-    MarketingLogos: typeof import('./../components/marketing/logos.vue')['default']
-    MarketingPricingPlans: typeof import('./../components/marketing/pricing-plans/index.vue')['default']
-    MarketingSetup: typeof import('./../components/marketing/setup.vue')['default']
     NoResultFound: typeof import('./../components/no-result-found.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SignInButton: typeof import('./../components/sign-in-button.vue')['default']
-    SignUpButton: typeof import('./../components/sign-up-button.vue')['default']
-    SortSelect: typeof import('./../components/sort-select/index.vue')['default']
-    SvaUiCopy: typeof import('./../components/sva-ui/copy/Copy.vue')['default']
-    SvaUiInlineTip: typeof import('./../components/sva-ui/inline-tip/InlineTip.vue')['default']
-    SvaUiStatusBadge: typeof import('./../components/sva-ui/status-badge/StatusBadge.vue')['default']
-    SvaUiStatusBadgeStatus: typeof import('./../components/sva-ui/status-badge/Status.vue')['default']
     ToggleTheme: typeof import('./../components/toggle-theme.vue')['default']
     UiAccordion: typeof import('./../components/ui/accordion/Accordion.vue')['default']
     UiAccordionContent: typeof import('./../components/ui/accordion/AccordionContent.vue')['default']
@@ -408,8 +383,6 @@ declare global {
   const AppSidebar: (typeof import("./../components/app-sidebar/index.vue"))["default"];
   const AppSidebarNavFooter: (typeof import("./../components/app-sidebar/nav-footer.vue"))["default"];
   const AppSidebarNavTeam: (typeof import("./../components/app-sidebar/nav-team.vue"))["default"];
-  const AppSidebarNavTeamAdd: (typeof import("./../components/app-sidebar/nav-team-add.vue"))["default"];
-  const AppSidebarTeamSwitcher: (typeof import("./../components/app-sidebar/team-switcher.vue"))["default"];
   const CommandMenuPanel: (typeof import("./../components/command-menu-panel/index.vue"))["default"];
   const CommandMenuPanelCommandChangeTheme: (typeof import("./../components/command-menu-panel/command-change-theme.vue"))["default"];
   const CommandMenuPanelCommandItemHasIcon: (typeof import("./../components/command-menu-panel/command-item-has-icon.vue"))["default"];
@@ -434,33 +407,10 @@ declare global {
   const GlobalLayoutBasicPage: (typeof import("./../components/global-layout/basic-page.vue"))["default"];
   const GlobalLayoutTwoCol: (typeof import("./../components/global-layout/two-col.vue"))["default"];
   const GlobalLayoutTwoColAside: (typeof import("./../components/global-layout/two-col-aside.vue"))["default"];
-  const InspiraUiFlickeringGrid: (typeof import("./../components/inspira-ui/flickering-grid.vue"))["default"];
-  const InspiraUiGlowingEffect: (typeof import("./../components/inspira-ui/glowing-effect.vue"))["default"];
-  const InspiraUiMarquee: (typeof import("./../components/inspira-ui/marquee/index.vue"))["default"];
-  const InspiraUiMarqueeReviewCard: (typeof import("./../components/inspira-ui/marquee/review-card.vue"))["default"];
-  const InspiraUiRipple: (typeof import("./../components/inspira-ui/ripple/index.vue"))["default"];
-  const InspiraUiRippleCircle: (typeof import("./../components/inspira-ui/ripple/circle.vue"))["default"];
-  const InspiraUiRippleContainer: (typeof import("./../components/inspira-ui/ripple/container.vue"))["default"];
-  const LanguageChange: (typeof import("./../components/language-change.vue"))["default"];
   const Loading: (typeof import("./../components/loading.vue"))["default"];
-  const MarketingEvaluation: (typeof import("./../components/marketing/evaluation.vue"))["default"];
-  const MarketingFeatures: (typeof import("./../components/marketing/features.vue"))["default"];
-  const MarketingHero: (typeof import("./../components/marketing/hero.vue"))["default"];
-  const MarketingLayoutTheFooter: (typeof import("./../components/marketing-layout/the-footer.vue"))["default"];
-  const MarketingLayoutTheHeader: (typeof import("./../components/marketing-layout/the-header.vue"))["default"];
-  const MarketingLogos: (typeof import("./../components/marketing/logos.vue"))["default"];
-  const MarketingPricingPlans: (typeof import("./../components/marketing/pricing-plans/index.vue"))["default"];
-  const MarketingSetup: (typeof import("./../components/marketing/setup.vue"))["default"];
   const NoResultFound: (typeof import("./../components/no-result-found.vue"))["default"];
   const RouterLink: (typeof import("vue-router"))["RouterLink"];
   const RouterView: (typeof import("vue-router"))["RouterView"];
-  const SignInButton: (typeof import("./../components/sign-in-button.vue"))["default"];
-  const SignUpButton: (typeof import("./../components/sign-up-button.vue"))["default"];
-  const SortSelect: (typeof import("./../components/sort-select/index.vue"))["default"];
-  const SvaUiCopy: (typeof import("./../components/sva-ui/copy/Copy.vue"))["default"];
-  const SvaUiInlineTip: (typeof import("./../components/sva-ui/inline-tip/InlineTip.vue"))["default"];
-  const SvaUiStatusBadge: (typeof import("./../components/sva-ui/status-badge/StatusBadge.vue"))["default"];
-  const SvaUiStatusBadgeStatus: (typeof import("./../components/sva-ui/status-badge/Status.vue"))["default"];
   const ToggleTheme: (typeof import("./../components/toggle-theme.vue"))["default"];
   const UiAccordion: (typeof import("./../components/ui/accordion/Accordion.vue"))["default"];
   const UiAccordionContent: (typeof import("./../components/ui/accordion/AccordionContent.vue"))["default"];

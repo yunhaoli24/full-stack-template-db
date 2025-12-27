@@ -5,73 +5,27 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type {
+  BackendResponse,
+  CreateRolePayload,
+  MenuTreeNode,
+  PageData,
+  RoleDetail,
+  RoleParams,
+  UpdateRoleMenusPayload,
+  UpdateRolePayload,
+  UpdateRoleScopesPayload,
+} from "@/services/types";
 
-export interface RoleDetail {
-  id: number;
-  name: string;
-  status: number;
-  is_filter_scopes: boolean;
-  remark: string | null;
-  created_time: string;
-  updated_time: string | null;
-}
-
-export interface RoleParams {
-  name?: string;
-  status?: number;
-}
-
-export interface CreateRolePayload {
-  name: string;
-  status: number;
-  is_filter_scopes: boolean;
-  remark?: string | null;
-}
-
-export interface UpdateRolePayload {
-  name: string;
-  status: number;
-  is_filter_scopes: boolean;
-  remark?: string | null;
-}
-
-export interface UpdateRoleMenusPayload {
-  menus: number[];
-}
-
-export interface UpdateRoleScopesPayload {
-  scopes: number[];
-}
-
-export interface MenuTreeNode {
-  id: number;
-  title: string;
-  name: string;
-  path: string | null;
-  parent_id: number | null;
-  sort: number;
-  icon: string | null;
-  type: number;
-  component: string | null;
-  perms: string | null;
-  status: number;
-  display: number;
-  cache: number;
-  link: string | null;
-  remark: string | null;
-  created_time: string;
-  updated_time: string | null;
-  children?: MenuTreeNode[] | null;
-}
-
-export interface PageData<T> {
-  items: T[];
-  total: number;
-  page: number;
-  size: number;
-  total_pages: number;
-}
+export type {
+  CreateRolePayload,
+  MenuTreeNode,
+  RoleDetail,
+  RoleParams,
+  UpdateRoleMenusPayload,
+  UpdateRolePayload,
+  UpdateRoleScopesPayload,
+};
 
 const ROLES_QUERY_KEY = ["roles"];
 const ALL_ROLES_QUERY_KEY = ["all-roles"];

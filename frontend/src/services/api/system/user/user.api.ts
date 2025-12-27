@@ -5,79 +5,27 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type {
+  BackendResponse,
+  CreateUserPayload,
+  CurrentUser,
+  PageData,
+  ResetPasswordPayload,
+  UpdateEmailPayload,
+  UpdateUserPayload,
+  UserDetail,
+  UserParams,
+} from "@/services/types";
 
-export interface CurrentUser {
-  id: number;
-  username: string;
-  nickname: string;
-  avatar: string | null;
-  email: string | null;
-  phone: string | null;
-  dept?: string | null;
-  roles?: string[];
-}
-
-export interface UpdateEmailPayload {
-  email: string;
-  captcha: string;
-}
-
-export interface UserDetail {
-  id: number;
-  uuid: string;
-  dept_id: number | null;
-  username: string;
-  nickname: string;
-  avatar: string | null;
-  email: string | null;
-  phone: string | null;
-  status: number;
-  is_superuser: boolean;
-  is_staff: boolean;
-  is_multi_login: boolean;
-  join_time: string;
-  last_login_time: string | null;
-  dept?: {
-    id: number;
-    name: string;
-  } | null;
-  roles?: Array<{
-    id: number;
-    name: string;
-  }>;
-}
-
-export interface UserParams {
-  dept?: number;
-  username?: string;
-  phone?: string;
-  status?: number;
-}
-
-export interface CreateUserPayload {
-  username: string;
-  password: string;
-  nickname?: string;
-  email?: string;
-  phone?: string;
-  dept_id: number;
-  roles: number[];
-}
-
-export interface UpdateUserPayload {
-  dept_id?: number | null;
-  username: string;
-  nickname: string;
-  avatar?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  roles: number[];
-}
-
-export interface ResetPasswordPayload {
-  password: string;
-}
+export type {
+  CreateUserPayload,
+  CurrentUser,
+  ResetPasswordPayload,
+  UpdateEmailPayload,
+  UpdateUserPayload,
+  UserDetail,
+  UserParams,
+};
 
 const CURRENT_USER_QUERY_KEY = ["current-user"];
 const USERS_QUERY_KEY = ["users"];
@@ -103,14 +51,6 @@ export function useGetCurrentUserQuery(enabled?: MaybeRefOrGetter<boolean>) {
     enabled: isEnabled,
     refetchOnWindowFocus: false,
   });
-}
-
-export interface PageData<T> {
-  items: T[];
-  total: number;
-  page: number;
-  size: number;
-  total_pages: number;
 }
 
 export function useGetUsersQuery(params?: MaybeRefOrGetter<UserParams | undefined>) {

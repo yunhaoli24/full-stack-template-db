@@ -5,31 +5,9 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse, PageData } from "../types/response.type";
+import type { BackendResponse, LoginLog, LoginLogParams, PageData } from "@/services/types";
 
-export interface LoginLog {
-  id: number;
-  user_uuid: string;
-  username: string;
-  status: number;
-  ip: string;
-  country: string | null;
-  region: string | null;
-  city: string | null;
-  user_agent: string;
-  browser: string | null;
-  os: string | null;
-  device: string | null;
-  msg: string;
-  login_time: string;
-  created_time: string;
-}
-
-export interface LoginLogParams {
-  username?: string;
-  status?: number;
-  ip?: string;
-}
+export type { LoginLog, LoginLogParams };
 
 const LOGIN_LOGS_QUERY_KEY = ["login-logs"];
 

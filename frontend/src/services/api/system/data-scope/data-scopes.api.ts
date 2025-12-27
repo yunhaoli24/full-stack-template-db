@@ -5,34 +5,15 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type {
+  BackendResponse,
+  DataScopeDetail,
+  DataScopeParams,
+  DataScopePayload,
+  DataScopeWithRelationDetail,
+} from "@/services/types";
 
-export interface DataScopeDetail {
-  id: number;
-  name: string;
-  status: number;
-  created_time: string;
-  updated_time: string | null;
-}
-
-export interface DataScopeWithRelationDetail extends DataScopeDetail {
-  rules: DataRuleSimpleDetail[];
-}
-
-export interface DataRuleSimpleDetail {
-  id: number;
-  name: string;
-}
-
-export interface DataScopeParams {
-  name?: string;
-  status?: number;
-}
-
-export interface DataScopePayload {
-  name: string;
-  status: number;
-}
+export type { DataScopeDetail, DataScopeParams, DataScopePayload, DataScopeWithRelationDetail };
 
 const DATA_SCOPE_QUERY_KEY = ["data-scope"];
 

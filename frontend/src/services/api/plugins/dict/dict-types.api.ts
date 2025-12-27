@@ -5,34 +5,16 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse, PageData } from "../types/response.type";
+import type {
+  BackendResponse,
+  DictType,
+  DictTypeListParams,
+  DictTypePayload,
+  DictTypeUpdatePayload,
+  PageData,
+} from "@/services/types";
 
-export interface DictType {
-  id: number;
-  name: string;
-  code: string;
-  remark: string | null;
-  created_time: string;
-  updated_time: string | null;
-}
-
-export interface DictTypePayload {
-  name: string;
-  code: string;
-  remark?: string | null;
-}
-
-export interface DictTypeListParams {
-  page: number;
-  size: number;
-  name?: string;
-  code?: string;
-}
-
-export interface DictTypeUpdatePayload {
-  id: number;
-  payload: DictTypePayload;
-}
+export type { DictType, DictTypeListParams, DictTypePayload, DictTypeUpdatePayload };
 
 const DICT_TYPE_QUERY_KEY = ["dict-types"];
 

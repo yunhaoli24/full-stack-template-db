@@ -4,21 +4,14 @@ import { useQuery } from "@tanstack/vue-query";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type {
+  BackendResponse,
+  RedisCommandStat,
+  RedisInfo,
+  RedisMonitorData,
+} from "@/services/types";
 
-export interface RedisInfo {
-  [key: string]: string;
-}
-
-export interface RedisCommandStat {
-  name: string;
-  value: string;
-}
-
-export interface RedisMonitorData {
-  info: RedisInfo;
-  stats: RedisCommandStat[];
-}
+export type { RedisCommandStat, RedisInfo, RedisMonitorData };
 
 const REDIS_MONITOR_QUERY_KEY = ["redis-monitor"];
 

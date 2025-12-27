@@ -5,37 +5,15 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type {
+  BackendResponse,
+  DataRuleColumnDetail,
+  DataRuleDetail,
+  DataRuleParams,
+  DataRulePayload,
+} from "@/services/types";
 
-export interface DataRuleDetail {
-  id: number;
-  name: string;
-  model: string;
-  column: string;
-  operator: string;
-  expression: string;
-  value: string;
-  created_time: string;
-  updated_time: string | null;
-}
-
-export interface DataRuleColumnDetail {
-  key: string;
-  comment: string | null;
-}
-
-export interface DataRuleParams {
-  name?: string;
-}
-
-export interface DataRulePayload {
-  name: string;
-  model: string;
-  column: string;
-  operator: string;
-  expression: string;
-  value: string;
-}
+export type { DataRuleColumnDetail, DataRuleDetail, DataRuleParams, DataRulePayload };
 
 const DATA_RULE_QUERY_KEY = ["data-rule"];
 const DATA_RULE_MODELS_QUERY_KEY = ["data-rule-models"];

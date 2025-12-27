@@ -5,25 +5,9 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type { BackendResponse, OnlineUserDetail, OnlineUserParams } from "@/services/types";
 
-export interface OnlineUserDetail {
-  id: number;
-  session_uuid: string;
-  username: string;
-  nickname: string;
-  ip: string;
-  os: string;
-  browser: string;
-  device: string;
-  status: number;
-  last_login_time: string;
-  expire_time: string;
-}
-
-export interface OnlineUserParams {
-  username?: string;
-}
+export type { OnlineUserDetail, OnlineUserParams };
 
 const ONLINE_USERS_QUERY_KEY = ["online-users"];
 

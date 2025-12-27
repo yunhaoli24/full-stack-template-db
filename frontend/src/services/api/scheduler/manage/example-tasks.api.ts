@@ -4,13 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse } from "../types/response.type";
+import type { BackendResponse, ITask } from "@/services/types";
 
-export interface ITask {
-  title: string;
-  description: string;
-  status: "pending" | "in-progress" | "completed";
-}
+export type { ITask };
 
 export function useGetTasksQuery() {
   const { axiosInstance } = useAxios();

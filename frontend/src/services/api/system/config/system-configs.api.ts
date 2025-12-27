@@ -5,40 +5,21 @@ import { computed, toValue, type MaybeRefOrGetter } from "vue";
 
 import { useAxios } from "@/composables/use-axios";
 
-import type { BackendResponse, PageData } from "../types/response.type";
+import type {
+  BackendResponse,
+  PageData,
+  SystemConfig,
+  SystemConfigListParams,
+  SystemConfigPayload,
+  SystemConfigUpdatePayload,
+} from "@/services/types";
 
-export interface SystemConfig {
-  id: number;
-  name: string;
-  type: string | null;
-  key: string;
-  value: string;
-  is_frontend: boolean;
-  remark: string | null;
-  created_time: string;
-  updated_time: string | null;
-}
-
-export interface SystemConfigPayload {
-  name: string;
-  type?: string | null;
-  key: string;
-  value: string;
-  is_frontend: boolean;
-  remark?: string | null;
-}
-
-export interface SystemConfigListParams {
-  page: number;
-  size: number;
-  name?: string;
-  type?: string;
-}
-
-export interface SystemConfigUpdatePayload {
-  id: number;
-  payload: SystemConfigPayload;
-}
+export type {
+  SystemConfig,
+  SystemConfigListParams,
+  SystemConfigPayload,
+  SystemConfigUpdatePayload,
+};
 
 const SYSTEM_CONFIG_QUERY_KEY = ["system-configs"];
 
