@@ -17,8 +17,8 @@ import {
   useUpdateDataScopeRulesMutation,
   type DataScopeDetail,
   type DataScopePayload,
-} from '@/services/api/data-scopes.api'
-import { useGetDataRulesQuery } from '@/services/api/data-rules.api'
+} from '@/services/api/system/data-scope/data-scopes.api'
+import { useGetDataRulesQuery } from '@/services/api/system/data-rule/data-rules.api'
 
 import { createColumns } from './components/columns'
 import DataScopeDataTable from './components/data-table.vue'

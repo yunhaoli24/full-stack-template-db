@@ -2,7 +2,7 @@
 import { Pencil, Settings, Trash2 } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
-import type { DataScopeDetail } from '@/services/api/data-scopes.api'
+import type { DataScopeDetail } from '@/services/api/system/data-scope/data-scopes.api'
 
 defineProps<{
   scope: DataScopeDetail

@@ -2,7 +2,7 @@
 import { Activity, Database, Timer, Zap } from 'lucide-vue-next'
 
 import { BasicPage } from '@/components/global-layout'
-import { useGetRedisMonitorQuery } from '@/services/api/redis-monitor.api'
+import { useGetRedisMonitorQuery } from '@/services/api/monitor/redis/redis-monitor.api'
 
 const query = useGetRedisMonitorQuery()
 

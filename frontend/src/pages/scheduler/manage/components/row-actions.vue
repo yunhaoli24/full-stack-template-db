@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Pencil, Play, Power, Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import type { TaskScheduler } from '@/services/api/schedulers.api'
+import type { TaskScheduler } from '@/services/api/scheduler/manage/schedulers.api'
 defineProps<{
   scheduler: TaskScheduler
   onEdit: (scheduler: TaskScheduler) => void

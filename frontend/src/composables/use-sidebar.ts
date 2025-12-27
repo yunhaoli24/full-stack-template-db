@@ -18,8 +18,8 @@ import { storeToRefs } from "pinia";
 
 import pinia from "@/plugins/pinia/setup";
 import router from "@/router";
-import { useGetSidebarMenuQuery, type SidebarMenuNode } from "@/services/api/menus.api";
-import { useGetCurrentUserQuery } from "@/services/api/user.api";
+import { useGetSidebarMenuQuery, type SidebarMenuNode } from "@/services/api/system/menu/menus.api";
+import { useGetCurrentUserQuery } from "@/services/api/system/user/user.api";
 import { useAuthStore } from "@/stores/auth";
 
 import type { NavGroup, NavItem, Team, User as SidebarUser } from "@/components/app-sidebar/types";

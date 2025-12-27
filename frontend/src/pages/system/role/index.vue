@@ -18,7 +18,7 @@ import {
   type RoleDetail,
   type CreateRolePayload,
   type UpdateRolePayload,
-} from '@/services/api/roles.api'
+} from '@/services/api/system/role/roles.api'
 
 import { createColumns } from './components/columns'
 import RoleDataTable from './components/data-table.vue'

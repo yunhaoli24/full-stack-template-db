@@ -14,7 +14,7 @@ import {
   useUpdateCurrentUserAvatarMutation,
   useUpdateCurrentUserEmailMutation,
   useUpdateCurrentUserNicknameMutation,
-} from '@/services/api/user.api'
+} from '@/services/api/system/user/user.api'
 
 import { accountValidator } from '../validators/account.validator'
 

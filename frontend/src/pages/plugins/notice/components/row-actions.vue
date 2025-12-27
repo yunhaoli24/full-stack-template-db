@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ellipsis, FilePenLine, Trash2 } from 'lucide-vue-next'
 
-import type { Notice } from '@/services/api/notices.api'
+import type { Notice } from '@/services/api/plugins/notice/notices.api'
 
 const props = defineProps<{
   notice: Notice

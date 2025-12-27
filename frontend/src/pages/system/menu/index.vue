@@ -16,7 +16,7 @@ import {
   useUpdateMenuMutation,
   type MenuPayload,
   type MenuTreeNode,
-} from '@/services/api/menus.api'
+} from '@/services/api/system/menu/menus.api'
 
 const query = useGetMenuTreeQuery()
 const createMutation = useCreateMenuMutation()

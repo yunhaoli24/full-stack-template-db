@@ -18,7 +18,7 @@ import {
   useUpdateDataRuleMutation,
   type DataRuleDetail,
   type DataRulePayload,
-} from '@/services/api/data-rules.api'
+} from '@/services/api/system/data-rule/data-rules.api'
 
 import { createColumns } from './components/columns'
 import DataRuleDataTable from './components/data-table.vue'

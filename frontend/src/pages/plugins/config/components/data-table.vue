@@ -4,7 +4,7 @@ import type { DataTableProps } from '@/components/data-table/types'
 import DataTable from '@/components/data-table/data-table.vue'
 import { generateVueTable } from '@/components/data-table/use-generate-vue-table'
 
-import type { SystemConfig } from '@/services/api/system-configs.api'
+import type { SystemConfig } from '@/services/api/system/config/system-configs.api'
 
 const props = defineProps<DataTableProps<SystemConfig>>()
 const table = generateVueTable<SystemConfig>(props)

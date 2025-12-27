@@ -14,7 +14,7 @@ import {
   useUpdateNoticeMutation,
   type Notice,
   type NoticePayload,
-} from '@/services/api/notices.api'
+} from '@/services/api/plugins/notice/notices.api'
 
 import NoticeForm from './components/notice-form.vue'
 import { createColumns } from './components/columns'

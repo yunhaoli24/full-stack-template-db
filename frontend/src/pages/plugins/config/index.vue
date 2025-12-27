@@ -14,7 +14,7 @@ import {
   useUpdateSystemConfigMutation,
   type SystemConfig,
   type SystemConfigPayload,
-} from '@/services/api/system-configs.api'
+} from '@/services/api/system/config/system-configs.api'
 
 import ConfigForm from './components/config-form.vue'
 import { createColumns } from './components/columns'

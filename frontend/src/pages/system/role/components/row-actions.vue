@@ -2,7 +2,7 @@
 import { Pencil, Trash2 } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
-import type { RoleDetail } from '@/services/api/roles.api'
+import type { RoleDetail } from '@/services/api/system/role/roles.api'
 
 defineProps<{
   role: RoleDetail

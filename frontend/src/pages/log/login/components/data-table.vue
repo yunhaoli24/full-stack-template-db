@@ -4,7 +4,7 @@ import type { DataTableProps, ServerPagination } from '@/components/data-table/t
 import DataTable from '@/components/data-table/data-table.vue'
 import { generateVueTable } from '@/components/data-table/use-generate-vue-table'
 
-import type { LoginLog } from '@/services/api/login-logs.api'
+import type { LoginLog } from '@/services/api/log/login/login-logs.api'
 
 const props = defineProps<DataTableProps<LoginLog> & {
   serverPagination: ServerPagination

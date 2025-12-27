@@ -16,7 +16,7 @@ import {
   useUpdateDeptMutation,
   type DeptPayload,
   type DeptTreeNode,
-} from '@/services/api/depts.api'
+} from '@/services/api/system/dept/depts.api'
 
 const query = useGetDeptTreeQuery()
 const createMutation = useCreateDeptMutation()

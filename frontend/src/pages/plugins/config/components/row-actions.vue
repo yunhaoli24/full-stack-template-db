@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ellipsis, FilePenLine, Trash2 } from 'lucide-vue-next'
 
-import type { SystemConfig } from '@/services/api/system-configs.api'
+import type { SystemConfig } from '@/services/api/system/config/system-configs.api'
 
 const props = defineProps<{
   config: SystemConfig

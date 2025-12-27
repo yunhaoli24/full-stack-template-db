@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { FormField } from '@/components/ui/form'
 
-import type { SystemConfig, SystemConfigPayload } from '@/services/api/system-configs.api'
+import type { SystemConfig, SystemConfigPayload } from '@/services/api/system/config/system-configs.api'
 
 const props = defineProps<{
   config: SystemConfig | null

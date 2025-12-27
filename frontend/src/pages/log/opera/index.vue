@@ -12,7 +12,7 @@ import {
   useDeleteOperaLogsMutation,
   useGetOperaLogsQuery,
   type OperaLog,
-} from '@/services/api/opera-logs.api'
+} from '@/services/api/log/opera/opera-logs.api'
 
 import { createColumns } from './components/columns'
 import OperaLogDataTable from './components/data-table.vue'

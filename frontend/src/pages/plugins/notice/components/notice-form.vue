@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { FormField } from '@/components/ui/form'
 
-import type { Notice, NoticePayload } from '@/services/api/notices.api'
+import type { Notice, NoticePayload } from '@/services/api/plugins/notice/notices.api'
 
 const props = defineProps<{
   notice: Notice | null

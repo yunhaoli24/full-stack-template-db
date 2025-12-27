@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ellipsis, FilePenLine, Trash2 } from 'lucide-vue-next'
 
-import type { DictType } from '@/services/api/dict-types.api'
+import type { DictType } from '@/services/api/plugins/dict/dict-types.api'
 
 const props = defineProps<{
   dictType: DictType

@@ -18,7 +18,7 @@ import {
   useUpdateSchedulerStatusMutation,
   type TaskScheduler,
   type TaskSchedulerPayload,
-} from '@/services/api/schedulers.api'
+} from '@/services/api/scheduler/manage/schedulers.api'
 
 import { createColumns } from './components/columns'
 import SchedulerDataTable from './components/data-table.vue'

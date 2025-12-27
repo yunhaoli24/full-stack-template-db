@@ -2,7 +2,7 @@
 import { Trash2 } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
-import type { TaskResult } from '@/services/api/task-results.api'
+import type { TaskResult } from '@/services/api/scheduler/record/task-results.api'
 
 defineProps<{
   result: TaskResult

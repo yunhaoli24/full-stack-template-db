@@ -2,7 +2,7 @@
 import { KeyRound, Pencil, Trash2 } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
-import type { UserDetail } from '@/services/api/user.api'
+import type { UserDetail } from '@/services/api/system/user/user.api'
 
 defineProps<{
   user: UserDetail

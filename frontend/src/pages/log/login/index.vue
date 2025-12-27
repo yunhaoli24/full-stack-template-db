@@ -12,7 +12,7 @@ import {
   useDeleteLoginLogsMutation,
   useGetLoginLogsQuery,
   type LoginLog,
-} from '@/services/api/login-logs.api'
+} from '@/services/api/log/login/login-logs.api'
 
 import { createColumns } from './components/columns'
 import LoginLogDataTable from './components/data-table.vue'

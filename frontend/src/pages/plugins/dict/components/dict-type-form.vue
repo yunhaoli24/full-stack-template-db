@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { FormField } from '@/components/ui/form'
 
-import type { DictType, DictTypePayload } from '@/services/api/dict-types.api'
+import type { DictType, DictTypePayload } from '@/services/api/plugins/dict/dict-types.api'
 
 const props = defineProps<{
   dictType: DictType | null

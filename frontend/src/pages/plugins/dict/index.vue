@@ -14,7 +14,7 @@ import {
   useUpdateDictTypeMutation,
   type DictType,
   type DictTypePayload,
-} from '@/services/api/dict-types.api'
+} from '@/services/api/plugins/dict/dict-types.api'
 
 import DictTypeForm from './components/dict-type-form.vue'
 import { createDictTypeColumns } from './components/dict-type-columns'

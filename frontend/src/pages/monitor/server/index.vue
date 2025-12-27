@@ -9,7 +9,7 @@ import {
 } from 'lucide-vue-next'
 
 import { BasicPage } from '@/components/global-layout'
-import { useGetServerMonitorQuery } from '@/services/api/server-monitor.api'
+import { useGetServerMonitorQuery } from '@/services/api/monitor/server/server-monitor.api'
 
 const query = useGetServerMonitorQuery()
 

@@ -4,7 +4,7 @@ import type { DataTableProps, ServerPagination } from '@/components/data-table/t
 import DataTable from '@/components/data-table/data-table.vue'
 import { generateVueTable } from '@/components/data-table/use-generate-vue-table'
 
-import type { OperaLog } from '@/services/api/opera-logs.api'
+import type { OperaLog } from '@/services/api/log/opera/opera-logs.api'
 
 const props = defineProps<DataTableProps<OperaLog> & {
   serverPagination: ServerPagination

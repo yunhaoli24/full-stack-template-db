@@ -2,7 +2,7 @@
 import { Pencil, Trash2 } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
-import type { DataRuleDetail } from '@/services/api/data-rules.api'
+import type { DataRuleDetail } from '@/services/api/system/data-rule/data-rules.api'
 
 defineProps<{
   rule: DataRuleDetail

@@ -9,7 +9,7 @@ import {
   useGetOnlineUsersQuery,
   useKickOnlineUserMutation,
   type OnlineUserDetail,
-} from '@/services/api/online-users.api'
+} from '@/services/api/log/online/online-users.api'
 
 import { createColumns } from './components/columns'
 import OnlineUserDataTable from './components/data-table.vue'

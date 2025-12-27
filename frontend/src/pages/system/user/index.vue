@@ -18,9 +18,9 @@ import {
   type UserDetail,
   type CreateUserPayload,
   type UpdateUserPayload,
-} from '@/services/api/user.api'
-import { useGetDeptTreeQuery, type DeptTreeNode } from '@/services/api/depts.api'
-import { useGetAllRolesQuery, type RoleDetail } from '@/services/api/roles.api'
+} from '@/services/api/system/user/user.api'
+import { useGetDeptTreeQuery, type DeptTreeNode } from '@/services/api/system/dept/depts.api'
+import { useGetAllRolesQuery, type RoleDetail } from '@/services/api/system/role/roles.api'
 
 import { createColumns } from './components/columns'
 import UserDataTable from './components/data-table.vue'

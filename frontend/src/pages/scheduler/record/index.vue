@@ -11,7 +11,7 @@ import {
   useDeleteTaskResultsMutation,
   useGetTaskResultsQuery,
   type TaskResult,
-} from '@/services/api/task-results.api'
+} from '@/services/api/scheduler/record/task-results.api'
 
 import { createColumns } from './components/columns'
 import RecordDataTable from './components/data-table.vue'
