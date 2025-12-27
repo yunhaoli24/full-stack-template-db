@@ -1,6 +1,5 @@
 import {
   BadgeHelp,
-  BellDot,
   Boxes,
   Building2,
   LayoutDashboard,
@@ -30,7 +29,6 @@ export function useSidebar() {
     { title: "Profile", url: "/settings/", icon: User },
     { title: "Account", url: "/settings/account", icon: Wrench },
     { title: "Appearance", url: "/settings/appearance", icon: Palette },
-    { title: "Notifications", url: "/settings/notifications", icon: BellDot },
   ];
 
   const authStore = useAuthStore(pinia);
@@ -56,8 +54,6 @@ export function useSidebar() {
     if (iconValue.includes("config") || iconValue.includes("setting")) return Settings2;
     if (iconValue.includes("profile")) return User;
     if (iconValue.includes("appearance")) return Palette;
-    if (iconValue.includes("display")) return PictureInPicture2;
-    if (iconValue.includes("notification")) return BellDot;
     if (iconValue.includes("help")) return BadgeHelp;
     return undefined;
   }

@@ -514,7 +514,9 @@ function formatType(type: number) {
           </div>
 
           <UiDialogFooter class="gap-2">
-            <UiButton type="button" variant="outline" @click="dialogOpen = false"> Cancel </UiButton>
+            <UiButton type="button" variant="outline" @click="dialogOpen = false">
+              Cancel
+            </UiButton>
             <UiButton type="submit" :disabled="isSaving">
               {{ editingMenu ? 'Save Changes' : 'Create Menu' }}
             </UiButton>

@@ -365,7 +365,9 @@ async function handleDeleteConfirm() {
           </FormField>
 
           <UiDialogFooter class="gap-2">
-            <UiButton type="button" variant="outline" @click="dialogOpen = false"> Cancel </UiButton>
+            <UiButton type="button" variant="outline" @click="dialogOpen = false">
+              Cancel
+            </UiButton>
             <UiButton type="submit" :disabled="isSaving">
               {{ editingDept ? 'Save Changes' : 'Create Department' }}
             </UiButton>

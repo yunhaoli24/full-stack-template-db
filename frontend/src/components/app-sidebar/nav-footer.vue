@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   BadgeCheck,
-  Bell,
   ChevronsUpDown,
   LogOut,
   UserRoundCog,
@@ -67,10 +66,6 @@ const { isMobile, open } = useSidebar()
             <UiDropdownMenuItem @click="$router.push('/settings/account')">
               <BadgeCheck />
               Account
-            </UiDropdownMenuItem>
-            <UiDropdownMenuItem @click="$router.push('/settings/notifications')">
-              <Bell />
-              Notifications
             </UiDropdownMenuItem>
           </UiDropdownMenuGroup>
 
