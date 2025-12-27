@@ -3,12 +3,10 @@ import {
   BellDot,
   Boxes,
   Building2,
-  CreditCard,
   LayoutDashboard,
   ListTodo,
   Menu,
   Palette,
-  PictureInPicture2,
   Settings,
   Settings2,
   Shield,
@@ -33,7 +31,6 @@ export function useSidebar() {
     { title: "Account", url: "/settings/account", icon: Wrench },
     { title: "Appearance", url: "/settings/appearance", icon: Palette },
     { title: "Notifications", url: "/settings/notifications", icon: BellDot },
-    { title: "Display", url: "/settings/display", icon: PictureInPicture2 },
   ];
 
   const authStore = useAuthStore(pinia);
@@ -43,18 +40,7 @@ export function useSidebar() {
   const menuQuery = useGetSidebarMenuQuery(hasToken);
   const userQuery = useGetCurrentUserQuery(hasToken);
 
-  const otherPages = ref<NavGroup[]>([
-    {
-      title: "Other",
-      items: [
-        {
-          title: "Plans & Pricing",
-          icon: CreditCard,
-          url: "/billing",
-        },
-      ],
-    },
-  ]);
+  const otherPages = ref<NavGroup[]>([]);
 
   const routePathSet = computed(() => new Set(router.getRoutes().map((route) => route.path)));
 

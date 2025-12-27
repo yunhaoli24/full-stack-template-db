@@ -112,13 +112,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/billing/': RouteRecordInfo<
-      '/billing/',
-      '/billing',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/dashboard/': RouteRecordInfo<
       '/dashboard/',
       '/dashboard',
@@ -306,13 +299,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/settings/display': RouteRecordInfo<
-      '/settings/display',
-      '/settings/display',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/settings/notifications': RouteRecordInfo<
       '/settings/notifications',
       '/settings/notifications',
@@ -488,12 +474,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/billing/index.vue': {
-      routes:
-        | '/billing/'
-      views:
-        | never
-    }
     'src/pages/dashboard/index.vue': {
       routes:
         | '/dashboard/'
@@ -653,12 +633,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/settings/appearance.vue': {
       routes:
         | '/settings/appearance'
-      views:
-        | never
-    }
-    'src/pages/settings/display.vue': {
-      routes:
-        | '/settings/display'
       views:
         | never
     }

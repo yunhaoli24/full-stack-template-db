@@ -3,9 +3,7 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
   UserRoundCog,
 } from 'lucide-vue-next'
 
@@ -59,22 +57,6 @@ const { isMobile, open } = useSidebar()
               </div>
             </div>
           </UiDropdownMenuLabel>
-
-          <UiDropdownMenuSeparator />
-          <UiDropdownMenuGroup>
-            <UiDropdownMenuItem @click="$router.push('/billing/')">
-              <Sparkles />
-              Upgrade to Pro
-            </UiDropdownMenuItem>
-          </UiDropdownMenuGroup>
-
-          <UiDropdownMenuSeparator />
-          <UiDropdownMenuGroup>
-            <UiDropdownMenuItem @click="$router.push('/billing?type=billing')">
-              <CreditCard />
-              Billing
-            </UiDropdownMenuItem>
-          </UiDropdownMenuGroup>
 
           <UiDropdownMenuSeparator />
           <UiDropdownMenuGroup>
