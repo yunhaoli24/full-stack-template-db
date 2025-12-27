@@ -1,52 +1,142 @@
-<template>
-  <div class="page-container">
-    <h1>{{ pageTitle }}</h1>
-    <div class="todo-notice">
-      <p>🚧 此页面正在开发中</p>
-      <p>页面路径：{{ route.path }}</p>
-      <p>功能：{{ pageDescription }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { Activity, Database, Timer, Zap } from 'lucide-vue-next'
 
-const route = useRoute()
+import { BasicPage } from '@/components/global-layout'
+import { useGetRedisMonitorQuery } from '@/services/api/redis-monitor.api'
 
-// 根据路由路径设置页面标题和描述
-const pageTitle = computed(() => {
-  const path = route.path
-  // 可以从路径中提取有意义的标题
-  const parts = path.split('/').filter(p => p)
-  return parts.length > 0 ? `${parts[parts.length - 1]} 管理` : '页面'
+const query = useGetRedisMonitorQuery()
+
+const redisInfo = computed(() => query.data.value?.data?.info ?? {})
+const commandStats = computed(() => query.data.value?.data?.stats ?? [])
+const isLoading = computed(() => query.isLoading.value)
+const error = computed(() => query.error.value)
+
+const displayFields = computed(() => [
+  { key: 'redis_version', label: 'Redis Version', icon: Database },
+  { key: 'keys_num', label: 'Total Keys', icon: Zap },
+  { key: 'uptime_in_seconds', label: 'Uptime', icon: Timer },
+  { key: 'connected_clients', label: 'Connected Clients', icon: Activity },
+  { key: 'used_memory_human', label: 'Used Memory', icon: Database },
+  { key: 'maxmemory_human', label: 'Max Memory', icon: Database },
+])
+
+const displayedStats = computed(() => {
+  return commandStats.value
+    .filter((stat) => Number(stat.value) > 0)
+    .sort((a, b) => Number(b.value) - Number(a.value))
+    .slice(0, 10)
 })
 
-const pageDescription = computed(() => {
-  const path = route.path
-  // 简化的描述映射
-  if (path.includes('dashboard')) return '仪表板相关功能'
-  if (path.includes('system')) return '系统管理功能'
-  if (path.includes('log')) return '日志查看功能'
-  if (path.includes('monitor')) return '系统监控功能'
-  if (path.includes('scheduler')) return '任务调度功能'
-  if (path.includes('plugins')) return '插件管理功能'
-  return '功能待实现'
-})
+function getValue(key: string) {
+  return redisInfo.value[key] || '-'
+}
+
+function formatNumber(value: string) {
+  const num = Number(value)
+  if (Number.isNaN(num))
+    return value
+  return num.toLocaleString()
+}
 </script>
 
-<style scoped>
-.page-container {
-  padding: 20px;
-}
+<template>
+  <BasicPage
+    title="Redis Monitor"
+    description="Real-time Redis server monitoring and statistics."
+    sticky
+  >
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <UiLoader class="mr-2" />
+      <span class="text-muted-foreground">Loading Redis information...</span>
+    </div>
 
-.todo-notice {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  color: #6c757d;
-}
-</style>
+    <UiAlert v-else-if="error" variant="destructive" class="mb-4">
+      <UiAlertTitle>Error</UiAlertTitle>
+      <UiAlertDescription>
+        Failed to load Redis information. {{ error.message }}
+      </UiAlertDescription>
+    </UiAlert>
+
+    <template v-else>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <UiCard v-for="field in displayFields" :key="field.key">
+          <UiCardContent class="pt-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-muted-foreground">{{ field.label }}</p>
+                <p class="text-2xl font-bold">
+                  {{ field.key.includes('num') || field.key.includes('clients')
+                    ? formatNumber(getValue(field.key))
+                    : getValue(field.key) }}
+                </p>
+              </div>
+              <component :is="field.icon" class="size-8 text-muted-foreground" />
+            </div>
+          </UiCardContent>
+        </UiCard>
+      </div>
+
+      <UiCard class="mt-6">
+        <UiCardHeader>
+          <UiCardTitle>Command Statistics (Top 10)</UiCardTitle>
+          <UiCardDescription>Most frequently used Redis commands</UiCardDescription>
+        </UiCardHeader>
+        <UiCardContent>
+          <div v-if="displayedStats.length === 0" class="py-8 text-center text-muted-foreground">
+            No command statistics available
+          </div>
+          <UiTable v-else>
+            <UiTableHeader>
+              <UiTableRow>
+                <UiTableHead>Rank</UiTableHead>
+                <UiTableHead>Command</UiTableHead>
+                <UiTableHead class="text-right">Calls</UiTableHead>
+                <UiTableHead class="text-right">Percentage</UiTableHead>
+              </UiTableRow>
+            </UiTableHeader>
+            <UiTableBody>
+              <UiTableRow v-for="(stat, index) in displayedStats" :key="stat.name">
+                <UiTableCell class="font-medium">#{{ index + 1 }}</UiTableCell>
+                <UiTableCell>
+                  <UiBadge variant="secondary">{{ stat.name }}</UiBadge>
+                </UiTableCell>
+                <UiTableCell
+                  class="text-right font-mono"
+                  >{{ formatNumber(stat.value) }}</UiTableCell
+                >
+                <UiTableCell class="text-right">
+                  {{
+                    commandStats.length > 0
+                      ? `${((Number(stat.value)
+                        / commandStats.reduce((sum, s) => sum + Number(s.value), 0))
+                        * 100).toFixed(2)}%`
+                      : '0%'
+                  }}
+                </UiTableCell>
+              </UiTableRow>
+            </UiTableBody>
+          </UiTable>
+        </UiCardContent>
+      </UiCard>
+
+      <UiCard class="mt-6">
+        <UiCardHeader>
+          <UiCardTitle>Additional Information</UiCardTitle>
+          <UiCardDescription>Detailed Redis server configuration and status</UiCardDescription>
+        </UiCardHeader>
+        <UiCardContent>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div
+              v-for="(value, key) in redisInfo"
+              :key="key"
+              class="flex justify-between border-b py-2"
+            >
+              <span class="text-sm font-medium text-muted-foreground">{{ key }}</span>
+              <span class="text-sm font-mono">{{ value }}</span>
+            </div>
+          </div>
+        </UiCardContent>
+      </UiCard>
+    </template>
+  </BasicPage>
+</template>

@@ -273,22 +273,29 @@ function formatDate(dateStr: string | null) {
     <UiCard>
       <UiCardContent class="py-4">
         <div class="mb-4 flex gap-4">
-          <UiInput v-model="searchName" placeholder="Search by name" class="max-w-xs" @keyup.enter="handleSearch" />
+          <UiInput
+            v-model="searchName"
+            placeholder="Search by name"
+            class="max-w-xs"
+            @keyup.enter="handleSearch"
+          />
           <UiSelect v-model="searchType" class="max-w-xs">
             <UiSelectTrigger>
               <UiSelectValue placeholder="All types" />
             </UiSelectTrigger>
             <UiSelectContent>
               <UiSelectGroup>
-                <UiSelectItem v-for="option in schedulerTypeOptions" :key="option.value" :value="String(option.value)">
+                <UiSelectItem
+                  v-for="option in schedulerTypeOptions"
+                  :key="option.value"
+                  :value="String(option.value)"
+                >
                   {{ option.label }}
                 </UiSelectItem>
               </UiSelectGroup>
             </UiSelectContent>
           </UiSelect>
-          <UiButton @click="handleSearch">
-            Search
-          </UiButton>
+          <UiButton @click="handleSearch"> Search </UiButton>
         </div>
 
         <UiTable>
@@ -320,7 +327,12 @@ function formatDate(dateStr: string | null) {
               <UiTableCell>{{ item.total_run_count }}</UiTableCell>
               <UiTableCell>{{ formatDate(item.last_run_time) }}</UiTableCell>
               <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" :disabled="executeMutation.isPending.value" @click="executeScheduler(item)">
+                <UiButton
+                  size="sm"
+                  variant="ghost"
+                  :disabled="executeMutation.isPending.value"
+                  @click="executeScheduler(item)"
+                >
                   <Play class="mr-1 size-4" />
                   Execute
                 </UiButton>
@@ -348,7 +360,9 @@ function formatDate(dateStr: string | null) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!schedulers.length" colspan="8"> No schedulers found. </UiTableEmpty>
+            <UiTableEmpty v-if="!schedulers.length" colspan="8">
+              No schedulers found.
+            </UiTableEmpty>
           </UiTableBody>
         </UiTable>
       </UiCardContent>
@@ -367,7 +381,11 @@ function formatDate(dateStr: string | null) {
               <UiFormItem>
                 <UiFormLabel>Name</UiFormLabel>
                 <UiFormControl>
-                  <UiInput v-bind="componentField" placeholder="Scheduler name" :disabled="isSaving" />
+                  <UiInput
+                    v-bind="componentField"
+                    placeholder="Scheduler name"
+                    :disabled="isSaving"
+                  />
                 </UiFormControl>
                 <UiFormMessage />
               </UiFormItem>
@@ -377,7 +395,11 @@ function formatDate(dateStr: string | null) {
               <UiFormItem>
                 <UiFormLabel>Task</UiFormLabel>
                 <UiFormControl>
-                  <UiInput v-bind="componentField" placeholder="Celery task name" :disabled="isSaving" />
+                  <UiInput
+                    v-bind="componentField"
+                    placeholder="Celery task name"
+                    :disabled="isSaving"
+                  />
                 </UiFormControl>
                 <UiFormMessage />
               </UiFormItem>
@@ -417,7 +439,11 @@ function formatDate(dateStr: string | null) {
                   <UiFormDescription>Run only once.</UiFormDescription>
                 </div>
                 <UiFormControl>
-                  <UiSwitch :checked="componentField.modelValue" :disabled="isSaving" @update:checked="componentField['onUpdate:modelValue']" />
+                  <UiSwitch
+                    :checked="componentField.modelValue"
+                    :disabled="isSaving"
+                    @update:checked="componentField['onUpdate:modelValue']"
+                  />
                 </UiFormControl>
               </UiFormItem>
             </FormField>
@@ -486,7 +512,11 @@ function formatDate(dateStr: string | null) {
               <UiFormItem>
                 <UiFormLabel>Exchange</UiFormLabel>
                 <UiFormControl>
-                  <UiInput v-bind="componentField" placeholder="AMQP exchange" :disabled="isSaving" />
+                  <UiInput
+                    v-bind="componentField"
+                    placeholder="AMQP exchange"
+                    :disabled="isSaving"
+                  />
                 </UiFormControl>
                 <UiFormMessage />
               </UiFormItem>
@@ -496,7 +526,11 @@ function formatDate(dateStr: string | null) {
               <UiFormItem>
                 <UiFormLabel>Routing Key</UiFormLabel>
                 <UiFormControl>
-                  <UiInput v-bind="componentField" placeholder="AMQP routing key" :disabled="isSaving" />
+                  <UiInput
+                    v-bind="componentField"
+                    placeholder="AMQP routing key"
+                    :disabled="isSaving"
+                  />
                 </UiFormControl>
                 <UiFormMessage />
               </UiFormItem>
@@ -540,7 +574,11 @@ function formatDate(dateStr: string | null) {
               <UiFormItem>
                 <UiFormLabel>Args (JSON)</UiFormLabel>
                 <UiFormControl>
-                  <UiInput v-bind="componentField" placeholder='["arg1", "arg2"]' :disabled="isSaving" />
+                  <UiInput
+                    v-bind="componentField"
+                    placeholder='["arg1", "arg2"]'
+                    :disabled="isSaving"
+                  />
                 </UiFormControl>
                 <UiFormMessage />
               </UiFormItem>
@@ -550,7 +588,11 @@ function formatDate(dateStr: string | null) {
               <UiFormItem>
                 <UiFormLabel>Kwargs (JSON)</UiFormLabel>
                 <UiFormControl>
-                  <UiInput v-bind="componentField" placeholder='{"key": "value"}' :disabled="isSaving" />
+                  <UiInput
+                    v-bind="componentField"
+                    placeholder='{"key": "value"}'
+                    :disabled="isSaving"
+                  />
                 </UiFormControl>
                 <UiFormMessage />
               </UiFormItem>
@@ -561,7 +603,11 @@ function formatDate(dateStr: string | null) {
             <UiFormItem>
               <UiFormLabel>Remark</UiFormLabel>
               <UiFormControl>
-                <UiInput v-bind="componentField" placeholder="Optional remark" :disabled="isSaving" />
+                <UiInput
+                  v-bind="componentField"
+                  placeholder="Optional remark"
+                  :disabled="isSaving"
+                />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>
