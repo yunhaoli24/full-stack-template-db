@@ -96,4 +96,12 @@ docker run -d \
   -e TZ='Asia/Shanghai' \
   -p 6379:6379 \
   redis:8
+
+fba celery worker
+
+fba celery beat
+
+fba celery flower
+
+
 ```
