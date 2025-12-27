@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { isAxiosError } from 'axios'
-import { KeyRound, Pencil, Plus, Trash2, UserCheck } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
@@ -21,6 +21,9 @@ import {
 } from '@/services/api/user.api'
 import { useGetDeptTreeQuery, type DeptTreeNode } from '@/services/api/depts.api'
 import { useGetAllRolesQuery, type RoleDetail } from '@/services/api/roles.api'
+
+import { createColumns } from './components/columns'
+import UserDataTable from './components/data-table'
 
 const query = useGetUsersQuery()
 const deptsQuery = useGetDeptTreeQuery()
@@ -110,6 +113,15 @@ const { handleSubmit: handleResetPasswordSubmit, resetForm: resetPasswordForm } 
 const users = computed(() => query.data.value?.data?.items ?? [])
 const depts = computed(() => deptsQuery.data.value?.data ?? [])
 const allRoles = computed(() => rolesQuery.data.value?.data ?? [])
+const isLoading = computed(() => query.isLoading.value)
+
+const columns = computed(() =>
+  createColumns({
+    onEdit: user => openEdit(user),
+    onDelete: user => requestDelete(user),
+    onResetPassword: user => openResetPassword(user),
+  }),
+)
 
 function flattenDepts(nodes: DeptTreeNode[]): DeptTreeNode[] {
   const result: DeptTreeNode[] = []
@@ -275,79 +287,9 @@ watch(dialogOpen, (open) => {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead>Username</UiTableHead>
-              <UiTableHead>Nickname</UiTableHead>
-              <UiTableHead>Department</UiTableHead>
-              <UiTableHead>Email</UiTableHead>
-              <UiTableHead>Phone</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>Roles</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="user in users" :key="user.id">
-              <UiTableCell>
-                <div class="flex items-center gap-2">
-                  <UiAvatar v-if="user.avatar" class="size-8">
-                    <UiAvatarImage :src="user.avatar" />
-                    <UiAvatarFallback>{{ user.username.charAt(0).toUpperCase() }}</UiAvatarFallback>
-                  </UiAvatar>
-                  <span>{{ user.username }}</span>
-                  <UiBadge v-if="user.is_superuser" variant="default" class="ml-1">Admin</UiBadge>
-                </div>
-              </UiTableCell>
-              <UiTableCell>{{ user.nickname }}</UiTableCell>
-              <UiTableCell>{{ user.dept?.name || '-' }}</UiTableCell>
-              <UiTableCell>{{ user.email || '-' }}</UiTableCell>
-              <UiTableCell>{{ user.phone || '-' }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="user.status === 1 ? 'default' : 'secondary'">
-                  {{ user.status === 1 ? 'Active' : 'Disabled' }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>
-                <div class="flex flex-wrap gap-1">
-                  <UiBadge
-                    v-for="role in user.roles"
-                    :key="role.id"
-                    variant="outline"
-                    class="text-xs"
-                  >
-                    {{ role.name }}
-                  </UiBadge>
-                </div>
-              </UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" @click="openResetPassword(user)">
-                  <KeyRound class="mr-1 size-4" />
-                  Password
-                </UiButton>
-                <UiButton size="sm" variant="ghost" @click="openEdit(user)">
-                  <Pencil class="mr-1 size-4" />
-                  Edit
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete(user)"
-                >
-                  <Trash2 class="mr-1 size-4" />
-                  Delete
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!users.length" :colspan="8"> No users found. </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <UserDataTable :data="users" :columns="columns" :loading="isLoading" />
+    </div>
 
     <!-- Create/Edit Dialog -->
     <UiDialog v-model:open="dialogOpen">

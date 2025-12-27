@@ -11,6 +11,9 @@ import {
   type OnlineUserDetail,
 } from '@/services/api/online-users.api'
 
+import { createColumns } from './components/columns'
+import OnlineUserDataTable from './components/data-table'
+
 const query = useGetOnlineUsersQuery()
 const kickMutation = useKickOnlineUserMutation()
 
@@ -23,6 +26,11 @@ const isRefetching = computed(() => query.isFetching.value)
 const onlineUsers = computed(() => query.data.value?.data ?? [])
 const onlineCount = computed(() => onlineUsers.value.filter(u => u.status === 1).length)
 const totalCount = computed(() => onlineUsers.value.length)
+const isLoading = computed(() => query.isLoading.value)
+
+const columns = computed(() =>
+  createColumns((user: OnlineUserDetail) => requestKick(user)),
+)
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
@@ -58,46 +66,6 @@ async function handleKickConfirm() {
     kickTarget.value = null
   }
 }
-
-function formatDevice(user: OnlineUserDetail) {
-  const parts = [user.os, user.browser, user.device].filter(Boolean)
-  return parts.join(' / ') || 'Unknown'
-}
-
-function formatTime(time: string) {
-  if (time === '未知' || !time) {
-    return '-'
-  }
-  try {
-    return new Date(time).toLocaleString()
-  }
-  catch {
-    return time
-  }
-}
-
-function getExpireTime(expireTime: string) {
-  try {
-    const expire = new Date(expireTime)
-    const now = new Date()
-    const diff = expire.getTime() - now.getTime()
-
-    if (diff <= 0) {
-      return 'Expired'
-    }
-
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`
-    }
-    return `${minutes}m`
-  }
-  catch {
-    return '-'
-  }
-}
 </script>
 
 <template>
@@ -128,70 +96,9 @@ function getExpireTime(expireTime: string) {
       </UiCard>
     </div>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead>User</UiTableHead>
-              <UiTableHead>IP Address</UiTableHead>
-              <UiTableHead>Device</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>Last Login</UiTableHead>
-              <UiTableHead>Expires In</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="user in onlineUsers" :key="user.session_uuid">
-              <UiTableCell>
-                <div>
-                  <div class="font-medium">{{ user.nickname || user.username }}</div>
-                  <div class="text-sm text-muted-foreground">@{{ user.username }}</div>
-                </div>
-              </UiTableCell>
-              <UiTableCell>
-                <code class="rounded bg-muted px-2 py-1 text-sm">{{ user.ip }}</code>
-              </UiTableCell>
-              <UiTableCell>
-                <div class="flex items-center gap-2 text-sm">
-                  <div>{{ formatDevice(user) }}</div>
-                </div>
-              </UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="user.status === 1 ? 'default' : 'secondary'">
-                  {{ user.status === 1 ? 'Online' : 'Offline' }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>
-                <div class="text-sm">
-                  {{ formatTime(user.last_login_time) }}
-                </div>
-              </UiTableCell>
-              <UiTableCell>
-                <div class="text-sm">
-                  {{ getExpireTime(user.expire_time) }}
-                </div>
-              </UiTableCell>
-              <UiTableCell class="text-right">
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  :disabled="user.status !== 1"
-                  @click="requestKick(user)"
-                >
-                  <LogOut class="mr-1 size-4" />
-                  Kick
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!onlineUsers.length" :colspan="7">
-              No online users found.
-            </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <OnlineUserDataTable :data="onlineUsers" :columns="columns" :loading="isLoading" />
+    </div>
 
     <!-- Kick Confirmation Dialog -->
     <ConfirmDialog

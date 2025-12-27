@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { isAxiosError } from 'axios'
-import { Pencil, Plus, Trash2 } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
 
+import type { ServerPagination } from '@/components/data-table/types'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { BasicPage } from '@/components/global-layout'
 import { FormField } from '@/components/ui/form'
@@ -18,6 +19,9 @@ import {
   type CreateRolePayload,
   type UpdateRolePayload,
 } from '@/services/api/roles.api'
+
+import { createColumns } from './components/columns'
+import RoleDataTable from './components/data-table'
 
 const query = useGetRolesQuery()
 const createMutation = useCreateRoleMutation()
@@ -62,6 +66,14 @@ const { handleSubmit: handleUpdateSubmit, resetForm: resetUpdateForm } = useForm
 })
 
 const roles = computed(() => query.data.value?.data?.items ?? [])
+const isLoading = computed(() => query.isLoading.value)
+
+const columns = computed(() =>
+  createColumns({
+    onEdit: role => openEdit(role),
+    onDelete: role => requestDelete(role),
+  }),
+)
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
@@ -176,61 +188,9 @@ watch(dialogOpen, (open) => {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead>Role Name</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>Filter Data Scopes</UiTableHead>
-              <UiTableHead>Remark</UiTableHead>
-              <UiTableHead>Created Time</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="role in roles" :key="role.id">
-              <UiTableCell class="font-medium">
-                {{ role.name }}
-              </UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="role.status === 1 ? 'default' : 'secondary'">
-                  {{ role.status === 1 ? 'Active' : 'Disabled' }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="role.is_filter_scopes ? 'default' : 'outline'">
-                  {{ role.is_filter_scopes ? 'Yes' : 'No' }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell class="text-muted-foreground">
-                {{ role.remark || '-' }}
-              </UiTableCell>
-              <UiTableCell class="text-sm text-muted-foreground">
-                {{ new Date(role.created_time).toLocaleString() }}
-              </UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" @click="openEdit(role)">
-                  <Pencil class="mr-1 size-4" />
-                  Edit
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete(role)"
-                >
-                  <Trash2 class="mr-1 size-4" />
-                  Delete
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!roles.length" :colspan="6"> No roles found. </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <RoleDataTable :data="roles" :columns="columns" :loading="isLoading" />
+    </div>
 
     <!-- Create/Edit Dialog -->
     <UiDialog v-model:open="dialogOpen">

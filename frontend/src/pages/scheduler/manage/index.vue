@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { isAxiosError } from 'axios'
-import { Play, Pencil, Plus, Power, PowerOff, Trash2 } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
@@ -19,6 +19,9 @@ import {
   type TaskScheduler,
   type TaskSchedulerPayload,
 } from '@/services/api/schedulers.api'
+
+import { createColumns } from './components/columns'
+import SchedulerDataTable from './components/data-table'
 
 const query = useGetSchedulersQuery(ref({ name: '', type: undefined }))
 const createMutation = useCreateSchedulerMutation()
@@ -97,6 +100,16 @@ const { handleSubmit, resetForm } = useForm({
 
 const schedulers = computed(() => query.data.value?.data?.items ?? [])
 const pagination = computed(() => query.data.value?.data)
+const isLoading = computed(() => query.isLoading.value)
+
+const columns = computed(() =>
+  createColumns({
+    onEdit: scheduler => openEdit(scheduler),
+    onDelete: scheduler => requestDelete(scheduler),
+    onToggleStatus: scheduler => toggleStatus(scheduler),
+    onExecute: scheduler => executeNow(scheduler),
+  }),
+)
 
 watch(dialogOpen, (open) => {
   if (!open) {
@@ -298,73 +311,11 @@ function formatDate(dateStr: string | null) {
           <UiButton @click="handleSearch"> Search </UiButton>
         </div>
 
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead>Name</UiTableHead>
-              <UiTableHead>Task</UiTableHead>
-              <UiTableHead>Type</UiTableHead>
-              <UiTableHead>Crontab/Interval</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>Run Count</UiTableHead>
-              <UiTableHead>Last Run</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="item in schedulers" :key="item.id">
-              <UiTableCell class="font-medium">{{ item.name }}</UiTableCell>
-              <UiTableCell>{{ item.task }}</UiTableCell>
-              <UiTableCell>{{ formatType(item.type) }}</UiTableCell>
-              <UiTableCell>
-                {{ item.type === 1 ? item.crontab : `${item.interval_every} ${item.interval_period}` }}
-              </UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="item.enabled ? 'default' : 'secondary'">
-                  {{ item.enabled ? 'Enabled' : 'Disabled' }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>{{ item.total_run_count }}</UiTableCell>
-              <UiTableCell>{{ formatDate(item.last_run_time) }}</UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  :disabled="executeMutation.isPending.value"
-                  @click="executeScheduler(item)"
-                >
-                  <Play class="mr-1 size-4" />
-                  Execute
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  :disabled="isTogglingStatus"
-                  @click="toggleStatus(item)"
-                >
-                  <component :is="item.enabled ? PowerOff : Power" class="mr-1 size-4" />
-                  {{ item.enabled ? 'Disable' : 'Enable' }}
-                </UiButton>
-                <UiButton size="sm" variant="ghost" @click="openEdit(item)">
-                  <Pencil class="mr-1 size-4" />
-                  Edit
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete(item)"
-                >
-                  <Trash2 class="mr-1 size-4" />
-                  Delete
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!schedulers.length" :colspan="8">
-              No schedulers found.
-            </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
+        <SchedulerDataTable
+          :data="schedulers"
+          :columns="columns"
+          :loading="isLoading"
+        />
       </UiCardContent>
     </UiCard>
 

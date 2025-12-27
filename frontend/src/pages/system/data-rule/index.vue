@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { isAxiosError } from 'axios'
-import { Pencil, Plus, Trash2 } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
@@ -19,6 +19,9 @@ import {
   type DataRuleDetail,
   type DataRulePayload,
 } from '@/services/api/data-rules.api'
+
+import { createColumns } from './components/columns'
+import DataRuleDataTable from './components/data-table'
 
 const query = useGetDataRulesQuery()
 const modelsQuery = useGetDataRuleModelsQuery()
@@ -96,6 +99,14 @@ const modelOptions = computed(() => modelsQuery.data.value?.data ?? [])
 const columnOptions = computed(() => columnsQuery.data.value?.data ?? [])
 
 const dataRules = computed(() => query.data.value?.data ?? [])
+const isLoading = computed(() => query.isLoading.value)
+
+const columns = computed(() =>
+  createColumns({
+    onEdit: rule => openEdit(rule),
+    onDelete: rule => requestDelete(rule),
+  }),
+)
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
@@ -186,16 +197,6 @@ async function handleDeleteConfirm() {
     deleteTarget.value = null
   }
 }
-
-function formatOperator(operator: string) {
-  const num = Number.parseInt(operator)
-  return operatorOptions.find((opt) => opt.value === num)?.label || operator
-}
-
-function formatExpression(expression: string) {
-  const num = Number.parseInt(expression)
-  return expressionOptions.find((opt) => opt.value === num)?.label || expression
-}
 </script>
 
 <template>
@@ -207,61 +208,9 @@ function formatExpression(expression: string) {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead>Name</UiTableHead>
-              <UiTableHead>Model</UiTableHead>
-              <UiTableHead>Column</UiTableHead>
-              <UiTableHead>Operator</UiTableHead>
-              <UiTableHead>Expression</UiTableHead>
-              <UiTableHead>Value</UiTableHead>
-              <UiTableHead>Created Time</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="rule in dataRules" :key="rule.id">
-              <UiTableCell>{{ rule.name }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge variant="outline">{{ rule.model }}</UiBadge>
-              </UiTableCell>
-              <UiTableCell>{{ rule.column }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="rule.operator === '0' ? 'default' : 'secondary'">
-                  {{ formatOperator(rule.operator) }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>
-                <UiBadge variant="outline">{{ formatExpression(rule.expression) }}</UiBadge>
-              </UiTableCell>
-              <UiTableCell class="font-mono text-xs">{{ rule.value }}</UiTableCell>
-              <UiTableCell>{{ new Date(rule.created_time).toLocaleString() }}</UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" @click="openEdit(rule)">
-                  <Pencil class="mr-1 size-4" />
-                  Edit
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete(rule)"
-                >
-                  <Trash2 class="mr-1 size-4" />
-                  Delete
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!dataRules.length" :colspan="8">
-              No data rules found.
-            </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <DataRuleDataTable :data="dataRules" :columns="columns" :loading="isLoading" />
+    </div>
 
     <!-- Create/Edit Dialog -->
     <UiDialog v-model:open="dialogOpen">

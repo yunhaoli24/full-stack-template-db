@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { isAxiosError } from 'axios'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2 } from 'lucide-vue-next'
+import { Trash2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
+import type { ServerPagination } from '@/components/data-table/types'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { BasicPage } from '@/components/global-layout'
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/constants/pagination'
@@ -11,6 +12,9 @@ import {
   useGetTaskResultsQuery,
   type TaskResult,
 } from '@/services/api/task-results.api'
+
+import { createColumns } from './components/columns'
+import RecordDataTable from './components/data-table'
 
 const page = ref(1)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
@@ -36,6 +40,32 @@ const isDeleting = computed(() => deleteMutation.isPending.value)
 const results = computed(() => query.data.value?.data?.items ?? [])
 const total = computed(() => query.data.value?.data?.total ?? 0)
 const totalPages = computed(() => query.data.value?.data?.total_pages ?? 0)
+const isLoading = computed(() => query.isLoading.value)
+
+const serverPagination = computed<ServerPagination>(() => ({
+  page: page.value,
+  pageSize: pageSize.value,
+  total: total.value,
+  onPageChange: nextPage => {
+    page.value = nextPage
+    selectedIds.value.clear()
+  },
+  onPageSizeChange: nextSize => {
+    pageSize.value = nextSize
+    page.value = 1
+    selectedIds.value.clear()
+  },
+}))
+
+const columns = computed(() =>
+  createColumns({
+    selectedIds: selectedIds.value,
+    onSelect: (id: number) => toggleSelect(id),
+    onSelectAll: () => toggleSelectAll(),
+    onViewDetail: (result: TaskResult) => showDetail(result),
+    onDelete: (ids: number[]) => requestDelete(ids),
+  }),
+)
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
@@ -80,39 +110,6 @@ function formatData(data: unknown) {
 
 function handleSearch() {
   page.value = 1
-}
-
-function handlePageSizeChange(value: string | number) {
-  const newSize = Number(value)
-  if (newSize) {
-    pageSize.value = newSize
-    page.value = 1
-    selectedIds.value.clear()
-  }
-}
-
-function goToFirstPage() {
-  page.value = 1
-  selectedIds.value.clear()
-}
-
-function goToPreviousPage() {
-  if (page.value > 1) {
-    page.value--
-    selectedIds.value.clear()
-  }
-}
-
-function goToNextPage() {
-  if (page.value < totalPages.value) {
-    page.value++
-    selectedIds.value.clear()
-  }
-}
-
-function goToLastPage() {
-  page.value = totalPages.value
-  selectedIds.value.clear()
 }
 
 function toggleSelect(id: number) {
@@ -204,126 +201,12 @@ function showDetail(result: TaskResult) {
           <UiButton @click="handleSearch"> Search </UiButton>
         </div>
 
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead class="w-12">
-                <UiCheckbox
-                  :checked="selectedIds.size === results.length && results.length > 0"
-                  @update:checked="toggleSelectAll"
-                />
-              </UiTableHead>
-              <UiTableHead>Task ID</UiTableHead>
-              <UiTableHead>Name</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>Worker</UiTableHead>
-              <UiTableHead>Queue</UiTableHead>
-              <UiTableHead>Retries</UiTableHead>
-              <UiTableHead>Completed Time</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="item in results" :key="item.id">
-              <UiTableCell>
-                <UiCheckbox
-                  :checked="selectedIds.has(item.id)"
-                  @update:checked="toggleSelect(item.id)"
-                />
-              </UiTableCell>
-              <UiTableCell class="font-mono text-xs">{{ item.task_id }}</UiTableCell>
-              <UiTableCell>{{ item.name || '-' }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="getStatusVariant(item.status)">
-                  {{ item.status }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>{{ item.worker || '-' }}</UiTableCell>
-              <UiTableCell>{{ item.queue || '-' }}</UiTableCell>
-              <UiTableCell>{{ item.retries ?? 0 }}</UiTableCell>
-              <UiTableCell>{{ formatDate(item.date_done) }}</UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" @click="showDetail(item)">
-                  View Detail
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete([item.id])"
-                >
-                  <Trash2 class="size-4" />
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!results.length" :colspan="9">
-              No task records found.
-            </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-
-        <div v-if="totalPages > 0" class="flex items-center justify-between px-2 py-4">
-          <div class="text-sm text-muted-foreground">
-            Showing {{ ((page - 1) * pageSize) + 1 }} to {{ Math.min(page * pageSize, total) }} of
-            {{ total }} results
-          </div>
-          <div class="flex items-center space-x-6 lg:space-x-8">
-            <div class="flex items-center space-x-2">
-              <p class="hidden text-sm font-medium line-clamp-1 md:block">Rows per page</p>
-              <UiSelect :model-value="`${pageSize}`" @update:model-value="handlePageSizeChange">
-                <UiSelectTrigger class="h-8 w-[70px]">
-                  <UiSelectValue :placeholder="`${pageSize}`" />
-                </UiSelectTrigger>
-                <UiSelectContent side="top">
-                  <UiSelectItem v-for="size in PAGE_SIZES" :key="size" :value="`${size}`">
-                    {{ size }}
-                  </UiSelectItem>
-                </UiSelectContent>
-              </UiSelect>
-            </div>
-            <div class="flex w-[100px] items-center justify-center text-sm font-medium">
-              Page {{ page }} of {{ totalPages }}
-            </div>
-            <div class="flex items-center space-x-2">
-              <UiButton
-                variant="outline"
-                class="hidden size-8 p-0 lg:flex"
-                :disabled="page <= 1"
-                @click="goToFirstPage"
-              >
-                <span class="sr-only">Go to first page</span>
-                <ChevronsLeft class="size-4" />
-              </UiButton>
-              <UiButton
-                variant="outline"
-                class="size-8 p-0"
-                :disabled="page <= 1"
-                @click="goToPreviousPage"
-              >
-                <span class="sr-only">Go to previous page</span>
-                <ChevronLeft class="size-4" />
-              </UiButton>
-              <UiButton
-                variant="outline"
-                class="size-8 p-0"
-                :disabled="page >= totalPages"
-                @click="goToNextPage"
-              >
-                <span class="sr-only">Go to next page</span>
-                <ChevronRight class="size-4" />
-              </UiButton>
-              <UiButton
-                variant="outline"
-                class="hidden size-8 p-0 lg:flex"
-                :disabled="page >= totalPages"
-                @click="goToLastPage"
-              >
-                <span class="sr-only">Go to last page</span>
-                <ChevronsRight class="size-4" />
-              </UiButton>
-            </div>
-          </div>
-        </div>
+        <RecordDataTable
+          :data="results"
+          :columns="columns"
+          :loading="isLoading"
+          :server-pagination="serverPagination"
+        />
       </UiCardContent>
     </UiCard>
 

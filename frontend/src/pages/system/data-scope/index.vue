@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import { isAxiosError } from 'axios'
-import { Pencil, Plus, Settings, Trash2 } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
@@ -19,6 +19,9 @@ import {
   type DataScopePayload,
 } from '@/services/api/data-scopes.api'
 import { useGetDataRulesQuery } from '@/services/api/data-rules.api'
+
+import { createColumns } from './components/columns'
+import DataScopeDataTable from './components/data-table'
 
 const query = useGetDataScopesQuery()
 const rulesQuery = useGetDataRulesQuery()
@@ -55,6 +58,15 @@ const { handleSubmit, resetForm } = useForm({
 
 const dataScopes = computed(() => query.data.value?.data ?? [])
 const allRules = computed(() => rulesQuery.data.value?.data ?? [])
+const isLoading = computed(() => query.isLoading.value)
+
+const columns = computed(() =>
+  createColumns({
+    onEdit: scope => openEdit(scope),
+    onDelete: scope => requestDelete(scope),
+    onConfigureRules: scope => openRules(scope),
+  }),
+)
 const selectedRuleIds = ref<number[]>([])
 
 watch(dialogOpen, (open) => {
@@ -181,53 +193,9 @@ async function handleRulesSave() {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead>Name</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>Created Time</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="scope in dataScopes" :key="scope.id">
-              <UiTableCell>{{ scope.name }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="scope.status === 1 ? 'default' : 'secondary'">
-                  {{ scope.status === 1 ? 'Active' : 'Disabled' }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell>{{ new Date(scope.created_time).toLocaleString() }}</UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" @click="openRules(scope)">
-                  <Settings class="mr-1 size-4" />
-                  Rules
-                </UiButton>
-                <UiButton size="sm" variant="ghost" @click="openEdit(scope)">
-                  <Pencil class="mr-1 size-4" />
-                  Edit
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete(scope)"
-                >
-                  <Trash2 class="mr-1 size-4" />
-                  Delete
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!dataScopes.length" :colspan="4">
-              No data scopes found.
-            </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <DataScopeDataTable :data="dataScopes" :columns="columns" :loading="isLoading" />
+    </div>
 
     <!-- Create/Edit Dialog -->
     <UiDialog v-model:open="dialogOpen">

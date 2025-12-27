@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { isAxiosError } from 'axios'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2 } from 'lucide-vue-next'
+import { Trash2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
+import type { ServerPagination } from '@/components/data-table/types'
 import ConfirmDialog from '@/components/confirm-dialog.vue'
 import { BasicPage } from '@/components/global-layout'
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/constants/pagination'
@@ -12,6 +13,9 @@ import {
   useGetOperaLogsQuery,
   type OperaLog,
 } from '@/services/api/opera-logs.api'
+
+import { createColumns } from './components/columns'
+import OperaLogDataTable from './components/data-table'
 
 const page = ref(1)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
@@ -41,6 +45,30 @@ const isDeleting = computed(() => deleteMutation.isPending.value || deleteAllMut
 const logs = computed(() => query.data.value?.data?.items ?? [])
 const total = computed(() => query.data.value?.data?.total ?? 0)
 const totalPages = computed(() => query.data.value?.data?.total_pages ?? 0)
+const isLoading = computed(() => query.isLoading.value)
+
+const serverPagination = computed<ServerPagination>(() => ({
+  page: page.value,
+  pageSize: pageSize.value,
+  total: total.value,
+  onPageChange: nextPage => {
+    page.value = nextPage
+    selectedIds.value.clear()
+  },
+  onPageSizeChange: nextSize => {
+    pageSize.value = nextSize
+    page.value = 1
+    selectedIds.value.clear()
+  },
+}))
+
+const columns = computed(() =>
+  createColumns({
+    selectedIds: selectedIds.value,
+    onSelect: (id: number) => toggleSelect(id),
+    onSelectAll: () => toggleSelectAll(),
+  }),
+)
 
 const statusOptions = [
   { label: 'All', value: undefined },
@@ -81,39 +109,6 @@ function formatCostTime(time: number) {
 
 function handleSearch() {
   page.value = 1
-}
-
-function handlePageSizeChange(value: string | number) {
-  const newSize = Number(value)
-  if (newSize) {
-    pageSize.value = newSize
-    page.value = 1
-    selectedIds.value.clear()
-  }
-}
-
-function goToFirstPage() {
-  page.value = 1
-  selectedIds.value.clear()
-}
-
-function goToPreviousPage() {
-  if (page.value > 1) {
-    page.value--
-    selectedIds.value.clear()
-  }
-}
-
-function goToNextPage() {
-  if (page.value < totalPages.value) {
-    page.value++
-    selectedIds.value.clear()
-  }
-}
-
-function goToLastPage() {
-  page.value = totalPages.value
-  selectedIds.value.clear()
 }
 
 function toggleSelect(id: number) {
@@ -254,130 +249,12 @@ function formatData(data: Record<string, unknown> | null) {
           <UiButton @click="handleSearch"> Search </UiButton>
         </div>
 
-        <UiTable>
-          <UiTableHeader>
-            <UiTableRow>
-              <UiTableHead class="w-12">
-                <UiCheckbox
-                  :checked="selectedIds.size === logs.length && logs.length > 0"
-                  @update:checked="toggleSelectAll"
-                />
-              </UiTableHead>
-              <UiTableHead>Username</UiTableHead>
-              <UiTableHead>Operation</UiTableHead>
-              <UiTableHead>Method</UiTableHead>
-              <UiTableHead>Path</UiTableHead>
-              <UiTableHead>Status</UiTableHead>
-              <UiTableHead>IP</UiTableHead>
-              <UiTableHead>Cost Time</UiTableHead>
-              <UiTableHead>Operation Time</UiTableHead>
-              <UiTableHead class="text-right">Actions</UiTableHead>
-            </UiTableRow>
-          </UiTableHeader>
-          <UiTableBody>
-            <UiTableRow v-for="log in logs" :key="log.id">
-              <UiTableCell>
-                <UiCheckbox
-                  :checked="selectedIds.has(log.id)"
-                  @update:checked="toggleSelect(log.id)"
-                />
-              </UiTableCell>
-              <UiTableCell class="font-medium">{{ log.username || '-' }}</UiTableCell>
-              <UiTableCell>{{ log.title }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge variant="secondary">{{ log.method }}</UiBadge>
-              </UiTableCell>
-              <UiTableCell class="font-mono text-xs">{{ log.path }}</UiTableCell>
-              <UiTableCell>
-                <UiBadge :variant="getStatusVariant(log.status)">
-                  {{ getStatusText(log.status) }}
-                </UiBadge>
-              </UiTableCell>
-              <UiTableCell class="font-mono text-xs">{{ log.ip }}</UiTableCell>
-              <UiTableCell>{{ formatCostTime(log.cost_time) }}</UiTableCell>
-              <UiTableCell>{{ formatDate(log.opera_time) }}</UiTableCell>
-              <UiTableCell class="text-right space-x-2">
-                <UiButton size="sm" variant="ghost" @click="showDetail(log)">
-                  View Detail
-                </UiButton>
-                <UiButton
-                  size="sm"
-                  variant="ghost"
-                  class="text-destructive"
-                  @click="requestDelete([log.id])"
-                >
-                  <Trash2 class="size-4" />
-                </UiButton>
-              </UiTableCell>
-            </UiTableRow>
-            <UiTableEmpty v-if="!logs.length" :colspan="10">
-              No operation logs found.
-            </UiTableEmpty>
-          </UiTableBody>
-        </UiTable>
-
-        <div v-if="totalPages > 0" class="flex items-center justify-between px-2 py-4">
-          <div class="text-sm text-muted-foreground">
-            Showing {{ ((page - 1) * pageSize) + 1 }} to {{ Math.min(page * pageSize, total) }} of
-            {{ total }} results
-          </div>
-          <div class="flex items-center space-x-6 lg:space-x-8">
-            <div class="flex items-center space-x-2">
-              <p class="hidden text-sm font-medium line-clamp-1 md:block">Rows per page</p>
-              <UiSelect :model-value="`${pageSize}`" @update:model-value="handlePageSizeChange">
-                <UiSelectTrigger class="h-8 w-[70px]">
-                  <UiSelectValue :placeholder="`${pageSize}`" />
-                </UiSelectTrigger>
-                <UiSelectContent side="top">
-                  <UiSelectItem v-for="size in PAGE_SIZES" :key="size" :value="`${size}`">
-                    {{ size }}
-                  </UiSelectItem>
-                </UiSelectContent>
-              </UiSelect>
-            </div>
-            <div class="flex w-[100px] items-center justify-center text-sm font-medium">
-              Page {{ page }} of {{ totalPages }}
-            </div>
-            <div class="flex items-center space-x-2">
-              <UiButton
-                variant="outline"
-                class="hidden size-8 p-0 lg:flex"
-                :disabled="page <= 1"
-                @click="goToFirstPage"
-              >
-                <span class="sr-only">Go to first page</span>
-                <ChevronsLeft class="size-4" />
-              </UiButton>
-              <UiButton
-                variant="outline"
-                class="size-8 p-0"
-                :disabled="page <= 1"
-                @click="goToPreviousPage"
-              >
-                <span class="sr-only">Go to previous page</span>
-                <ChevronLeft class="size-4" />
-              </UiButton>
-              <UiButton
-                variant="outline"
-                class="size-8 p-0"
-                :disabled="page >= totalPages"
-                @click="goToNextPage"
-              >
-                <span class="sr-only">Go to next page</span>
-                <ChevronRight class="size-4" />
-              </UiButton>
-              <UiButton
-                variant="outline"
-                class="hidden size-8 p-0 lg:flex"
-                :disabled="page >= totalPages"
-                @click="goToLastPage"
-              >
-                <span class="sr-only">Go to last page</span>
-                <ChevronsRight class="size-4" />
-              </UiButton>
-            </div>
-          </div>
-        </div>
+        <OperaLogDataTable
+          :data="logs"
+          :columns="columns"
+          :loading="isLoading"
+          :server-pagination="serverPagination"
+        />
       </UiCardContent>
     </UiCard>
 
