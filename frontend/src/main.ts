@@ -7,6 +7,7 @@ import "@/assets/index.css";
 import "@/assets/scrollbar.css";
 import "@/assets/themes.css";
 import "@/assets/chart-theme.css";
+import "markstream-vue/index.css";
 import "vue-sonner/style.css"; // vue sonner style
 
 import "@/utils/env";

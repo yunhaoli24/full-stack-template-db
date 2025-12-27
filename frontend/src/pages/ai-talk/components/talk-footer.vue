@@ -5,14 +5,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupText, InputGroupTextarea } from '@/components/ui/input-group'
 import { Separator } from '@/components/ui/separator'
 
-import TalkType from './talk-type.vue'
-
-const emit = defineEmits(['submit', 'typeChange'])
-const text = ref('')
-
-function handleTypeChange(type: string) {
-  emit('typeChange', type)
+interface Props {
+  disabled?: boolean
 }
+
+defineProps<Props>()
+
+const emit = defineEmits(['submit'])
+const text = ref('')
 
 function handleSubmit() {
   emit('submit', text.value)
@@ -22,11 +22,9 @@ function handleSubmit() {
 
 <template>
   <InputGroup>
-    <InputGroupTextarea v-model="text" placeholder="Ask, Search or Chat..." />
+    <InputGroupTextarea v-model="text" :disabled="disabled" placeholder="Ask, Search or Chat..." />
     <InputGroupAddon align="block-end">
-      <TalkType @update:type="handleTypeChange" />
-
-      <InputGroupButton variant="ghost" class="rounded-full" size="icon-xs">
+      <InputGroupButton variant="ghost" class="rounded-full" size="icon-xs" :disabled="disabled">
         <Paperclip class="size-4" />
         <span class="sr-only">Add File</span>
       </InputGroupButton>
@@ -49,7 +47,7 @@ function handleSubmit() {
         variant="default"
         class="rounded-full"
         size="icon-xs"
-        :disabled="!text"
+        :disabled="!text || disabled"
         @click="handleSubmit"
       >
         <ArrowUpIcon class="size-4" />

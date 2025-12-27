@@ -14,7 +14,7 @@ defineProps<Props>()
   <div class="">
     <TalkItem
       v-for="talk, index in talks"
-      :key="`${index}${talk.content}`"
+      :key="index"
       :talk="talk"
       class="mb-2"
     />
