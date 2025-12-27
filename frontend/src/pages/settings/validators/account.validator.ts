@@ -1,19 +1,28 @@
 import { z } from "zod";
 
+const optionalEmail = z.union([
+  z.string().trim().email({ error: "Please enter a valid email." }),
+  z.literal(""),
+]);
+
+const optionalUrl = z.union([
+  z.string().trim().url({ error: "Please enter a valid URL." }),
+  z.literal(""),
+]);
+
 export const accountValidator = z.object({
-  name: z
+  username: z.string().optional(),
+  nickname: z
     .string({
       error: "Required.",
     })
     .min(2, {
-      error: "Name must be at least 2 characters.",
+      error: "Nickname must be at least 2 characters.",
     })
     .max(30, {
-      error: "Name must not be longer than 30 characters.",
+      error: "Nickname must not be longer than 30 characters.",
     }),
-  dob: z.iso
-    .datetime()
-    .optional()
-    .refine((date) => date !== undefined, "Please select a valid date."),
-  language: z.string().min(1, "Please select a language."),
+  avatar: optionalUrl,
+  email: optionalEmail,
+  captcha: z.string().optional(),
 });
