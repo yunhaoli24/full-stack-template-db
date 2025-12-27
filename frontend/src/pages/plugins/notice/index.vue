@@ -212,7 +212,6 @@ async function handleDeleteConfirm() {
                   <UiSelectValue placeholder="All types" />
                 </UiSelectTrigger>
                 <UiSelectContent>
-                  <UiSelectItem :value="undefined">All</UiSelectItem>
                   <UiSelectItem :value="0">通知</UiSelectItem>
                   <UiSelectItem :value="1">公告</UiSelectItem>
                 </UiSelectContent>
@@ -225,7 +224,6 @@ async function handleDeleteConfirm() {
                   <UiSelectValue placeholder="All status" />
                 </UiSelectTrigger>
                 <UiSelectContent>
-                  <UiSelectItem :value="undefined">All</UiSelectItem>
                   <UiSelectItem :value="1">显示</UiSelectItem>
                   <UiSelectItem :value="0">隐藏</UiSelectItem>
                 </UiSelectContent>
