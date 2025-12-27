@@ -313,7 +313,12 @@ watch(dialogOpen, (open) => {
               </UiTableCell>
               <UiTableCell>
                 <div class="flex flex-wrap gap-1">
-                  <UiBadge v-for="role in user.roles" :key="role.id" variant="outline" class="text-xs">
+                  <UiBadge
+                    v-for="role in user.roles"
+                    :key="role.id"
+                    variant="outline"
+                    class="text-xs"
+                  >
                     {{ role.name }}
                   </UiBadge>
                 </div>
@@ -338,9 +343,7 @@ watch(dialogOpen, (open) => {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!users.length" :colspan="8">
-              No users found.
-            </UiTableEmpty>
+            <UiTableEmpty v-if="!users.length" :colspan="8"> No users found. </UiTableEmpty>
           </UiTableBody>
         </UiTable>
       </UiCardContent>
@@ -371,7 +374,12 @@ watch(dialogOpen, (open) => {
             <UiFormItem>
               <UiFormLabel>Password</UiFormLabel>
               <UiFormControl>
-                <UiInput v-bind="componentField" type="password" placeholder="Password" :disabled="isSaving" />
+                <UiInput
+                  v-bind="componentField"
+                  type="password"
+                  placeholder="Password"
+                  :disabled="isSaving"
+                />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>
@@ -391,7 +399,12 @@ watch(dialogOpen, (open) => {
             <UiFormItem>
               <UiFormLabel>Email</UiFormLabel>
               <UiFormControl>
-                <UiInput v-bind="componentField" type="email" placeholder="Email" :disabled="isSaving" />
+                <UiInput
+                  v-bind="componentField"
+                  type="email"
+                  placeholder="Email"
+                  :disabled="isSaving"
+                />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>
@@ -453,9 +466,7 @@ watch(dialogOpen, (open) => {
             <UiButton type="button" variant="outline" @click="dialogOpen = false">
               Cancel
             </UiButton>
-            <UiButton type="submit" :disabled="isSaving">
-              Create User
-            </UiButton>
+            <UiButton type="submit" :disabled="isSaving"> Create User </UiButton>
           </UiDialogFooter>
         </form>
 
@@ -484,7 +495,12 @@ watch(dialogOpen, (open) => {
             <UiFormItem>
               <UiFormLabel>Email</UiFormLabel>
               <UiFormControl>
-                <UiInput v-bind="componentField" type="email" placeholder="Email" :disabled="isSaving" />
+                <UiInput
+                  v-bind="componentField"
+                  type="email"
+                  placeholder="Email"
+                  :disabled="isSaving"
+                />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>
@@ -546,9 +562,7 @@ watch(dialogOpen, (open) => {
             <UiButton type="button" variant="outline" @click="dialogOpen = false">
               Cancel
             </UiButton>
-            <UiButton type="submit" :disabled="isSaving">
-              Save Changes
-            </UiButton>
+            <UiButton type="submit" :disabled="isSaving"> Save Changes </UiButton>
           </UiDialogFooter>
         </form>
       </UiDialogContent>
@@ -569,7 +583,12 @@ watch(dialogOpen, (open) => {
             <UiFormItem>
               <UiFormLabel>New Password</UiFormLabel>
               <UiFormControl>
-                <UiInput v-bind="componentField" type="password" placeholder="New password" :disabled="isResettingPassword" />
+                <UiInput
+                  v-bind="componentField"
+                  type="password"
+                  placeholder="New password"
+                  :disabled="isResettingPassword"
+                />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>
@@ -579,7 +598,12 @@ watch(dialogOpen, (open) => {
             <UiFormItem>
               <UiFormLabel>Confirm Password</UiFormLabel>
               <UiFormControl>
-                <UiInput v-bind="componentField" type="password" placeholder="Confirm password" :disabled="isResettingPassword" />
+                <UiInput
+                  v-bind="componentField"
+                  type="password"
+                  placeholder="Confirm password"
+                  :disabled="isResettingPassword"
+                />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>
@@ -589,9 +613,7 @@ watch(dialogOpen, (open) => {
             <UiButton type="button" variant="outline" @click="resetPasswordDialogOpen = false">
               Cancel
             </UiButton>
-            <UiButton type="submit" :disabled="isResettingPassword">
-              Reset Password
-            </UiButton>
+            <UiButton type="submit" :disabled="isResettingPassword"> Reset Password </UiButton>
           </UiDialogFooter>
         </form>
       </UiDialogContent>

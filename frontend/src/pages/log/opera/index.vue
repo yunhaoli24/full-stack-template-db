@@ -310,7 +310,9 @@ function formatData(data: Record<string, unknown> | null) {
                 </UiButton>
               </UiTableCell>
             </UiTableRow>
-            <UiTableEmpty v-if="!logs.length" :colspan="10"> No operation logs found. </UiTableEmpty>
+            <UiTableEmpty v-if="!logs.length" :colspan="10">
+              No operation logs found.
+            </UiTableEmpty>
           </UiTableBody>
         </UiTable>
 

@@ -295,11 +295,7 @@ function formatExpression(expression: string) {
                 </UiFormControl>
                 <UiSelectContent>
                   <UiSelectGroup>
-                    <UiSelectItem
-                      v-for="model in modelOptions"
-                      :key="model"
-                      :value="model"
-                    >
+                    <UiSelectItem v-for="model in modelOptions" :key="model" :value="model">
                       {{ model }}
                     </UiSelectItem>
                   </UiSelectGroup>
@@ -320,11 +316,7 @@ function formatExpression(expression: string) {
                 </UiFormControl>
                 <UiSelectContent>
                   <UiSelectGroup>
-                    <UiSelectItem
-                      v-for="col in columnOptions"
-                      :key="col.key"
-                      :value="col.key"
-                    >
+                    <UiSelectItem v-for="col in columnOptions" :key="col.key" :value="col.key">
                       {{ col.comment ? `${col.key} (${col.comment})` : col.key }}
                     </UiSelectItem>
                   </UiSelectGroup>
@@ -390,11 +382,7 @@ function formatExpression(expression: string) {
             <UiFormItem>
               <UiFormLabel>Value</UiFormLabel>
               <UiFormControl>
-                <UiInput
-                  v-bind="componentField"
-                  placeholder="Rule value"
-                  :disabled="isSaving"
-                />
+                <UiInput v-bind="componentField" placeholder="Rule value" :disabled="isSaving" />
               </UiFormControl>
               <UiFormMessage />
             </UiFormItem>

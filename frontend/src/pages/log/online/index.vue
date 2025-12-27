@@ -101,7 +101,11 @@ function getExpireTime(expireTime: string) {
 </script>
 
 <template>
-  <BasicPage title="Online Users" description="Monitor and manage currently logged-in users." sticky>
+  <BasicPage
+    title="Online Users"
+    description="Monitor and manage currently logged-in users."
+    sticky
+  >
     <template #actions>
       <UiButton :disabled="isRefetching" @click="query.refetch">
         <RefreshCw class="mr-2 size-4" :class="{ 'animate-spin': isRefetching }" />
@@ -199,8 +203,8 @@ function getExpireTime(expireTime: string) {
     >
       <template #title> Kick user </template>
       <template #description>
-        This will force the user <span class="font-semibold">{{ kickTarget?.username }}</span> to log out.
-        The user will need to log in again to access the system.
+        This will force the user <span class="font-semibold">{{ kickTarget?.username }}</span> to
+        log out. The user will need to log in again to access the system.
       </template>
     </ConfirmDialog>
   </BasicPage>
