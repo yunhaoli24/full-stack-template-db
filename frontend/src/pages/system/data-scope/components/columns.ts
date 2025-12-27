@@ -38,7 +38,8 @@ export function createColumns({
     },
     {
       accessorKey: "status",
-      header: ({ column }) => h(DataTableColumnHeader<DataScopeDetail>, { column, title: "Status" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<DataScopeDetail>, { column, title: "Status" }),
       cell: ({ row }) => {
         const status = row.original.status;
         return h(Badge, { variant: status === 1 ? "default" : "secondary" }, () =>
@@ -48,7 +49,8 @@ export function createColumns({
     },
     {
       accessorKey: "created_time",
-      header: ({ column }) => h(DataTableColumnHeader<DataScopeDetail>, { column, title: "Created Time" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<DataScopeDetail>, { column, title: "Created Time" }),
       cell: ({ row }) =>
         h(
           "div",

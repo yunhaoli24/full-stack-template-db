@@ -8,20 +8,20 @@ import { Badge } from "@/components/ui/badge";
 import type { LoginLog } from "@/services/api/login-logs.api";
 
 function getStatusVariant(status: number) {
-  return status === 1 ? 'default' : 'destructive'
+  return status === 1 ? "default" : "destructive";
 }
 
 function getStatusText(status: number) {
-  return status === 1 ? 'Success' : 'Failed'
+  return status === 1 ? "Success" : "Failed";
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleString()
+  return new Date(dateStr).toLocaleString();
 }
 
 function getLocation(log: LoginLog) {
-  const parts = [log.country, log.region, log.city].filter(Boolean)
-  return parts.length > 0 ? parts.join(' - ') : '-'
+  const parts = [log.country, log.region, log.city].filter(Boolean);
+  return parts.length > 0 ? parts.join(" - ") : "-";
 }
 
 export function createColumns({
@@ -29,16 +29,18 @@ export function createColumns({
   onSelect,
   onSelectAll,
 }: {
-  selectedIds: Set<number>
-  onSelect: (id: number) => void
-  onSelectAll: () => void
+  selectedIds: Set<number>;
+  onSelect: (id: number) => void;
+  onSelectAll: () => void;
 }): ColumnDef<LoginLog>[] {
   return [
     {
       id: "select",
       header: ({ table }) =>
         h(Checkbox, {
-          checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate"),
+          checked:
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate"),
           onCheckedChange: () => onSelectAll(),
           ariaLabel: "Select all",
         }),
@@ -60,14 +62,14 @@ export function createColumns({
       accessorKey: "status",
       header: ({ column }) => h(DataTableColumnHeader<LoginLog>, { column, title: "Status" }),
       cell: ({ row }) => {
-        const status = row.original.status
-        return h(Badge, { variant: getStatusVariant(status) }, () => getStatusText(status))
+        const status = row.original.status;
+        return h(Badge, { variant: getStatusVariant(status) }, () => getStatusText(status));
       },
     },
     {
       accessorKey: "ip",
       header: ({ column }) => h(DataTableColumnHeader<LoginLog>, { column, title: "IP" }),
-      cell: ({ row }) => h("div", { class: "font-mono text-xs" }, row.original.ip || '-'),
+      cell: ({ row }) => h("div", { class: "font-mono text-xs" }, row.original.ip || "-"),
     },
     {
       accessorKey: "location",
@@ -78,8 +80,8 @@ export function createColumns({
       accessorKey: "user_agent",
       header: ({ column }) => h(DataTableColumnHeader<LoginLog>, { column, title: "User Agent" }),
       cell: ({ row }) => {
-        const ua = row.original.user_agent
-        return h("div", { class: "max-w-[300px] truncate text-muted-foreground" }, ua || '-')
+        const ua = row.original.user_agent;
+        return h("div", { class: "max-w-[300px] truncate text-muted-foreground" }, ua || "-");
       },
     },
     {

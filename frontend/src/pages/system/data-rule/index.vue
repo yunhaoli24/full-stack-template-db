@@ -21,7 +21,7 @@ import {
 } from '@/services/api/data-rules.api'
 
 import { createColumns } from './components/columns'
-import DataRuleDataTable from './components/data-table'
+import DataRuleDataTable from './components/data-table.vue'
 
 const query = useGetDataRulesQuery()
 const modelsQuery = useGetDataRuleModelsQuery()

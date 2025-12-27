@@ -14,7 +14,7 @@ import {
 } from '@/services/api/task-results.api'
 
 import { createColumns } from './components/columns'
-import RecordDataTable from './components/data-table'
+import RecordDataTable from './components/data-table.vue'
 
 const page = ref(1)
 const pageSize = ref(DEFAULT_PAGE_SIZE)

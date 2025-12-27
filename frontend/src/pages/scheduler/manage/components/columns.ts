@@ -48,7 +48,8 @@ export function createColumns({
     },
     {
       accessorKey: "crontab",
-      header: ({ column }) => h(DataTableColumnHeader<TaskScheduler>, { column, title: "Crontab/Interval" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<TaskScheduler>, { column, title: "Crontab/Interval" }),
       cell: ({ row }) => {
         const scheduler = row.original;
         const value = scheduler.type === 1 ? scheduler.crontab : scheduler.interval_seconds;
@@ -61,20 +62,26 @@ export function createColumns({
       cell: ({ row }) => {
         const status = row.original.status;
         return h(Badge, { variant: status === 1 ? "default" : "secondary" }, () =>
-          status === 1 ? "Enabled" : "Disabled"
+          status === 1 ? "Enabled" : "Disabled",
         );
       },
     },
     {
       accessorKey: "run_count",
-      header: ({ column }) => h(DataTableColumnHeader<TaskScheduler>, { column, title: "Run Count" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<TaskScheduler>, { column, title: "Run Count" }),
       cell: ({ row }) => h("div", {}, row.original.run_count ?? 0),
     },
     {
       accessorKey: "last_run_time",
-      header: ({ column }) => h(DataTableColumnHeader<TaskScheduler>, { column, title: "Last Run" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<TaskScheduler>, { column, title: "Last Run" }),
       cell: ({ row }) =>
-        h("div", { class: "whitespace-nowrap text-sm text-muted-foreground" }, formatDate(row.original.last_run_time)),
+        h(
+          "div",
+          { class: "whitespace-nowrap text-sm text-muted-foreground" },
+          formatDate(row.original.last_run_time),
+        ),
     },
     {
       id: "actions",

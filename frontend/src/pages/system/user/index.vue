@@ -23,7 +23,7 @@ import { useGetDeptTreeQuery, type DeptTreeNode } from '@/services/api/depts.api
 import { useGetAllRolesQuery, type RoleDetail } from '@/services/api/roles.api'
 
 import { createColumns } from './components/columns'
-import UserDataTable from './components/data-table'
+import UserDataTable from './components/data-table.vue'
 
 const query = useGetUsersQuery()
 const deptsQuery = useGetDeptTreeQuery()

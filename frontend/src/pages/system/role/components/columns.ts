@@ -50,7 +50,8 @@ export function createColumns({
     },
     {
       accessorKey: "is_filter_scopes",
-      header: ({ column }) => h(DataTableColumnHeader<RoleDetail>, { column, title: "Filter Data Scopes" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<RoleDetail>, { column, title: "Filter Data Scopes" }),
       cell: ({ row }) => {
         const isFilter = row.original.is_filter_scopes;
         return h(Badge, { variant: isFilter ? "default" : "outline" }, () =>
@@ -68,7 +69,8 @@ export function createColumns({
     },
     {
       accessorKey: "created_time",
-      header: ({ column }) => h(DataTableColumnHeader<RoleDetail>, { column, title: "Created Time" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<RoleDetail>, { column, title: "Created Time" }),
       cell: ({ row }) =>
         h(
           "div",

@@ -21,7 +21,7 @@ import {
 } from '@/services/api/roles.api'
 
 import { createColumns } from './components/columns'
-import RoleDataTable from './components/data-table'
+import RoleDataTable from './components/data-table.vue'
 
 const query = useGetRolesQuery()
 const createMutation = useCreateRoleMutation()

@@ -15,7 +15,7 @@ import {
 } from '@/services/api/login-logs.api'
 
 import { createColumns } from './components/columns'
-import LoginLogDataTable from './components/data-table'
+import LoginLogDataTable from './components/data-table.vue'
 
 const page = ref(1)
 const pageSize = ref(DEFAULT_PAGE_SIZE)

@@ -11,22 +11,21 @@ import RowActions from "./row-actions.vue";
 
 function getStatusVariant(status: string) {
   switch (status.toLowerCase()) {
-    case 'success':
-      return 'default'
-    case 'failure':
-    case 'error':
-      return 'destructive'
-    case 'pending':
-      return 'secondary'
+    case "success":
+      return "default";
+    case "failure":
+    case "error":
+      return "destructive";
+    case "pending":
+      return "secondary";
     default:
-      return 'outline'
+      return "outline";
   }
 }
 
 function formatDate(dateStr: string | null) {
-  if (!dateStr)
-    return '-'
-  return new Date(dateStr).toLocaleString()
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleString();
 }
 
 export function createColumns({
@@ -36,28 +35,30 @@ export function createColumns({
   onViewDetail,
   onDelete,
 }: {
-  selectedIds: Set<number>
-  onSelect: (id: number) => void
-  onSelectAll: () => void
-  onViewDetail: (result: TaskResult) => void
-  onDelete: (ids: number[]) => void
+  selectedIds: Set<number>;
+  onSelect: (id: number) => void;
+  onSelectAll: () => void;
+  onViewDetail: (result: TaskResult) => void;
+  onDelete: (ids: number[]) => void;
 }): ColumnDef<TaskResult>[] {
   return [
     {
       id: "select",
       header: ({ table }) =>
         h(Checkbox, {
-          checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate"),
-          onCheckedChange: (value) => {
-            onSelectAll()
+          checked:
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate"),
+          onCheckedChange: (_value) => {
+            onSelectAll();
           },
           ariaLabel: "Select all",
         }),
       cell: ({ row }) =>
         h(Checkbox, {
           checked: selectedIds.has(row.original.id),
-          onCheckedChange: (value) => {
-            onSelect(row.original.id)
+          onCheckedChange: (_value) => {
+            onSelect(row.original.id);
           },
           ariaLabel: "Select row",
         }),
@@ -73,32 +74,32 @@ export function createColumns({
       accessorKey: "name",
       header: ({ column }) => h(DataTableColumnHeader<TaskResult>, { column, title: "Name" }),
       cell: ({ row }) => {
-        const name = row.original.name
-        return h("div", {}, name || "-")
+        const name = row.original.name;
+        return h("div", {}, name || "-");
       },
     },
     {
       accessorKey: "status",
       header: ({ column }) => h(DataTableColumnHeader<TaskResult>, { column, title: "Status" }),
       cell: ({ row }) => {
-        const status = row.original.status
-        return h(Badge, { variant: getStatusVariant(status) }, () => status)
+        const status = row.original.status;
+        return h(Badge, { variant: getStatusVariant(status) }, () => status);
       },
     },
     {
       accessorKey: "worker",
       header: ({ column }) => h(DataTableColumnHeader<TaskResult>, { column, title: "Worker" }),
       cell: ({ row }) => {
-        const worker = row.original.worker
-        return h("div", {}, worker || "-")
+        const worker = row.original.worker;
+        return h("div", {}, worker || "-");
       },
     },
     {
       accessorKey: "queue",
       header: ({ column }) => h(DataTableColumnHeader<TaskResult>, { column, title: "Queue" }),
       cell: ({ row }) => {
-        const queue = row.original.queue
-        return h("div", {}, queue || "-")
+        const queue = row.original.queue;
+        return h("div", {}, queue || "-");
       },
     },
     {
@@ -108,7 +109,8 @@ export function createColumns({
     },
     {
       accessorKey: "date_done",
-      header: ({ column }) => h(DataTableColumnHeader<TaskResult>, { column, title: "Completed Time" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<TaskResult>, { column, title: "Completed Time" }),
       cell: ({ row }) =>
         h(
           "div",

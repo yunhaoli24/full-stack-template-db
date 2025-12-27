@@ -11,7 +11,7 @@ const table = generateVueTable<UserDetail>(props)
 </script>
 
 <template>
-  <DataTable :columns :table :data :loading :server-pagination="serverPagination">
+  <DataTable :columns :table :data :loading>
     <template #toolbar>
       <slot name="toolbar" :table="table" />
     </template>

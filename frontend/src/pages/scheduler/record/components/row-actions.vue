@@ -13,9 +13,7 @@ defineProps<{
 
 <template>
   <div class="flex justify-end gap-2">
-    <Button size="sm" variant="ghost" @click="onViewDetail(result)">
-      View Detail
-    </Button>
+    <Button size="sm" variant="ghost" @click="onViewDetail(result)"> View Detail </Button>
     <Button size="sm" variant="ghost" class="text-destructive" @click="onDelete([result.id])">
       <Trash2 class="size-4" />
     </Button>

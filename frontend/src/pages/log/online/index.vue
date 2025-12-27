@@ -12,7 +12,7 @@ import {
 } from '@/services/api/online-users.api'
 
 import { createColumns } from './components/columns'
-import OnlineUserDataTable from './components/data-table'
+import OnlineUserDataTable from './components/data-table.vue'
 
 const query = useGetOnlineUsersQuery()
 const kickMutation = useKickOnlineUserMutation()

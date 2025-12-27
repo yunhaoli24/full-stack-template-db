@@ -15,11 +15,7 @@ const isDark = useDark()
   <UiSidebar collapsible="icon" class="z-50">
     <UiSidebarHeader>
       <div class="flex items-center gap-2 px-2 py-2">
-        <img
-          :src="isDark ? '/logo.svg' : '/logo-black.svg'"
-          alt="Logo"
-          class="size-8 shrink-0"
-        />
+        <img :src="isDark ? '/logo.svg' : '/logo-black.svg'" alt="Logo" class="size-8 shrink-0" />
         <div class="grid flex-1 text-sm leading-tight">
           <span class="font-semibold truncate">shadcn-vue-admin</span>
         </div>

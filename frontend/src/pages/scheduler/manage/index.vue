@@ -21,7 +21,7 @@ import {
 } from '@/services/api/schedulers.api'
 
 import { createColumns } from './components/columns'
-import SchedulerDataTable from './components/data-table'
+import SchedulerDataTable from './components/data-table.vue'
 
 const query = useGetSchedulersQuery(ref({ name: '', type: undefined }))
 const createMutation = useCreateSchedulerMutation()
@@ -311,11 +311,7 @@ function formatDate(dateStr: string | null) {
           <UiButton @click="handleSearch"> Search </UiButton>
         </div>
 
-        <SchedulerDataTable
-          :data="schedulers"
-          :columns="columns"
-          :loading="isLoading"
-        />
+        <SchedulerDataTable :data="schedulers" :columns="columns" :loading="isLoading" />
       </UiCardContent>
     </UiCard>
 

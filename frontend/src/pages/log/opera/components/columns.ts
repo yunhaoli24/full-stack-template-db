@@ -8,24 +8,19 @@ import { Badge } from "@/components/ui/badge";
 import type { OperaLog } from "@/services/api/opera-logs.api";
 
 function getStatusVariant(status: number) {
-  return status === 1 ? 'default' : 'destructive'
+  return status === 1 ? "default" : "destructive";
 }
 
 function getStatusText(status: number) {
-  return status === 1 ? 'Success' : 'Failed'
+  return status === 1 ? "Success" : "Failed";
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleString()
-}
-
-function getLocation(log: OperaLog) {
-  const parts = [log.country, log.region, log.city].filter(Boolean)
-  return parts.length > 0 ? parts.join(' - ') : '-'
+  return new Date(dateStr).toLocaleString();
 }
 
 function formatCostTime(time: number) {
-  return `${time.toFixed(2)}ms`
+  return `${time.toFixed(2)}ms`;
 }
 
 export function createColumns({
@@ -33,16 +28,18 @@ export function createColumns({
   onSelect,
   onSelectAll,
 }: {
-  selectedIds: Set<number>
-  onSelect: (id: number) => void
-  onSelectAll: () => void
+  selectedIds: Set<number>;
+  onSelect: (id: number) => void;
+  onSelectAll: () => void;
 }): ColumnDef<OperaLog>[] {
   return [
     {
       id: "select",
       header: ({ table }) =>
         h(Checkbox, {
-          checked: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate"),
+          checked:
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate"),
           onCheckedChange: () => onSelectAll(),
           ariaLabel: "Select all",
         }),
@@ -61,43 +58,39 @@ export function createColumns({
       cell: ({ row }) => h("div", { class: "font-medium" }, row.getValue("username")),
     },
     {
-      accessorKey: "module",
-      header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "Module" }),
-      cell: ({ row }) => h("div", {}, row.getValue("module")),
-    },
-    {
-      accessorKey: "operation",
+      accessorKey: "title",
       header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "Operation" }),
-      cell: ({ row }) => h("div", {}, row.getValue("operation")),
+      cell: ({ row }) => h("div", {}, row.getValue("title")),
     },
     {
       accessorKey: "method",
       header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "Method" }),
       cell: ({ row }) => {
-        const method = row.original.method
-        return h("div", { class: "font-mono text-xs" }, method || '-')
+        const method = row.original.method;
+        return h("div", { class: "font-mono text-xs" }, method || "-");
       },
     },
     {
-      accessorKey: "url",
-      header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "URL" }),
+      accessorKey: "path",
+      header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "Path" }),
       cell: ({ row }) => {
-        const url = row.original.url
-        return h("div", { class: "max-w-[300px] truncate font-mono text-xs" }, url || '-')
+        const path = row.original.path;
+        return h("div", { class: "max-w-[300px] truncate font-mono text-xs" }, path || "-");
       },
     },
     {
       accessorKey: "status",
       header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "Status" }),
       cell: ({ row }) => {
-        const status = row.original.status
-        return h(Badge, { variant: getStatusVariant(status) }, () => getStatusText(status))
+        const status = row.original.status;
+        return h(Badge, { variant: getStatusVariant(status) }, () => getStatusText(status));
       },
     },
     {
       accessorKey: "cost_time",
       header: ({ column }) => h(DataTableColumnHeader<OperaLog>, { column, title: "Cost Time" }),
-      cell: ({ row }) => h("div", { class: "text-muted-foreground" }, formatCostTime(row.original.cost_time)),
+      cell: ({ row }) =>
+        h("div", { class: "text-muted-foreground" }, formatCostTime(row.original.cost_time)),
     },
     {
       accessorKey: "opera_time",

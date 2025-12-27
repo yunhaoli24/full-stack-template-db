@@ -11,8 +11,8 @@ export interface TaskScheduler {
   id: number;
   name: string;
   task: string;
-  args: unknown | null;
-  kwargs: unknown | null;
+  args: unknown;
+  kwargs: unknown;
   queue: string | null;
   exchange: string | null;
   routing_key: string | null;
@@ -40,8 +40,8 @@ export interface TaskSchedulerParams {
 export interface TaskSchedulerPayload {
   name: string;
   task: string;
-  args?: unknown | null;
-  kwargs?: unknown | null;
+  args?: unknown;
+  kwargs?: unknown;
   queue?: string | null;
   exchange?: string | null;
   routing_key?: string | null;

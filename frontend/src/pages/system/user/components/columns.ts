@@ -36,9 +36,7 @@ export function createColumns({
               ])
             : null,
           h("span", {}, user.username),
-          user.is_superuser
-            ? h(Badge, { variant: "default", class: "ml-1" }, () => "Admin")
-            : null,
+          user.is_superuser ? h(Badge, { variant: "default", class: "ml-1" }, () => "Admin") : null,
         ]);
       },
     },

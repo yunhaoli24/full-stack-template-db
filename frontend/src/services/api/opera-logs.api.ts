@@ -32,6 +32,8 @@ export interface OperaLog {
 }
 
 export interface OperaLogParams {
+  page?: number;
+  size?: number;
   username?: string;
   status?: number;
   ip?: string;

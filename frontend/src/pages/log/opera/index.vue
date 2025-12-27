@@ -15,7 +15,7 @@ import {
 } from '@/services/api/opera-logs.api'
 
 import { createColumns } from './components/columns'
-import OperaLogDataTable from './components/data-table'
+import OperaLogDataTable from './components/data-table.vue'
 
 const page = ref(1)
 const pageSize = ref(DEFAULT_PAGE_SIZE)

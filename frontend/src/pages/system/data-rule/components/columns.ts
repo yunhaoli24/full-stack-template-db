@@ -9,19 +9,19 @@ import type { DataRuleDetail } from "@/services/api/data-rules.api";
 import RowActions from "./row-actions.vue";
 
 const operatorOptions = [
-  { label: 'AND', value: 0 },
-  { label: 'OR', value: 1 },
+  { label: "AND", value: 0 },
+  { label: "OR", value: 1 },
 ];
 
 const expressionOptions = [
-  { label: '== (Equal)', value: 0 },
-  { label: '!= (Not Equal)', value: 1 },
-  { label: '> (Greater Than)', value: 2 },
-  { label: '>= (Greater or Equal)', value: 3 },
-  { label: '< (Less Than)', value: 4 },
-  { label: '<= (Less or Equal)', value: 5 },
-  { label: 'IN', value: 6 },
-  { label: 'NOT IN', value: 7 },
+  { label: "== (Equal)", value: 0 },
+  { label: "!= (Not Equal)", value: 1 },
+  { label: "> (Greater Than)", value: 2 },
+  { label: ">= (Greater or Equal)", value: 3 },
+  { label: "< (Less Than)", value: 4 },
+  { label: "<= (Less or Equal)", value: 5 },
+  { label: "IN", value: 6 },
+  { label: "NOT IN", value: 7 },
 ];
 
 function formatOperator(operator: string) {
@@ -74,7 +74,8 @@ export function createColumns({
     },
     {
       accessorKey: "operator",
-      header: ({ column }) => h(DataTableColumnHeader<DataRuleDetail>, { column, title: "Operator" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<DataRuleDetail>, { column, title: "Operator" }),
       cell: ({ row }) => {
         const operator = row.original.operator;
         const num = Number.parseInt(operator);
@@ -85,7 +86,8 @@ export function createColumns({
     },
     {
       accessorKey: "expression",
-      header: ({ column }) => h(DataTableColumnHeader<DataRuleDetail>, { column, title: "Expression" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<DataRuleDetail>, { column, title: "Expression" }),
       cell: ({ row }) => {
         return h(Badge, { variant: "outline" }, () => formatExpression(row.original.expression));
       },
@@ -97,7 +99,8 @@ export function createColumns({
     },
     {
       accessorKey: "created_time",
-      header: ({ column }) => h(DataTableColumnHeader<DataRuleDetail>, { column, title: "Created Time" }),
+      header: ({ column }) =>
+        h(DataTableColumnHeader<DataRuleDetail>, { column, title: "Created Time" }),
       cell: ({ row }) =>
         h(
           "div",
