@@ -10,10 +10,7 @@ const classes = computed(() => cn('flex items-center gap-1', props.class))
 </script>
 
 <template>
-  <div
-    :class="classes"
-    v-bind="$attrs"
-  >
+  <div :class="classes" v-bind="$attrs">
     <slot />
   </div>
 </template>

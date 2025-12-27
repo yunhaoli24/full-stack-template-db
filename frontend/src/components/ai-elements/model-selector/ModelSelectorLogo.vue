@@ -18,5 +18,5 @@ const props = defineProps<Props>()
     height="12"
     :src="`https://models.dev/logos/${props.provider}.svg`"
     width="12"
-  >
+  />
 </template>

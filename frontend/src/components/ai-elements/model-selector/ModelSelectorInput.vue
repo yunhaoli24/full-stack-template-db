@@ -11,8 +11,5 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <CommandInput
-    :class="cn('h-auto py-3.5', props.class)"
-    v-bind="$attrs"
-  />
+  <CommandInput :class="cn('h-auto py-3.5', props.class)" v-bind="$attrs" />
 </template>

@@ -37,9 +37,7 @@ const thinkingMessage = computed(() => {
       <BrainIcon class="size-4" />
 
       <template v-if="thinkingMessage === 'thinking'">
-        <Shimmer :duration="1">
-          Thinking...
-        </Shimmer>
+        <Shimmer :duration="1"> Thinking... </Shimmer>
       </template>
 
       <template v-else-if="thinkingMessage === 'default_done'">

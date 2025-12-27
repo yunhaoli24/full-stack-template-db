@@ -11,10 +11,7 @@ const classes = computed(() => cn('flex-1 overflow-auto p-4', props.class))
 </script>
 
 <template>
-  <div
-    :class="classes"
-    v-bind="$attrs"
-  >
+  <div :class="classes" v-bind="$attrs">
     <slot />
   </div>
 </template>

@@ -14,10 +14,7 @@ const classes = computed(() => cn(
 </script>
 
 <template>
-  <div
-    :class="classes"
-    v-bind="$attrs"
-  >
+  <div :class="classes" v-bind="$attrs">
     <slot />
   </div>
 </template>

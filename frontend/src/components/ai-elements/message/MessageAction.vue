@@ -28,8 +28,7 @@ const buttonProps = {
       <TooltipTrigger as-child>
         <Button v-bind="{ ...buttonProps, ...$attrs }">
           <slot />
-          <span class="sr-only">
-            {{ props.label || props.tooltip }}</span>
+          <span class="sr-only"> {{ props.label || props.tooltip }}</span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>

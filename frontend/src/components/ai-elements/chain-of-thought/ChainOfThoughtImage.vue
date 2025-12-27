@@ -9,10 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div
-    :class="cn('mt-2 space-y-2', props.class)"
-    v-bind="$attrs"
-  >
+  <div :class="cn('mt-2 space-y-2', props.class)" v-bind="$attrs">
     <div
       class="relative flex max-h-[22rem] items-center justify-center overflow-hidden rounded-lg bg-muted p-3"
     >

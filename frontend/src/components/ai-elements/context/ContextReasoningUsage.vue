@@ -40,9 +40,6 @@ const reasoningCostText = computed(() => {
     v-bind="$attrs"
   >
     <span class="text-muted-foreground">Reasoning</span>
-    <TokensWithCost
-      :cost-text="reasoningCostText"
-      :tokens="reasoningTokens"
-    />
+    <TokensWithCost :cost-text="reasoningCostText" :tokens="reasoningTokens" />
   </div>
 </template>

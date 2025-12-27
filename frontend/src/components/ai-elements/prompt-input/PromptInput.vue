@@ -97,7 +97,7 @@ function onSubmit(e: Event) {
       :accept="accept"
       :multiple="multiple"
       @change="onFileChange"
-    >
+    />
     <form
       ref="formRef"
       :class="cn('w-full', props.class)"

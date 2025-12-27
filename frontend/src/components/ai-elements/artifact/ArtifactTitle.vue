@@ -11,10 +11,7 @@ const classes = computed(() => cn('font-medium text-foreground text-sm', props.c
 </script>
 
 <template>
-  <p
-    v-bind="$attrs"
-    :class="classes"
-  >
+  <p v-bind="$attrs" :class="classes">
     <slot />
   </p>
 </template>

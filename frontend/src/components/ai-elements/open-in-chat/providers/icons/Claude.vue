@@ -1,10 +1,5 @@
 <template>
-  <svg
-    fill="currentColor"
-    role="img"
-    viewBox="0 0 12 12"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg fill="currentColor" role="img" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
     <title>Claude</title>
     <path
       clipRule="evenodd"

@@ -24,9 +24,7 @@ const props = defineProps<TaskTriggerProps>()
         <p class="text-sm">
           {{ props.title }}
         </p>
-        <ChevronDown
-          class="size-4 transition-transform group-data-[state=open]:rotate-180"
-        />
+        <ChevronDown class="size-4 transition-transform group-data-[state=open]:rotate-180" />
       </div>
     </slot>
   </CollapsibleTrigger>

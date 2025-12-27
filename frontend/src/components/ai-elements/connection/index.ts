@@ -1,1 +1,1 @@
-export { default as Connection } from './Connection.vue'
+export { default as Connection } from "./Connection.vue";

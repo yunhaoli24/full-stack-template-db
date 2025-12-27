@@ -11,9 +11,5 @@ const props = defineProps<{
 <template>
   <slot v-if="$slots.default" />
 
-  <BookmarkIcon
-    v-else
-    :class="cn('size-4 shrink-0', props.class)"
-    v-bind="$attrs"
-  />
+  <BookmarkIcon v-else :class="cn('size-4 shrink-0', props.class)" v-bind="$attrs" />
 </template>

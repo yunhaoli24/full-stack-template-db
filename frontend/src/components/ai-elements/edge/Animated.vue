@@ -78,12 +78,7 @@ const path = computed(() => {
 
 <template>
   <g v-if="path">
-    <BaseEdge
-      :id="props.id"
-      :marker-end="markerEnd"
-      :path="path"
-      :style="style"
-    />
+    <BaseEdge :id="props.id" :marker-end="markerEnd" :path="path" :style="style" />
     <circle fill="var(--primary)" r="4">
       <animateMotion dur="2s" :path="path" repeatCount="indefinite" />
     </circle>

@@ -15,11 +15,7 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <DropdownMenuContent
-    align="start"
-    :class="cn('w-[240px]', props.class)"
-    v-bind="$attrs"
-  >
+  <DropdownMenuContent align="start" :class="cn('w-[240px]', props.class)" v-bind="$attrs">
     <slot />
   </DropdownMenuContent>
 </template>

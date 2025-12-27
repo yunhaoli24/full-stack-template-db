@@ -10,10 +10,7 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <span
-    :class="cn('flex-1 truncate text-left', props.class)"
-    v-bind="$attrs"
-  >
+  <span :class="cn('flex-1 truncate text-left', props.class)" v-bind="$attrs">
     <slot />
   </span>
 </template>

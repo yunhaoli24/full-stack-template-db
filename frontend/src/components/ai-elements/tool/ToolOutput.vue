@@ -27,14 +27,8 @@ const formattedOutput = computed(() => {
 </script>
 
 <template>
-  <div
-    v-if="showOutput"
-    :class="cn('space-y-2 p-4', props.class)"
-    v-bind="$attrs"
-  >
-    <h4
-      class="font-medium text-muted-foreground text-xs uppercase tracking-wide"
-    >
+  <div v-if="showOutput" :class="cn('space-y-2 p-4', props.class)" v-bind="$attrs">
+    <h4 class="font-medium text-muted-foreground text-xs uppercase tracking-wide">
       {{ props.errorText ? "Error" : "Result" }}
     </h4>
     <div
@@ -51,16 +45,8 @@ const formattedOutput = computed(() => {
         {{ props.errorText }}
       </div>
 
-      <CodeBlock
-        v-else-if="isObjectOutput"
-        :code="formattedOutput"
-        language="json"
-      />
-      <CodeBlock
-        v-else-if="isStringOutput"
-        :code="formattedOutput"
-        language="json"
-      />
+      <CodeBlock v-else-if="isObjectOutput" :code="formattedOutput" language="json" />
+      <CodeBlock v-else-if="isStringOutput" :code="formattedOutput" language="json" />
       <div v-else class="p-3">
         {{ props.output }}
       </div>

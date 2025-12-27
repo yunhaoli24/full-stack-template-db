@@ -12,12 +12,7 @@ const props = defineProps<{
 
 <template>
   <CollapsibleTrigger as-child>
-    <Button
-      :class="cn('size-8', props.class)"
-      data-slot="plan-trigger"
-      size="icon"
-      variant="ghost"
-    >
+    <Button :class="cn('size-8', props.class)" data-slot="plan-trigger" size="icon" variant="ghost">
       <ChevronsUpDownIcon class="size-4" />
       <span class="sr-only">Toggle plan</span>
     </Button>

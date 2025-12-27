@@ -1,4 +1,4 @@
-export type TalkRole = "user" | "system";
+export type TalkRole = "user" | "assistant" | "system";
 
 export interface IMessage {
   role: TalkRole;

@@ -1,7 +1,7 @@
-import type { ComputedRef, InjectionKey } from 'vue'
+import type { ComputedRef, InjectionKey } from "vue";
 
 export interface CodeBlockContext {
-  code: ComputedRef<string>
+  code: ComputedRef<string>;
 }
 
-export const CodeBlockKey: InjectionKey<CodeBlockContext> = Symbol('CodeBlock')
+export const CodeBlockKey: InjectionKey<CodeBlockContext> = Symbol("CodeBlock");

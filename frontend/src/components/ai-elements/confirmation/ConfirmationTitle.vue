@@ -9,10 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <AlertDescription
-    :class="cn('inline', props.class)"
-    v-bind="$attrs"
-  >
+  <AlertDescription :class="cn('inline', props.class)" v-bind="$attrs">
     <slot />
   </AlertDescription>
 </template>

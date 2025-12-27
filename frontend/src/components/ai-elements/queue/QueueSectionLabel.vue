@@ -14,9 +14,7 @@ const props = defineProps<QueueSectionLabelProps>()
 
 <template>
   <span :class="cn('flex items-center gap-2', props.class)">
-    <ChevronDownIcon
-      class="group-data-[state=closed]:-rotate-90 size-4 transition-transform"
-    />
+    <ChevronDownIcon class="group-data-[state=closed]:-rotate-90 size-4 transition-transform" />
     <slot name="icon" />
     <span>
       {{ props.count }}

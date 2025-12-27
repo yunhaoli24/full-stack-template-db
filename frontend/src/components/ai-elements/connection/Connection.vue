@@ -16,13 +16,7 @@ const pathD = computed(() => {
 
 <template>
   <g>
-    <path
-      class="animated"
-      fill="none"
-      stroke="var(--color-ring)"
-      :stroke-width="1"
-      :d="pathD"
-    />
+    <path class="animated" fill="none" stroke="var(--color-ring)" :stroke-width="1" :d="pathD" />
 
     <circle
       :cx="targetX"

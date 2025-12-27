@@ -1,20 +1,20 @@
-import type { InjectionKey } from 'vue'
-import { inject, provide } from 'vue'
+import type { InjectionKey } from "vue";
+import { inject, provide } from "vue";
 
 export interface OpenInContext {
-  query: string
+  query: string;
 }
 
-export const OpenInContextKey: InjectionKey<OpenInContext> = Symbol('OpenInContext')
+export const OpenInContextKey: InjectionKey<OpenInContext> = Symbol("OpenInContext");
 
 export function provideOpenInContext(context: OpenInContext) {
-  provide(OpenInContextKey, context)
+  provide(OpenInContextKey, context);
 }
 
 export function useOpenInContext() {
-  const context = inject(OpenInContextKey)
+  const context = inject(OpenInContextKey);
   if (!context) {
-    throw new Error('OpenIn components must be used within an OpenIn provider')
+    throw new Error("OpenIn components must be used within an OpenIn provider");
   }
-  return context
+  return context;
 }

@@ -1,4 +1,4 @@
-import type { ToolUIPart } from 'ai'
+import type { ToolUIPart } from "ai";
 
 /**
  * Extended tool state type that includes approval-related states
@@ -8,8 +8,8 @@ import type { ToolUIPart } from 'ai'
  * - Tool components (ToolStatusBadge)
  * - Confirmation components
  */
-export type ExtendedToolState
-  = | ToolUIPart['state']
-    | 'approval-requested'
-    | 'approval-responded'
-    | 'output-denied'
+export type ExtendedToolState =
+  | ToolUIPart["state"]
+  | "approval-requested"
+  | "approval-responded"
+  | "output-denied";

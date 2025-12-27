@@ -57,10 +57,7 @@ provide(MessageBranchKey, contextValue)
 </script>
 
 <template>
-  <div
-    :class="cn('grid w-full gap-2 [&>div]:pb-0', props.class)"
-    v-bind="$attrs"
-  >
+  <div :class="cn('grid w-full gap-2 [&>div]:pb-0', props.class)" v-bind="$attrs">
     <slot />
   </div>
 </template>

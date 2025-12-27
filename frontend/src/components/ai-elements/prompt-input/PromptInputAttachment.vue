@@ -41,13 +41,10 @@ function handleRemove(e: Event) {
         )"
       >
         <div class="relative size-5 shrink-0">
-          <div class="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0">
-            <img
-              v-if="isImage"
-              :src="file.url"
-              :alt="label"
-              class="size-5 object-cover"
-            >
+          <div
+            class="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0"
+          >
+            <img v-if="isImage" :src="file.url" :alt="label" class="size-5 object-cover" />
             <div v-else class="flex size-5 items-center justify-center text-muted-foreground">
               <PaperclipIcon class="size-3" />
             </div>
@@ -71,12 +68,11 @@ function handleRemove(e: Event) {
 
     <HoverCardContent class="w-auto p-2" align="start">
       <div class="w-auto space-y-3">
-        <div v-if="isImage" class="flex max-h-96 w-96 items-center justify-center overflow-hidden rounded-md border">
-          <img
-            :src="file.url"
-            :alt="label"
-            class="max-h-full max-w-full object-contain"
-          >
+        <div
+          v-if="isImage"
+          class="flex max-h-96 w-96 items-center justify-center overflow-hidden rounded-md border"
+        >
+          <img :src="file.url" :alt="label" class="max-h-full max-w-full object-contain" />
         </div>
         <div class="flex items-center gap-2.5">
           <div class="min-w-0 flex-1 space-y-1 px-0.5">

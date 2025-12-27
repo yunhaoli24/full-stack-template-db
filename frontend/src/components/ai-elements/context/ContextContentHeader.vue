@@ -37,9 +37,7 @@ const total = computed(() => formatter.format(maxTokens.value))
     <template v-else>
       <div class="flex items-center justify-between gap-3 text-xs">
         <p>{{ displayPct }}</p>
-        <p class="font-mono text-muted-foreground">
-          {{ used }} / {{ total }}
-        </p>
+        <p class="font-mono text-muted-foreground">{{ used }} / {{ total }}</p>
       </div>
       <div class="space-y-2">
         <Progress class="bg-muted" :model-value="usedPercent * PERCENT_MAX" />

@@ -38,11 +38,7 @@ const classes = computed(() => cn(
             class: classes,
           }"
         >
-          <component
-            :is="props.icon"
-            v-if="props.icon"
-            class="size-4"
-          />
+          <component :is="props.icon" v-if="props.icon" class="size-4" />
           <slot v-else />
           <span class="sr-only">{{ props.label || props.tooltip }}</span>
         </Button>
@@ -61,11 +57,7 @@ const classes = computed(() => cn(
       class: classes,
     }"
   >
-    <component
-      :is="props.icon"
-      v-if="props.icon"
-      class="size-4"
-    />
+    <component :is="props.icon" v-if="props.icon" class="size-4" />
     <slot v-else />
     <span class="sr-only">{{ props.label || props.tooltip }}</span>
   </Button>

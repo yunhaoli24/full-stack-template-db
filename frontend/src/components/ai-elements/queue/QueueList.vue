@@ -9,10 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <ScrollArea
-    :class="cn('-mb-1 mt-2', props.class)"
-    v-bind="$attrs"
-  >
+  <ScrollArea :class="cn('-mb-1 mt-2', props.class)" v-bind="$attrs">
     <div class="max-h-40 pr-4">
       <ul>
         <slot />

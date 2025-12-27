@@ -12,12 +12,7 @@ const { scrollNext } = useCarousel()
 </script>
 
 <template>
-  <button
-    :class="cn('shrink-0', props.class)"
-    type="button"
-    aria-label="Next"
-    @click="scrollNext"
-  >
+  <button :class="cn('shrink-0', props.class)" type="button" aria-label="Next" @click="scrollNext">
     <ArrowRight class="size-4 text-muted-foreground" />
   </button>
 </template>

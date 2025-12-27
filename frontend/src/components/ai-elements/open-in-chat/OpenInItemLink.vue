@@ -14,12 +14,7 @@ const props = defineProps<Props>()
 
 <template>
   <DropdownMenuItem v-bind="$attrs" as-child>
-    <a
-      :href="props.href"
-      class="flex items-center gap-2"
-      rel="noopener"
-      target="_blank"
-    >
+    <a :href="props.href" class="flex items-center gap-2" rel="noopener" target="_blank">
       <span class="shrink-0">
         <component :is="props.icon" />
       </span>

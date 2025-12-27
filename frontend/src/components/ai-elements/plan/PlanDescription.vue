@@ -13,10 +13,7 @@ const { isStreaming } = usePlan()
 </script>
 
 <template>
-  <CardDescription
-    :class="cn('text-balance', props.class)"
-    data-slot="plan-description"
-  >
+  <CardDescription :class="cn('text-balance', props.class)" data-slot="plan-description">
     <Shimmer v-if="isStreaming">
       <slot />
     </Shimmer>

@@ -1,1 +1,1 @@
-export { default as Shimmer } from './Shimmer.vue'
+export { default as Shimmer } from "./Shimmer.vue";

@@ -17,10 +17,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <Collapsible
-    :class="cn(props.class)"
-    :default-open="props.defaultOpen"
-  >
+  <Collapsible :class="cn(props.class)" :default-open="props.defaultOpen">
     <slot />
   </Collapsible>
 </template>

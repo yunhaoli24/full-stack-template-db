@@ -10,7 +10,10 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <div :class="cn('flex items-center gap-2 px-3 py-2 text-xs hover:bg-accent', props.class)" v-bind="props">
+  <div
+    :class="cn('flex items-center gap-2 px-3 py-2 text-xs hover:bg-accent', props.class)"
+    v-bind="props"
+  >
     <slot />
   </div>
 </template>

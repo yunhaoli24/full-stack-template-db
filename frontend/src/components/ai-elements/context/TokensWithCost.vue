@@ -18,8 +18,6 @@ const formattedTokens = computed(() => {
 <template>
   <span>
     {{ formattedTokens }}
-    <span v-if="costText" class="ml-2 text-muted-foreground">
-      • {{ costText }}
-    </span>
+    <span v-if="costText" class="ml-2 text-muted-foreground"> • {{ costText }} </span>
   </span>
 </template>

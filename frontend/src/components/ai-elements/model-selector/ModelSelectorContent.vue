@@ -15,10 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <DialogContent
-    :class="cn('p-0', props.class)"
-    v-bind="$attrs"
-  >
+  <DialogContent :class="cn('p-0', props.class)" v-bind="$attrs">
     <DialogTitle class="sr-only">
       {{ props.title }}
     </DialogTitle>
