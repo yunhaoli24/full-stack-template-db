@@ -47,10 +47,13 @@ def default_formatter(record: logging.LogRecord) -> str:
     return settings.LOG_FORMAT if settings.LOG_FORMAT.endswith('\n') else f'{settings.LOG_FORMAT}\n'
 
 
-def request_id_filter(record: logging.LogRecord) -> logging.LogRecord:
+def request_id_filter(record: logging.LogRecord | dict) -> logging.LogRecord | dict:
     """请求 ID 过滤器"""
     rid = get_request_trace_id()
-    record.request_id = rid[: settings.TRACE_ID_LOG_LENGTH]
+    if isinstance(record, dict):
+        record['request_id'] = rid[: settings.TRACE_ID_LOG_LENGTH]
+    else:
+        record.request_id = rid[: settings.TRACE_ID_LOG_LENGTH]
     return record
 
 
@@ -126,7 +129,7 @@ def set_custom_logfile() -> None:
     logger.add(
         str(log_access_file),
         level=settings.LOG_FILE_ACCESS_LEVEL,
-        filter=lambda record: record.level.no <= 25,
+        filter=lambda record: record['level'].no <= 25,
         backtrace=False,
         diagnose=False,
         **log_config,

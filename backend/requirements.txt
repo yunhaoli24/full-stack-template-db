@@ -29,8 +29,6 @@ async-timeout==5.0.1 ; python_full_version < '3.11.3'
     # via
     #   asyncpg
     #   redis
-asyncmy==0.2.10
-    # via fastapi-best-architecture
 asyncpg==0.31.0
     # via fastapi-best-architecture
 bcrypt==5.0.0
@@ -303,8 +301,6 @@ pygments==2.19.2
     # via
     #   pytest
     #   rich
-pymysql==1.1.2
-    # via fastapi-best-architecture
 pyright==1.1.407
 pytest==9.0.2
     # via pytest-sugar

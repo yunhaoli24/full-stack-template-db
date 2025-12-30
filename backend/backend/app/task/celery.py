@@ -5,7 +5,6 @@ import celery
 import celery_aio_pool
 
 from backend.app.task.tasks.beat import LOCAL_BEAT_SCHEDULE
-from backend.common.enums import DataBaseType
 from backend.core.conf import settings
 from backend.core.path_conf import BASE_PATH
 
@@ -34,8 +33,6 @@ def init_celery() -> celery.Celery:
         broker_url = f'redis://:{urllib.parse.quote(settings.REDIS_PASSWORD)}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.CELERY_BROKER_REDIS_DATABASE}'
 
     result_backend = f'db+postgresql+psycopg://{settings.DATABASE_USER}:{urllib.parse.quote(settings.DATABASE_PASSWORD)}@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}'
-    if DataBaseType.mysql == settings.DATABASE_TYPE:
-        result_backend = result_backend.replace('postgresql+psycopg', 'mysql+pymysql')
 
     # https://docs.celeryq.dev/en/stable/userguide/configuration.html
     app = celery.Celery(

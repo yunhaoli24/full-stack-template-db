@@ -13,6 +13,48 @@ importers:
       "@formkit/auto-animate":
         specifier: ^0.9.0
         version: 0.9.0
+      "@iconify-json/ant-design":
+        specifier: ^1.2.5
+        version: 1.2.5
+      "@iconify-json/carbon":
+        specifier: ^1.2.15
+        version: 1.2.15
+      "@iconify-json/codicon":
+        specifier: ^1.2.39
+        version: 1.2.39
+      "@iconify-json/cuida":
+        specifier: ^1.2.5
+        version: 1.2.5
+      "@iconify-json/devicon":
+        specifier: ^1.2.56
+        version: 1.2.56
+      "@iconify-json/eos-icons":
+        specifier: ^1.2.4
+        version: 1.2.4
+      "@iconify-json/fe":
+        specifier: ^1.2.4
+        version: 1.2.4
+      "@iconify-json/fluent":
+        specifier: ^1.2.36
+        version: 1.2.36
+      "@iconify-json/icon-park":
+        specifier: ^1.2.4
+        version: 1.2.4
+      "@iconify-json/ix":
+        specifier: ^1.2.11
+        version: 1.2.11
+      "@iconify-json/material-symbols":
+        specifier: ^1.2.50
+        version: 1.2.50
+      "@iconify-json/mdi":
+        specifier: ^1.2.3
+        version: 1.2.3
+      "@iconify-json/mingcute":
+        specifier: ^1.2.6
+        version: 1.2.6
+      "@iconify-json/wpf":
+        specifier: ^1.2.0
+        version: 1.2.0
       "@internationalized/date":
         specifier: ^3.10.1
         version: 3.10.1
@@ -633,10 +675,94 @@ packages:
         integrity: sha512-VhP4zEAacXS3dfTpJpJ88QdLqMTcabMg0jwpOSxZ/VzfQVfl3GkZSCZThhGC5uhq/TxPHPzW0dzr4H9Bb1OgKA==,
       }
 
+  "@iconify-json/ant-design@1.2.5":
+    resolution:
+      {
+        integrity: sha512-SYxhrx1AFq2MBcXk77AERYz2mPhLQes1F0vtvG64+dJZWyge9studXo7MiR8PPeLjRjZdWRrReRbxiwdRMf70Q==,
+      }
+
+  "@iconify-json/carbon@1.2.15":
+    resolution:
+      {
+        integrity: sha512-9tW0nZY5QtKkMhuYzW09BM1345SyXNuA+gx2ub0j/fnfHOD5XVimMJ/D76H3tTez25NJbPYCLIQoFhvJc1HVBQ==,
+      }
+
+  "@iconify-json/codicon@1.2.39":
+    resolution:
+      {
+        integrity: sha512-ULXUW5ne+Edy8YrZMJRD4YakuA3iME1vQb/ZuY/B5ggmWUNswqzsIMe8Jzmq909yINi/kKDwe0vkkMQqyA/K8A==,
+      }
+
+  "@iconify-json/cuida@1.2.5":
+    resolution:
+      {
+        integrity: sha512-+LCnHk53WIw9uTcskDT5Kpjwj8wEEI1YLNeX/yLdksQAt8VOOcIeZnRMmW0drnu8GK8SFw6IXu7CZdx7Kqnwqw==,
+      }
+
+  "@iconify-json/devicon@1.2.56":
+    resolution:
+      {
+        integrity: sha512-4HYxc/MXcIgaAbs9h27asp+JyUlGs/F1uPxkYeVdHCxopxRYi1f+U10zmjCzkzhdCACgHbG7Jg8w4zeGS9OxlA==,
+      }
+
+  "@iconify-json/eos-icons@1.2.4":
+    resolution:
+      {
+        integrity: sha512-gp2BCSF3+aRgMqE7LRAVxT5nXJLOtfcvGnOYwJz4gc4zxcEqAaOByxFVLZej15jXPRJmUv2TSzMNrQ2gDtw4VA==,
+      }
+
+  "@iconify-json/fe@1.2.4":
+    resolution:
+      {
+        integrity: sha512-TBfDSJOUKxd6QO+2WWcOC/trnsovRluk1jx05aGqMyoG+G9pkL661VO0ladWiWp+4ewOHDJ3s47W5bwx3EounQ==,
+      }
+
+  "@iconify-json/fluent@1.2.36":
+    resolution:
+      {
+        integrity: sha512-DhxwOu5Qiq09o2ehHeUK0I9lC01OeWFlxXP7pIslM0vbi8VuplrrJ7kMg21GJy87iOCevzxf6gTU7TLPGgSknw==,
+      }
+
+  "@iconify-json/icon-park@1.2.4":
+    resolution:
+      {
+        integrity: sha512-S8fVl49LG/M9hvwb7ruFGInK21AHMv3IJehOJRJgXPLE39OOCP3wbfTWjro/XzsjxRwdvX/lYdGetFOZI0TaJQ==,
+      }
+
+  "@iconify-json/ix@1.2.11":
+    resolution:
+      {
+        integrity: sha512-3mMMD+3d2jVRNGhsLZgxCIw+mpDD3B7a/rBv+V+DzwUPnuqoFYzAf/lTq9GhgI5/8DOpzpYJ4Toho+2TLQVMGg==,
+      }
+
+  "@iconify-json/material-symbols@1.2.50":
+    resolution:
+      {
+        integrity: sha512-71tjHR70h46LHtBFab3fAd2V/wPTO7JMV5lKnRn3IcF303LaFgAlO0BZeTJDcmCv9d0snRZmnoLZAJVD7/eisw==,
+      }
+
+  "@iconify-json/mdi@1.2.3":
+    resolution:
+      {
+        integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==,
+      }
+
+  "@iconify-json/mingcute@1.2.6":
+    resolution:
+      {
+        integrity: sha512-mXvLsBgsZz9jiAUKtU+EHsD5/tLzWAHQ0z0Qk255NjUnZqtbmIhSNoUHq59tO776K2Q48A4D+Y3LYce2niY3CQ==,
+      }
+
   "@iconify-json/simple-icons@1.2.64":
     resolution:
       {
         integrity: sha512-SMmm//tjZBvHnT0EAzZLnBTL6bukSkncM0pwkOXjr0FsAeCqjQtqoxBR0Mp+PazIJjXJKHm1Ju0YgnCIPOodJg==,
+      }
+
+  "@iconify-json/wpf@1.2.0":
+    resolution:
+      {
+        integrity: sha512-sA5z2Fy0rh6+wSMlXpj5Of4oRXZTn84zQFo2yWTtjbN5WTrH52iJrT4KLmepnF8l5VAsf+WbeXsQLFFhlVeDFA==,
       }
 
   "@iconify/types@2.0.0":
@@ -5924,7 +6050,63 @@ snapshots:
 
   "@formkit/auto-animate@0.9.0": {}
 
+  "@iconify-json/ant-design@1.2.5":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/carbon@1.2.15":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/codicon@1.2.39":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/cuida@1.2.5":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/devicon@1.2.56":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/eos-icons@1.2.4":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/fe@1.2.4":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/fluent@1.2.36":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/icon-park@1.2.4":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/ix@1.2.11":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/material-symbols@1.2.50":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/mdi@1.2.3":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/mingcute@1.2.6":
+    dependencies:
+      "@iconify/types": 2.0.0
+
   "@iconify-json/simple-icons@1.2.64":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/wpf@1.2.0":
     dependencies:
       "@iconify/types": 2.0.0
 

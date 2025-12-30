@@ -129,7 +129,6 @@ class UserPermissionType(StrEnum):
 class DataBaseType(StrEnum):
     """数据库类型"""
 
-    mysql = 'mysql'
     postgresql = 'postgresql'
 
 

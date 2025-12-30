@@ -1,19 +1,3 @@
-import {
-  BadgeHelp,
-  Boxes,
-  Building2,
-  LayoutDashboard,
-  ListTodo,
-  Menu,
-  Palette,
-  Settings,
-  Settings2,
-  Shield,
-  User,
-  Users,
-  Wrench,
-} from "lucide-vue-next";
-
 import { storeToRefs } from "pinia";
 
 import pinia from "@/plugins/pinia/setup";
@@ -22,13 +6,13 @@ import { useGetSidebarMenuQuery, type SidebarMenuNode } from "@/services/api/sys
 import { useGetCurrentUserQuery } from "@/services/api/system/user/user.api";
 import { useAuthStore } from "@/stores/auth";
 
-import type { NavGroup, NavItem, Team, User as SidebarUser } from "@/components/app-sidebar/types";
+import type { NavGroup, NavItem, User as SidebarUser } from "@/components/app-sidebar/types";
 
 export function useSidebar() {
   const settingsNavItems = [
-    { title: "Profile", url: "/settings/", icon: User },
-    { title: "Account", url: "/settings/account", icon: Wrench },
-    { title: "Appearance", url: "/settings/appearance", icon: Palette },
+    { title: "Profile", url: "/settings/", icon: "lucide:user" },
+    { title: "Account", url: "/settings/account", icon: "lucide:wrench" },
+    { title: "Appearance", url: "/settings/appearance", icon: "lucide:palette" },
   ];
 
   const authStore = useAuthStore(pinia);
@@ -42,20 +26,8 @@ export function useSidebar() {
 
   const routePathSet = computed(() => new Set(router.getRoutes().map((route) => route.path)));
 
-  function resolveIcon(value?: string | null, hint?: string) {
-    const iconValue = `${value || ""} ${hint || ""}`.toLowerCase();
-    if (iconValue.includes("dashboard")) return LayoutDashboard;
-    if (iconValue.includes("task")) return ListTodo;
-    if (iconValue.includes("app")) return Boxes;
-    if (iconValue.includes("user") || iconValue.includes("account")) return Users;
-    if (iconValue.includes("menu")) return Menu;
-    if (iconValue.includes("dept") || iconValue.includes("department")) return Building2;
-    if (iconValue.includes("role") || iconValue.includes("permission")) return Shield;
-    if (iconValue.includes("config") || iconValue.includes("setting")) return Settings2;
-    if (iconValue.includes("profile")) return User;
-    if (iconValue.includes("appearance")) return Palette;
-    if (iconValue.includes("help")) return BadgeHelp;
-    return undefined;
+  function resolveIcon(value?: string | null): string | null {
+    return value || null;
   }
 
   function isVisibleMenu(node: SidebarMenuNode) {
@@ -134,28 +106,9 @@ export function useSidebar() {
     };
   });
 
-  const teams = ref<Team[]>([
-    {
-      name: "Acme Inc",
-      logo: Settings,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: LayoutDashboard,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Menu,
-      plan: "Free",
-    },
-  ]);
-
   return {
     navData,
     user,
-    teams,
     otherPages,
     settingsNavItems,
   };

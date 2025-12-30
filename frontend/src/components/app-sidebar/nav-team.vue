@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import {
-  ChevronRight,
-} from 'lucide-vue-next'
+import { Icon } from '@iconify/vue'
 
 import { useSidebar } from '@/components/ui/sidebar'
 
@@ -44,11 +42,11 @@ function isActive(menu: NavItem): boolean {
         <UiSidebarMenuItem v-if="!menu.items">
           <UiSidebarMenuButton as-child :is-active="isActive(menu)" :tooltip="menu.title">
             <router-link v-if="!menu.external" :to="menu.url">
-              <component :is="menu.icon" v-if="menu.icon" />
+              <Icon v-if="menu.icon" :icon="menu.icon" class="size-4" />
               <span>{{ menu.title }}</span>
             </router-link>
             <a v-else :href="menu.url" target="_blank" rel="noreferrer">
-              <component :is="menu.icon" v-if="menu.icon" />
+              <Icon v-if="menu.icon" :icon="menu.icon" class="size-4" />
               <span>{{ menu.title }}</span>
             </a>
           </UiSidebarMenuButton>
@@ -65,10 +63,11 @@ function isActive(menu: NavItem): boolean {
             <UiSidebarMenuItem>
               <UiCollapsibleTrigger as-child>
                 <UiSidebarMenuButton :tooltip="menu.title">
-                  <component :is="menu.icon" v-if="menu.icon" />
+                  <Icon v-if="menu.icon" :icon="menu.icon" class="size-4" />
                   <span>{{ menu.title }}</span>
-                  <ChevronRight
-                    class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                  <Icon
+                    icon="lucide:chevron-right"
+                    class="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                   />
                 </UiSidebarMenuButton>
               </UiCollapsibleTrigger>
@@ -78,11 +77,11 @@ function isActive(menu: NavItem): boolean {
                 <UiSidebarMenuSubItem v-for="subItem in menu.items" :key="subItem.title">
                   <UiSidebarMenuSubButton as-child :is-active="isActive(subItem as NavItem)">
                     <router-link v-if="!subItem.external" :to="subItem?.url || '/'">
-                      <component :is="subItem.icon" v-if="subItem.icon" />
+                      <Icon v-if="subItem.icon" :icon="subItem.icon" class="size-4" />
                       <span>{{ subItem.title }}</span>
                     </router-link>
                     <a v-else :href="subItem?.url" target="_blank" rel="noreferrer">
-                      <component :is="subItem.icon" v-if="subItem.icon" />
+                      <Icon v-if="subItem.icon" :icon="subItem.icon" class="size-4" />
                       <span>{{ subItem.title }}</span>
                     </a>
                   </UiSidebarMenuSubButton>
@@ -95,7 +94,7 @@ function isActive(menu: NavItem): boolean {
           <UiDropdownMenu v-else>
             <UiDropdownMenuTrigger as-child>
               <UiSidebarMenuButton :tooltip="menu.title">
-                <component :is="menu.icon" v-if="menu.icon" />
+                <Icon v-if="menu.icon" :icon="menu.icon" class="size-4" />
                 <span>{{ menu.title }}</span>
               </UiSidebarMenuButton>
             </UiDropdownMenuTrigger>
@@ -104,11 +103,11 @@ function isActive(menu: NavItem): boolean {
               <UiDropdownMenuSeparator />
               <UiDropdownMenuItem v-for="subItem in menu.items" :key="subItem.title" as-child>
                 <router-link v-if="!subItem.external" :to="subItem?.url || '/'">
-                  <component :is="subItem.icon" v-if="subItem.icon" />
+                  <Icon v-if="subItem.icon" :icon="subItem.icon" class="size-4" />
                   <span>{{ subItem.title }}</span>
                 </router-link>
                 <a v-else :href="subItem?.url" target="_blank" rel="noreferrer">
-                  <component :is="subItem.icon" v-if="subItem.icon" />
+                  <Icon v-if="subItem.icon" :icon="subItem.icon" class="size-4" />
                   <span>{{ subItem.title }}</span>
                 </a>
               </UiDropdownMenuItem>

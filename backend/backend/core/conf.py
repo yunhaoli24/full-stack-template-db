@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     FASTAPI_STATIC_FILES: bool = True
 
     # .env 数据库
-    DATABASE_TYPE: Literal['mysql', 'postgresql']
+    DATABASE_TYPE: Literal['postgresql']
     DATABASE_HOST: str
     DATABASE_PORT: int
     DATABASE_USER: str
@@ -124,7 +124,7 @@ class Settings(BaseSettings):
 
     # CORS
     CORS_ALLOWED_ORIGINS: list[str] = [  # 末尾不带斜杠
-        'http://127.0.0.1:8000',
+        'http://127.0.0.1:8080',
         'http://localhost:5173',
     ]
     CORS_EXPOSE_HEADERS: list[str] = [
@@ -260,9 +260,9 @@ class Settings(BaseSettings):
     # 基础配置
     OAUTH2_STATE_REDIS_PREFIX: str = 'fba:oauth2:state'
     OAUTH2_STATE_EXPIRE_SECONDS: int = 60 * 3  # 3 分钟
-    OAUTH2_GITHUB_REDIRECT_URI: str = 'http://127.0.0.1:8000/api/v1/oauth2/github/callback'
-    OAUTH2_GOOGLE_REDIRECT_URI: str = 'http://127.0.0.1:8000/api/v1/oauth2/google/callback'
-    OAUTH2_LINUX_DO_REDIRECT_URI: str = 'http://127.0.0.1:8000/api/v1/oauth2/linux-do/callback'
+    OAUTH2_GITHUB_REDIRECT_URI: str = 'http://127.0.0.1:8080/api/v1/oauth2/github/callback'
+    OAUTH2_GOOGLE_REDIRECT_URI: str = 'http://127.0.0.1:8080/api/v1/oauth2/google/callback'
+    OAUTH2_LINUX_DO_REDIRECT_URI: str = 'http://127.0.0.1:8080/api/v1/oauth2/linux-do/callback'
     OAUTH2_FRONTEND_LOGIN_REDIRECT_URI: str = 'http://localhost:5173/oauth2/callback'
     OAUTH2_FRONTEND_BINDING_REDIRECT_URI: str = 'http://localhost:5173/profile'
 

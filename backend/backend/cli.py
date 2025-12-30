@@ -132,7 +132,7 @@ def run(host: str, port: int, reload: bool, workers: int) -> None:  # noqa: FBT0
         interface='asgi',
         address=host,
         port=port,
-        reload=not reload,
+        reload=reload,
         reload_filter=CustomReloadFilter,
         workers=workers,
     ).serve()
@@ -203,11 +203,7 @@ async def install_plugin(
 
 async def get_sql_scripts() -> list[str]:
     sql_scripts = []
-    db_dir = (
-        BASE_PATH / 'sql' / 'mysql'
-        if DataBaseType.mysql == settings.DATABASE_TYPE
-        else BASE_PATH / 'sql' / 'postgresql'
-    )
+    db_dir = BASE_PATH / 'sql' / 'postgresql'
     main_sql_file = (
         db_dir / 'init_test_data.sql'
         if PrimaryKeyType.autoincrement == settings.DATABASE_PK_MODE
@@ -266,17 +262,17 @@ class Run:
         int,
         cappa.Arg(default=8080, help='提供服务的主机端口号'),
     ]
-    no_reload: Annotated[
+    reload: Annotated[
         bool,
-        cappa.Arg(default=False, help='禁用在（代码）文件更改时自动重新加载服务器'),
+        cappa.Arg(default=True, help='禁用在（代码）文件更改时自动重新加载服务器'),
     ]
     workers: Annotated[
         int,
-        cappa.Arg(default=1, help='使用多个工作进程，必须与 `--no-reload` 同时使用'),
+        cappa.Arg(default=1, help='使用多个工作进程，必须与 `--reload` 同时使用'),
     ]
 
     def __call__(self) -> None:
-        run(host=self.host, port=self.port, reload=self.no_reload, workers=self.workers)
+        run(host=self.host, port=self.port, reload=self.reload, workers=self.workers)
 
 
 @cappa.command(help='从当前主机启动 Celery worker 服务', default_long=True)
