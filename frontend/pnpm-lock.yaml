@@ -20,8 +20,8 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18(vite@8.0.0-beta.4(@types/node@24.10.4)(jiti@2.6.1)(yaml@2.8.2))
       "@tanstack/vue-query":
-        specifier: ^5.92.1
-        version: 5.92.1(vue@3.5.26(typescript@5.9.3))
+        specifier: ^5.92.4
+        version: 5.92.4(vue@3.5.26(typescript@5.9.3))
       "@tanstack/vue-table":
         specifier: ^8.21.3
         version: 8.21.3(vue@3.5.26(typescript@5.9.3))
@@ -140,21 +140,21 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(vue@3.5.26(typescript@5.9.3))
       zod:
-        specifier: ^3.24.1
+        specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
       "@faker-js/faker":
         specifier: ^10.1.0
         version: 10.1.0
       "@iconify-json/simple-icons":
-        specifier: ^1.2.63
-        version: 1.2.63
+        specifier: ^1.2.64
+        version: 1.2.64
       "@iconify/vue":
         specifier: ^5.0.0
         version: 5.0.0(vue@3.5.26(typescript@5.9.3))
       "@tanstack/vue-query-devtools":
         specifier: ^5.91.0
-        version: 5.91.0(@tanstack/vue-query@5.92.1(vue@3.5.26(typescript@5.9.3)))(vue@3.5.26(typescript@5.9.3))
+        version: 5.91.0(@tanstack/vue-query@5.92.4(vue@3.5.26(typescript@5.9.3)))(vue@3.5.26(typescript@5.9.3))
       "@types/node":
         specifier: ^24.10.4
         version: 24.10.4
@@ -177,8 +177,8 @@ importers:
         specifier: ^0.17.0
         version: 0.17.0
       oxlint:
-        specifier: ^1.35.0
-        version: 1.35.0(oxlint-tsgolint@0.10.0)
+        specifier: ^1.36.0
+        version: 1.36.0(oxlint-tsgolint@0.10.0)
       oxlint-tsgolint:
         specifier: ^0.10.0
         version: 0.10.0
@@ -633,10 +633,10 @@ packages:
         integrity: sha512-VhP4zEAacXS3dfTpJpJ88QdLqMTcabMg0jwpOSxZ/VzfQVfl3GkZSCZThhGC5uhq/TxPHPzW0dzr4H9Bb1OgKA==,
       }
 
-  "@iconify-json/simple-icons@1.2.63":
+  "@iconify-json/simple-icons@1.2.64":
     resolution:
       {
-        integrity: sha512-xZl2UWCwE58VlqZ+pDPmaUhE2tq8MVSTJRr4/9nzzHlDdjJ0Ud1VxNXPrwTSgESKY29iCQw3S0r2nJTSNNngHw==,
+        integrity: sha512-SMmm//tjZBvHnT0EAzZLnBTL6bukSkncM0pwkOXjr0FsAeCqjQtqoxBR0Mp+PazIJjXJKHm1Ju0YgnCIPOodJg==,
       }
 
   "@iconify/types@2.0.0":
@@ -945,66 +945,66 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  "@oxlint/darwin-arm64@1.35.0":
+  "@oxlint/darwin-arm64@1.36.0":
     resolution:
       {
-        integrity: sha512-ieiYVHkNZPo77Hgrxav595wGS4rRNKuDNrljf+4xhwpJsddrxMpM64IQUf2IvR3MhK4FxdGzhhB6OVmGVHY5/w==,
+        integrity: sha512-MJkj82GH+nhvWKJhSIM6KlZ8tyGKdogSQXtNdpIyP02r/tTayFJQaAEWayG2Jhsn93kske+nimg5MYFhwO/rlg==,
       }
     cpu: [arm64]
     os: [darwin]
 
-  "@oxlint/darwin-x64@1.35.0":
+  "@oxlint/darwin-x64@1.36.0":
     resolution:
       {
-        integrity: sha512-1jNHu3j66X5jKySvgtE+jGtjx4ye+xioAucVTi2IuROZO6keK2YG74pnD+9FT+DpWZAtWRZGoW0r0x6aN9sEEg==,
+        integrity: sha512-VvEhfkqj/99dCTqOcfkyFXOSbx4lIy5u2m2GHbK4WCMDySokOcMTNRHGw8fH/WgQ5cDrDMSTYIGQTmnBGi9tiQ==,
       }
     cpu: [x64]
     os: [darwin]
 
-  "@oxlint/linux-arm64-gnu@1.35.0":
+  "@oxlint/linux-arm64-gnu@1.36.0":
     resolution:
       {
-        integrity: sha512-T1lc0UaYbTxZyqVpLfC7eipbauNG8pBpkaZEW4JGz8Y68rxTH7d9s+CF0zxUxNr5RCtcmT669RLVjQT7VrKVLg==,
+        integrity: sha512-EMx92X5q+hHc3olTuj/kgkx9+yP0p/AVs4yvHbUfzZhBekXNpUWxWvg4hIKmQWn+Ee2j4o80/0ACGO0hDYJ9mg==,
       }
     cpu: [arm64]
     os: [linux]
 
-  "@oxlint/linux-arm64-musl@1.35.0":
+  "@oxlint/linux-arm64-musl@1.36.0":
     resolution:
       {
-        integrity: sha512-7Wv5Pke9kwWKFycUziSHsmi3EM0389TLzraB0KE/MArrKxx30ycwfJ5PYoMj9ERoW+Ybs0txdaOF/xJy/XyYkg==,
+        integrity: sha512-7YCxtrPIctVYLqWrWkk8pahdCxch6PtsaucfMLC7TOlDt4nODhnQd4yzEscKqJ8Gjrw1bF4g+Ngob1gB+Qr9Fw==,
       }
     cpu: [arm64]
     os: [linux]
 
-  "@oxlint/linux-x64-gnu@1.35.0":
+  "@oxlint/linux-x64-gnu@1.36.0":
     resolution:
       {
-        integrity: sha512-HDMPOzyVVy+rQl3H7UOq8oGHt7m1yaiWCanlhAu4jciK8dvXeO9OG/OQd74lD/h05IcJh93pCLEJ3wWOG8hTiQ==,
+        integrity: sha512-lnaJVlx5r3NWmoOMesfQXJSf78jHTn8Z+sdAf795Kgteo72+qGC1Uax2SToCJVN2J8PNG3oRV5bLriiCNR2i6Q==,
       }
     cpu: [x64]
     os: [linux]
 
-  "@oxlint/linux-x64-musl@1.35.0":
+  "@oxlint/linux-x64-musl@1.36.0":
     resolution:
       {
-        integrity: sha512-kAPBBsUOM3HQQ6n3nnZauvFR9EoXqCSoj4O3OSXXarzsRTiItNrHabVUwxeswZEc+xMzQNR0FHEWg/d4QAAWLw==,
+        integrity: sha512-AhuEU2Qdl66lSfTGu/Htirq8r/8q2YnZoG3yEXLMQWnPMn7efy8spD/N1NA7kH0Hll+cdfwgQkQqC2G4MS2lPQ==,
       }
     cpu: [x64]
     os: [linux]
 
-  "@oxlint/win32-arm64@1.35.0":
+  "@oxlint/win32-arm64@1.36.0":
     resolution:
       {
-        integrity: sha512-qrpBkkOASS0WT8ra9xmBRXOEliN6D/MV9JhI/68lFHrtLhfFuRwg4AjzjxrCWrQCnQ0WkvAVpJzu73F4ICLYZw==,
+        integrity: sha512-GlWCBjUJY2QgvBFuNRkiRJu7K/djLmM0UQKfZV8IN+UXbP/JbjZHWKRdd4LXlQmzoz7M5Hd6p+ElCej8/90FCg==,
       }
     cpu: [arm64]
     os: [win32]
 
-  "@oxlint/win32-x64@1.35.0":
+  "@oxlint/win32-x64@1.36.0":
     resolution:
       {
-        integrity: sha512-yPFcj6umrhusnG/kMS5wh96vblsqZ0kArQJS+7kEOSJDrH+DsFWaDCsSRF8U6gmSmZJ26KVMU3C3TMpqDN4M1g==,
+        integrity: sha512-J+Vc00Utcf8p77lZPruQgb0QnQXuKnFogN88kCnOqs2a83I+vTBB8ILr0+L9sTwVRvIDMSC0pLdeQH4svWGFZg==,
       }
     cpu: [x64]
     os: [win32]
@@ -1345,10 +1345,10 @@ packages:
       }
     engines: { node: ">=12" }
 
-  "@tanstack/query-core@5.90.12":
+  "@tanstack/query-core@5.90.15":
     resolution:
       {
-        integrity: sha512-T1/8t5DhV/SisWjDnaiU2drl6ySvsHj1bHBCWNXd+/T+Hh1cf6JodyEYMd5sgwm+b/mETT4EV3H+zCVczCU5hg==,
+        integrity: sha512-mInIZNUZftbERE+/Hbtswfse49uUQwch46p+27gP9DWJL927UjnaWEF2t3RMOqBcXbfMdcNkPe06VyUIAZTV1g==,
       }
 
   "@tanstack/query-devtools@5.90.1":
@@ -1379,10 +1379,10 @@ packages:
       "@tanstack/vue-query": ^5.90.5
       vue: ^3.3.0
 
-  "@tanstack/vue-query@5.92.1":
+  "@tanstack/vue-query@5.92.4":
     resolution:
       {
-        integrity: sha512-m672jBiwK6sv1HHFF7Q3XsLUVKejzjEAMDqhFgLXIVtmwSayUo0WnhNQmlBlcHRKCR/Lw5jmIh6iu08ZXBh4ag==,
+        integrity: sha512-k9aJyt35avmlPfkRIdRPEf/tHY5kyyL9zXc9xMMihRSxsmR1Zryr37IIVaGTPZy8LyLLmaNL7+d6AsbXN2qOag==,
       }
     peerDependencies:
       "@vue/composition-api": ^1.1.2
@@ -2366,10 +2366,10 @@ packages:
       }
     engines: { node: ">=6" }
 
-  caniuse-lite@1.0.30001761:
+  caniuse-lite@1.0.30001762:
     resolution:
       {
-        integrity: sha512-JF9ptu1vP2coz98+5051jZ4PwQgd2ni8A+gYSN7EA7dPKIMf0pDlSUxhdmVOaV3/fYK5uWBkgSXJaRLr4+3A6g==,
+        integrity: sha512-PxZwGNvH7Ak8WX5iXzoK1KPZttBXNPuaOvI2ZYU7NrlM+d9Ov+TUvlLOBNGzVXAntMSMMlJPd+jY6ovrVjSmUw==,
       }
 
   ccount@2.0.1:
@@ -4365,10 +4365,10 @@ packages:
       }
     hasBin: true
 
-  oxlint@1.35.0:
+  oxlint@1.36.0:
     resolution:
       {
-        integrity: sha512-QDX1aUgaiqznkGfTM2qHwva2wtKqhVoqPSVXrnPz+yLUhlNadikD3QRuRtppHl7WGuy3wG6nKAuR8lash3aWSg==,
+        integrity: sha512-IicUdXfXgI8OKrDPnoSjvBfeEF8PkKtm+CoLlg4LYe4ypc8U+T4r7730XYshdBGZdelg+JRw8GtCb2w/KaaZvw==,
       }
     engines: { node: ^20.19.0 || >=22.12.0 }
     hasBin: true
@@ -5924,7 +5924,7 @@ snapshots:
 
   "@formkit/auto-animate@0.9.0": {}
 
-  "@iconify-json/simple-icons@1.2.63":
+  "@iconify-json/simple-icons@1.2.64":
     dependencies:
       "@iconify/types": 2.0.0
 
@@ -6074,28 +6074,28 @@ snapshots:
   "@oxlint-tsgolint/win32-x64@0.10.0":
     optional: true
 
-  "@oxlint/darwin-arm64@1.35.0":
+  "@oxlint/darwin-arm64@1.36.0":
     optional: true
 
-  "@oxlint/darwin-x64@1.35.0":
+  "@oxlint/darwin-x64@1.36.0":
     optional: true
 
-  "@oxlint/linux-arm64-gnu@1.35.0":
+  "@oxlint/linux-arm64-gnu@1.36.0":
     optional: true
 
-  "@oxlint/linux-arm64-musl@1.35.0":
+  "@oxlint/linux-arm64-musl@1.36.0":
     optional: true
 
-  "@oxlint/linux-x64-gnu@1.35.0":
+  "@oxlint/linux-x64-gnu@1.36.0":
     optional: true
 
-  "@oxlint/linux-x64-musl@1.35.0":
+  "@oxlint/linux-x64-musl@1.36.0":
     optional: true
 
-  "@oxlint/win32-arm64@1.35.0":
+  "@oxlint/win32-arm64@1.36.0":
     optional: true
 
-  "@oxlint/win32-x64@1.35.0":
+  "@oxlint/win32-x64@1.36.0":
     optional: true
 
   "@polka/url@1.0.0-next.29": {}
@@ -6258,7 +6258,7 @@ snapshots:
     dependencies:
       remove-accents: 0.5.0
 
-  "@tanstack/query-core@5.90.12": {}
+  "@tanstack/query-core@5.90.15": {}
 
   "@tanstack/query-devtools@5.90.1": {}
 
@@ -6266,16 +6266,16 @@ snapshots:
 
   "@tanstack/virtual-core@3.13.13": {}
 
-  "@tanstack/vue-query-devtools@5.91.0(@tanstack/vue-query@5.92.1(vue@3.5.26(typescript@5.9.3)))(vue@3.5.26(typescript@5.9.3))":
+  "@tanstack/vue-query-devtools@5.91.0(@tanstack/vue-query@5.92.4(vue@3.5.26(typescript@5.9.3)))(vue@3.5.26(typescript@5.9.3))":
     dependencies:
       "@tanstack/query-devtools": 5.90.1
-      "@tanstack/vue-query": 5.92.1(vue@3.5.26(typescript@5.9.3))
+      "@tanstack/vue-query": 5.92.4(vue@3.5.26(typescript@5.9.3))
       vue: 3.5.26(typescript@5.9.3)
 
-  "@tanstack/vue-query@5.92.1(vue@3.5.26(typescript@5.9.3))":
+  "@tanstack/vue-query@5.92.4(vue@3.5.26(typescript@5.9.3))":
     dependencies:
       "@tanstack/match-sorter-utils": 8.19.4
-      "@tanstack/query-core": 5.90.12
+      "@tanstack/query-core": 5.90.15
       "@vue/devtools-api": 6.6.4
       vue: 3.5.26(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.26(typescript@5.9.3))
@@ -6924,7 +6924,7 @@ snapshots:
   autoprefixer@10.4.23(postcss@8.5.6):
     dependencies:
       browserslist: 4.28.1
-      caniuse-lite: 1.0.30001761
+      caniuse-lite: 1.0.30001762
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.5.6
@@ -6957,7 +6957,7 @@ snapshots:
   browserslist@4.28.1:
     dependencies:
       baseline-browser-mapping: 2.9.11
-      caniuse-lite: 1.0.30001761
+      caniuse-lite: 1.0.30001762
       electron-to-chromium: 1.5.267
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
@@ -6973,7 +6973,7 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  caniuse-lite@1.0.30001761: {}
+  caniuse-lite@1.0.30001762: {}
 
   ccount@2.0.1: {}
 
@@ -8281,16 +8281,16 @@ snapshots:
       "@oxlint-tsgolint/win32-arm64": 0.10.0
       "@oxlint-tsgolint/win32-x64": 0.10.0
 
-  oxlint@1.35.0(oxlint-tsgolint@0.10.0):
+  oxlint@1.36.0(oxlint-tsgolint@0.10.0):
     optionalDependencies:
-      "@oxlint/darwin-arm64": 1.35.0
-      "@oxlint/darwin-x64": 1.35.0
-      "@oxlint/linux-arm64-gnu": 1.35.0
-      "@oxlint/linux-arm64-musl": 1.35.0
-      "@oxlint/linux-x64-gnu": 1.35.0
-      "@oxlint/linux-x64-musl": 1.35.0
-      "@oxlint/win32-arm64": 1.35.0
-      "@oxlint/win32-x64": 1.35.0
+      "@oxlint/darwin-arm64": 1.36.0
+      "@oxlint/darwin-x64": 1.36.0
+      "@oxlint/linux-arm64-gnu": 1.36.0
+      "@oxlint/linux-arm64-musl": 1.36.0
+      "@oxlint/linux-x64-gnu": 1.36.0
+      "@oxlint/linux-x64-musl": 1.36.0
+      "@oxlint/win32-arm64": 1.36.0
+      "@oxlint/win32-x64": 1.36.0
       oxlint-tsgolint: 0.10.0
 
   package-manager-detector@1.6.0: {}

@@ -1,5 +1,5 @@
 {
-  "name": "shadcn-vue-admin",
+  "name": "后台管理系统",
   "type": "module",
   "version": "0.7.7",
   "private": false,
@@ -31,7 +31,7 @@
     "@formkit/auto-animate": "^0.9.0",
     "@internationalized/date": "^3.10.1",
     "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/vue-query": "^5.92.1",
+    "@tanstack/vue-query": "^5.92.4",
     "@tanstack/vue-table": "^8.21.3",
     "@unovis/ts": "^1.6.2",
     "@unovis/vue": "^1.6.2",
@@ -71,11 +71,11 @@
     "vue-router": "^4.6.4",
     "vue-sonner": "^2.0.9",
     "vue-stick-to-bottom": "^0.1.0",
-    "zod": "^3.24.1"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
-    "@iconify-json/simple-icons": "^1.2.63",
+    "@iconify-json/simple-icons": "^1.2.64",
     "@iconify/vue": "^5.0.0",
     "@tanstack/vue-query-devtools": "^5.91.0",
     "@types/node": "^24.10.4",
@@ -85,7 +85,7 @@
     "autoprefixer": "^10.4.23",
     "lint-staged": "^16.2.7",
     "oxfmt": "^0.17.0",
-    "oxlint": "^1.35.0",
+    "oxlint": "^1.36.0",
     "oxlint-tsgolint": "^0.10.0",
     "rollup-plugin-visualizer": "^6.0.5",
     "simple-git-hooks": "^2.13.1",

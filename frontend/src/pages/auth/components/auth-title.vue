@@ -10,6 +10,6 @@ const logo = computed(() => {
 <template>
   <h1 class="flex items-center gap-2 text-xl font-bold">
     <img :src="logo" />
-    <span>Shadcn Vue Admin</span>
+    <span>后台管理系统</span>
   </h1>
 </template>

@@ -3,11 +3,9 @@ import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/use-auth'
 import { useAxios } from '@/composables/use-axios'
 
-import GitHubButton from './github-button.vue'
-import GoogleButton from './google-button.vue'
+import ToForgotPasswordLink from './to-forgot-password-link.vue'
 import PrivacyPolicyButton from './privacy-policy-button.vue'
 import TermsOfServiceButton from './terms-of-service-button.vue'
-import ToForgotPasswordLink from './to-forgot-password-link.vue'
 
 const { login, loading } = useAuth()
 const { axiosInstance } = useAxios()
@@ -164,13 +162,6 @@ onMounted(() => {
         <UiSpinner v-if="loading" class="mr-2" />
         {{ loading ? 'Logging in...' : 'Login' }}
       </UiButton>
-
-      <UiSeparator label="Or continue with" />
-
-      <div class="flex flex-col items-center justify-between gap-4">
-        <GitHubButton />
-        <GoogleButton />
-      </div>
 
       <UiCardDescription>
         By clicking login, you agree to our
