@@ -35,10 +35,7 @@ function getUsageVariant(percentage: number) {
 </script>
 
 <template>
-  <BasicPage
-    title="Server Monitor"
-    sticky
-  >
+  <BasicPage title="Server Monitor" sticky>
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <UiSpinner class="mr-2" />
       <span class="text-muted-foreground">Loading server information...</span>

@@ -69,10 +69,7 @@ async function handleKickConfirm() {
 </script>
 
 <template>
-  <BasicPage
-    title="Online Users"
-    sticky
-  >
+  <BasicPage title="Online Users" sticky>
     <template #actions>
       <UiButton :disabled="isRefetching" @click="query.refetch">
         <RefreshCw class="mr-2 size-4" :class="{ 'animate-spin': isRefetching }" />

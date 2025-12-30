@@ -184,10 +184,7 @@ function showDetail(log: LoginLog) {
 </script>
 
 <template>
-  <BasicPage
-    title="Login Logs"
-    sticky
-  >
+  <BasicPage title="Login Logs" sticky>
     <template #actions>
       <UiButton v-if="selectedIds.size > 0" variant="destructive" @click="requestDeleteSelected">
         <Trash2 class="mr-2 size-4" />

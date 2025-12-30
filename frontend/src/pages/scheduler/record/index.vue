@@ -171,10 +171,7 @@ function showDetail(result: TaskResult) {
 </script>
 
 <template>
-  <BasicPage
-    title="Task Execution Records"
-    sticky
-  >
+  <BasicPage title="Task Execution Records" sticky>
     <template #actions>
       <UiButton v-if="selectedIds.size > 0" variant="destructive" @click="requestDeleteSelected">
         <Trash2 class="mr-2 size-4" />

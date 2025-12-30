@@ -188,10 +188,7 @@ async function handleDeleteConfirm() {
 </script>
 
 <template>
-  <BasicPage
-    title="Dictionary Management"
-    sticky
-  >
+  <BasicPage title="Dictionary Management" sticky>
     <template #actions>
       <UiButton variant="outline" :disabled="isFetching" @click="refreshList">
         <RefreshCcw class="mr-2 size-4" />

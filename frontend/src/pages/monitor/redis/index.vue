@@ -40,10 +40,7 @@ function formatNumber(value: string) {
 </script>
 
 <template>
-  <BasicPage
-    title="Redis Monitor"
-    sticky
-  >
+  <BasicPage title="Redis Monitor" sticky>
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <UiSpinner class="mr-2" />
       <span class="text-muted-foreground">Loading Redis information...</span>

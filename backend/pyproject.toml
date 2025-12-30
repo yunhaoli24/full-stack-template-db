@@ -64,6 +64,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=1.19.1",
     "pytest>=9.0.0",
     "pytest-sugar>=1.1.1",
 ]

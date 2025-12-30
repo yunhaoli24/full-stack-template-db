@@ -199,10 +199,7 @@ function formatData(data: Record<string, unknown> | null) {
 </script>
 
 <template>
-  <BasicPage
-    title="Operation Logs"
-    sticky
-  >
+  <BasicPage title="Operation Logs" sticky>
     <template #actions>
       <UiButton v-if="selectedIds.size > 0" variant="destructive" @click="requestDeleteSelected">
         <Trash2 class="mr-2 size-4" />
