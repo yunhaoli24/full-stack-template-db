@@ -79,7 +79,7 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         if name is not None:
             filters['name__like'] = f'%{name}%'
         if status is not None:
-            filters['status'] = status
+            filters['status'] = status  # type: ignore[assignment]
 
         return await self.select_order('id', **filters)
 

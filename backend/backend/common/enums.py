@@ -11,17 +11,17 @@ class _EnumBase:
     @classmethod
     def get_member_keys(cls) -> list[str]:
         """获取枚举成员名称列表"""
-        return list(cls.__members__.keys())
+        return list(cls.__members__.keys())  # type: ignore[attr-defined]
 
     @classmethod
     def get_member_values(cls) -> list:
         """获取枚举成员值列表"""
-        return [item.value for item in cls.__members__.values()]
+        return [item.value for item in cls.__members__.values()]  # type: ignore[attr-defined]
 
     @classmethod
     def get_member_dict(cls) -> dict[str, Any]:
         """获取枚举成员字典"""
-        return {name: item.value for name, item in cls.__members__.items()}
+        return {name: item.value for name, item in cls.__members__.items()}  # type: ignore[attr-defined]
 
 
 class IntEnum(_EnumBase, SourceIntEnum):

@@ -44,7 +44,7 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         if name is not None:
             filters['name__like'] = f'%{name}%'
         if type is not None:
-            filters['type'] = type
+            filters['type'] = type  # type: ignore[assignment]  # type: ignore[assignment]
 
         return await self.select_order('id', **filters)
 
@@ -94,6 +94,8 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         :return:
         """
         task_scheduler = await self.get(db, pk)
+        if task_scheduler is None:
+            return 0
         task_scheduler.enabled = status
         TaskScheduler.no_changes = False
         return 1

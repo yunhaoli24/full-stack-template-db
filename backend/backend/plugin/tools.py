@@ -94,7 +94,7 @@ async def get_plugin_sql(plugin: str, db_type: DataBaseType, pk_type: PrimaryKey
     if not await path.exists():
         return None
 
-    return sql_file
+    return str(sql_file)
 
 
 def load_plugin_config(plugin: str) -> dict[str, Any]:
@@ -366,7 +366,7 @@ def install_requirements(plugin: str | None) -> None:  # noqa: C901
                 if not _ensure_pip_available():
                     raise PluginInstallError(f'pip 安装失败，无法继续安装插件 {plugin} 依赖')
 
-                pip_install = [sys.executable, '-m', 'pip', 'install', '-r', requirements_file]
+                pip_install = [sys.executable, '-m', 'pip', 'install', '-r', str(requirements_file)]
                 if settings.PLUGIN_PIP_CHINA:
                     pip_install.extend(['-i', settings.PLUGIN_PIP_INDEX_URL])
 
@@ -401,7 +401,7 @@ def uninstall_requirements(plugin: str) -> None:
     requirements_file = PLUGIN_DIR / plugin / 'requirements.txt'
     if os.path.exists(requirements_file):
         try:
-            pip_uninstall = [sys.executable, '-m', 'pip', 'uninstall', '-r', requirements_file, '-y']
+            pip_uninstall = [sys.executable, '-m', 'pip', 'uninstall', '-r', str(requirements_file), '-y']
             subprocess.check_call(pip_uninstall, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError as e:
             raise PluginInstallError(f'插件 {plugin} 依赖卸载失败：{e}') from e

@@ -58,7 +58,7 @@ class OAuth2Service:
         if user_social:
             sys_user = await user_dao.get(db, user_social.user_id)
             # 更新用户头像
-            if not sys_user.avatar and avatar is not None:
+            if sys_user and not sys_user.avatar and avatar is not None:
                 await user_dao.update_avatar(db, sys_user.id, avatar)
         else:
             sys_user = None
@@ -68,7 +68,7 @@ class OAuth2Service:
 
             # 创建系统用户
             if not sys_user:
-                while await user_dao.get_by_username(db, username):
+                while username and await user_dao.get_by_username(db, username):
                     username = f'{username}_{text_captcha(5)}'
                 new_sys_user = AddOAuth2UserParam(
                     username=username,
@@ -79,13 +79,17 @@ class OAuth2Service:
                 )
                 await user_dao.add_by_oauth2(db, new_sys_user)
                 await db.flush()
-                sys_user = await user_dao.get_by_username(db, username)
+                sys_user = await user_dao.get_by_username(db, username) if username else None
 
             # 绑定社交账号
+            if not sys_user:
+                raise errors.AuthorizationError(msg='用户不存在')
             new_user_social = CreateUserSocialParam(sid=sid, source=source.value, user_id=sys_user.id)
             await user_social_dao.create(db, new_user_social)
 
         # 创建 token
+        if not sys_user:
+            raise errors.AuthorizationError(msg='用户不存在')
         access_token_data = await jwt.create_access_token(
             sys_user.id,
             multi_login=sys_user.is_multi_login,

@@ -94,7 +94,9 @@ def filter_data_permission(  # noqa: C901
         if target_model is None:
             continue
 
-        table = target_model if isinstance(target_model, Table) else target_model.__table__
+        table = target_model if isinstance(target_model, Table) else getattr(target_model, '__table__', None)
+        if table is None:
+            continue
         rule_column = data_rule.column
         if rule_column not in table.columns.keys():
             continue

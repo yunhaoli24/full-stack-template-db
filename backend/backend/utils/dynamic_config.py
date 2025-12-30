@@ -48,21 +48,21 @@ async def load_user_security_config(db: AsyncSession) -> None:  # noqa: C901
         password_require_special_char_key = 'USER_PASSWORD_REQUIRE_SPECIAL_CHAR'
 
         configs = {dc['key']: dc['value'] for dc in select_list_serialize(dynamic_config)}
-        if int(configs.get(security_config_status_key)):
+        if int(str(configs.get(security_config_status_key) or 0)):
             if lock_threshold_key in configs:
-                settings.USER_LOCK_THRESHOLD = int(configs[lock_threshold_key])
+                settings.USER_LOCK_THRESHOLD = int(str(configs[lock_threshold_key]))
             if lock_seconds_key in configs:
-                settings.USER_LOCK_SECONDS = int(configs[lock_seconds_key])
+                settings.USER_LOCK_SECONDS = int(str(configs[lock_seconds_key]))
             if password_expiry_days_key in configs:
-                settings.USER_PASSWORD_EXPIRY_DAYS = int(configs[password_expiry_days_key])
+                settings.USER_PASSWORD_EXPIRY_DAYS = int(str(configs[password_expiry_days_key]))
             if password_reminder_days_key in configs:
-                settings.USER_PASSWORD_REMINDER_DAYS = int(configs[password_reminder_days_key])
+                settings.USER_PASSWORD_REMINDER_DAYS = int(str(configs[password_reminder_days_key]))
             if password_history_check_count_key in configs:
-                settings.USER_PASSWORD_HISTORY_CHECK_COUNT = int(configs[password_history_check_count_key])
+                settings.USER_PASSWORD_HISTORY_CHECK_COUNT = int(str(configs[password_history_check_count_key]))
             if password_min_length_key in configs:
-                settings.USER_PASSWORD_MIN_LENGTH = int(configs[password_min_length_key])
+                settings.USER_PASSWORD_MIN_LENGTH = int(str(configs[password_min_length_key]))
             if password_max_length_key in configs:
-                settings.USER_PASSWORD_MAX_LENGTH = int(configs[password_max_length_key])
+                settings.USER_PASSWORD_MAX_LENGTH = int(str(configs[password_max_length_key]))
             if password_require_special_char_key in configs:
                 settings.USER_PASSWORD_REQUIRE_SPECIAL_CHAR = configs[password_require_special_char_key] == 'true'
 
@@ -87,7 +87,7 @@ async def load_login_config(db: AsyncSession) -> None:
         login_captcha_enabled_key = 'LOGIN_CAPTCHA_ENABLED'
 
         configs = {dc['key']: dc['value'] for dc in select_list_serialize(dynamic_config)}
-        if int(configs.get(login_config_status_key)) and login_captcha_enabled_key in configs:
+        if int(str(configs.get(login_config_status_key) or 0)) and login_captcha_enabled_key in configs:
             settings.LOGIN_CAPTCHA_ENABLED = configs[login_captcha_enabled_key] == 'true'
 
 
@@ -115,10 +115,10 @@ async def load_email_config(db: AsyncSession) -> None:
         password_key = 'EMAIL_PASSWORD'
 
         configs = {dc['key']: dc['value'] for dc in select_list_serialize(dynamic_config)}
-        if int(configs.get(email_config_status_key)):
+        if int(str(configs.get(email_config_status_key) or 0)):
             settings.EMAIL_HOST = str(configs[host_key])
         if configs.get(port_key):
-            settings.EMAIL_PORT = int(configs[port_key])
+            settings.EMAIL_PORT = int(str(configs[port_key]))
         if configs.get(ssl_key):
             settings.EMAIL_SSL = configs[ssl_key] == 'true'
         if configs.get(username_key):

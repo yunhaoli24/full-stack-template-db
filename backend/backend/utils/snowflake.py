@@ -182,6 +182,9 @@ class Snowflake:
         if not self._initialized:
             raise errors.ServerError(msg='雪花 ID 生成失败，雪花算法未初始化')
 
+        assert self.datacenter_id is not None
+        assert self.worker_id is not None
+
         with self._lock:
             timestamp = self._current_ms()
 

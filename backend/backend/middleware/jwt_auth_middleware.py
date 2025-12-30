@@ -1,3 +1,5 @@
+import re
+
 from typing import Any
 
 from fastapi import Request, Response
@@ -65,7 +67,7 @@ class JwtAuthMiddleware(AuthenticationBackend):
         if path in settings.TOKEN_REQUEST_PATH_EXCLUDE:
             return None
         for pattern in settings.TOKEN_REQUEST_PATH_EXCLUDE_PATTERN:
-            if pattern.match(path):
+            if re.match(pattern, path):
                 return None
 
         scheme, token = get_authorization_scheme_param(token)

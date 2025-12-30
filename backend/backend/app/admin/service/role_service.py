@@ -64,7 +64,7 @@ class RoleService:
         return await paging_data(db, role_select)
 
     @staticmethod
-    async def get_menu_tree(*, db: AsyncSession, pk: int) -> list[dict[str, Any] | None]:
+    async def get_menu_tree(*, db: AsyncSession, pk: int) -> list[dict[str, Any]]:
         """
         获取角色的菜单树形结构
 
@@ -77,7 +77,7 @@ class RoleService:
         if not role:
             raise errors.NotFoundError(msg='角色不存在')
         menus = await role_dao.get_menus(db, pk)
-        menu_tree = get_tree_data(menus) if menus else []
+        menu_tree: list[dict[str, Any]] = get_tree_data(menus) if menus else []
         return menu_tree
 
     @staticmethod

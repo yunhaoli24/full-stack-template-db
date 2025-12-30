@@ -167,8 +167,8 @@ def run_celery_flower(port: int, basic_auth: str) -> None:
 
 
 async def install_plugin(
-    path: str,
-    repo_url: str,
+    path: str | None,
+    repo_url: str | None,
     no_sql: bool,  # noqa: FBT001
     db_type: DataBaseType,
     pk_type: PrimaryKeyType,
@@ -186,6 +186,9 @@ async def install_plugin(
             plugin_name = await install_zip_plugin(file=path)
         if repo_url:
             plugin_name = await install_git_plugin(repo_url=repo_url)
+
+        if plugin_name is None:
+            raise cappa.Exit('插件安装失败', code=1)
 
         console.print(f'插件 {plugin_name} 安装成功', style='bold green')
 
@@ -217,7 +220,11 @@ async def get_sql_scripts() -> list[str]:
 
     plugins = get_plugins()
     for plugin in plugins:
-        plugin_sql = await get_plugin_sql(plugin, settings.DATABASE_TYPE, settings.DATABASE_PK_MODE)
+        plugin_sql = await get_plugin_sql(
+            plugin,
+            DataBaseType(settings.DATABASE_TYPE),  # type: ignore[arg-type]
+            PrimaryKeyType(settings.DATABASE_PK_MODE),  # type: ignore[arg-type]
+        )
         if plugin_sql:
             sql_scripts.append(str(plugin_sql))
 

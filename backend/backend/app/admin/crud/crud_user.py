@@ -83,10 +83,10 @@ class CRUDUser(CRUDPlus[User]):
         :param status: 用户状态
         :return:
         """
-        filters = {}
+        filters: dict[str, str | int] = {}
 
         if dept:
-            filters['dept_id'] = dept
+            filters['dept_id'] = str(dept)
         if username:
             filters['username__like'] = f'%{username}%'
         if phone:
@@ -324,7 +324,7 @@ class CRUDUser(CRUDPlus[User]):
         :param username: 用户名
         :return:
         """
-        filters = {}
+        filters: dict[str, int | str] = {}
 
         if user_id:
             filters['id'] = user_id

@@ -140,7 +140,7 @@ class AuthService:
             )
         except errors.NotFoundError as e:
             log.error('登陆错误: 用户名不存在')
-            raise errors.NotFoundError(msg=e.msg)
+            raise errors.NotFoundError(msg=e.msg or '用户名不存在')
         except (errors.RequestError, errors.CustomError) as e:
             if not user:
                 log.error('登陆错误: 用户密码有误')
@@ -151,9 +151,9 @@ class AuthService:
                 username=obj.username,
                 login_time=timezone.now(),
                 status=LoginLogStatusType.fail.value,
-                msg=e.msg,
+                msg=e.msg or '用户密码有误',
             )
-            raise errors.RequestError(code=e.code, msg=e.msg, background=task)
+            raise errors.RequestError(code=e.code, msg=e.msg or '用户密码有误', background=task)
         except Exception as e:
             log.error(f'登陆错误: {e}')
             raise
@@ -185,7 +185,7 @@ class AuthService:
         :param request: FastAPI 请求对象
         :return:
         """
-        codes = set()
+        codes: set[str] = set()
         if request.user.is_superuser:
             menus = await menu_dao.get_all(db, None, None)
             for menu in menus:

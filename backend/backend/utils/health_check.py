@@ -70,7 +70,7 @@ def timer(func) -> Callable:  # noqa: ANN001
         if elapsed >= 1:
             unit, factor = 's', 1
         else:
-            unit, factor = 'ms', 1e3
+            unit, factor = 'ms', 1000
 
         log.info(f'{func.__module__}.{func.__name__} | {elapsed * factor:.3f} {unit}')
 

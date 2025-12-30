@@ -46,7 +46,7 @@ class _Links(BaseModel):
 class _PageDetails(BaseModel):
     """分页详情"""
 
-    items: list = Field([], description='当前页数据列表')
+    items: Sequence[Any] = Field([], description='当前页数据列表')
     total: int = Field(description='数据总条数')
     page: int = Field(description='当前页码')
     size: int = Field(description='每页数量')

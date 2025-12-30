@@ -1,3 +1,5 @@
+import re
+
 from fastapi import Depends, Request
 
 from backend.common.context import ctx
@@ -23,7 +25,7 @@ async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:  
     if path in settings.TOKEN_REQUEST_PATH_EXCLUDE:
         return
     for pattern in settings.TOKEN_REQUEST_PATH_EXCLUDE_PATTERN:
-        if pattern.match(path):
+        if re.match(pattern, path):
             return
 
     # JWT 授权状态强制校验

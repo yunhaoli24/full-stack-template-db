@@ -45,7 +45,7 @@ class CRUDMenu(CRUDPlus[Menu]):
         if title is not None:
             filters['title__like'] = f'%{title}%'
         if status is not None:
-            filters['status'] = status
+            filters['status'] = status  # type: ignore[assignment]
 
         return await self.select_models_order(db, 'sort', **filters)
 

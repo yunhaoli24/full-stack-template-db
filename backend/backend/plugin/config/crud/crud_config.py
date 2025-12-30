@@ -21,7 +21,7 @@ class CRUDConfig(CRUDPlus[Config]):
         """
         return await self.select_model_by_column(db, id=pk)
 
-    async def get_all(self, db: AsyncSession, type: str) -> Sequence[Config | None]:
+    async def get_all(self, db: AsyncSession, type: str | None) -> Sequence[Config | None]:
         """
         通过键名获取参数配置
 

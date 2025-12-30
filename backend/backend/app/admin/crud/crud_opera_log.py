@@ -24,7 +24,7 @@ class CRUDOperaLogDao(CRUDPlus[OperaLog]):
         if username is not None:
             filters['username__like'] = f'%{username}%'
         if status is not None:
-            filters['status__eq'] = status
+            filters['status__eq'] = status  # type: ignore[assignment]
         if ip is not None:
             filters['ip__like'] = f'%{ip}%'
 

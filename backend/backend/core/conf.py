@@ -1,5 +1,4 @@
 from functools import lru_cache
-from re import Pattern
 from typing import Any, Literal
 
 from pydantic import model_validator
@@ -76,7 +75,7 @@ class Settings(BaseSettings):
     TOKEN_REQUEST_PATH_EXCLUDE: list[str] = [  # JWT / RBAC 路由白名单
         f'{FASTAPI_API_V1_PATH}/auth/login',
     ]
-    TOKEN_REQUEST_PATH_EXCLUDE_PATTERN: list[Pattern[str]] = [  # JWT / RBAC 路由白名单（正则）
+    TOKEN_REQUEST_PATH_EXCLUDE_PATTERN: list[str] = [  # JWT / RBAC 路由白名单（正则）
         rf'^{FASTAPI_API_V1_PATH}/monitors/(redis|server)$',
     ]
 

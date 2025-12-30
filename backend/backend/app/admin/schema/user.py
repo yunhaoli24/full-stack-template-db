@@ -41,9 +41,10 @@ class AddUserRoleParam(SchemaBase):
     role_id: int = Field(description='角色 ID')
 
 
-class AddOAuth2UserParam(AuthSchemaBase):
+class AddOAuth2UserParam(SchemaBase):
     """添加 OAuth2 用户参数"""
 
+    username: str = Field(description='用户名')
     password: str | None = Field(None, description='密码')
     nickname: str | None = Field(None, description='昵称')
     email: CustomEmailStr | None = Field(None, description='邮箱')
@@ -100,7 +101,7 @@ class GetUserInfoWithRelationDetail(GetUserInfoDetail):
     roles: list[GetRoleWithRelationDetail] = Field(description='角色列表')
 
 
-class GetCurrentUserInfoWithRelationDetail(GetUserInfoWithRelationDetail):
+class GetCurrentUserInfoWithRelationDetail(GetUserInfoDetail):
     """当前用户信息关联详情"""
 
     model_config = ConfigDict(from_attributes=True)
@@ -112,10 +113,10 @@ class GetCurrentUserInfoWithRelationDetail(GetUserInfoWithRelationDetail):
     @classmethod
     def handel(cls, data: Any) -> Self:
         """处理部门和角色数据"""
-        dept = data['dept']
+        dept = data.get('dept')
         if dept:
             data['dept'] = dept['name']
-        roles = data['roles']
+        roles = data.get('roles')
         if roles:
             data['roles'] = [role['name'] for role in roles]
         return data

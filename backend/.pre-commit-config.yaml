@@ -25,6 +25,13 @@ repos:
     hooks:
       - id: mypy
 
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.407
+    hooks:
+    - id: pyright
+      args:
+          - --threads=4
+
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.9.12
     hooks:

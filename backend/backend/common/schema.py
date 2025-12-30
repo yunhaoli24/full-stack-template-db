@@ -15,7 +15,7 @@ class CustomEmailStr(EmailStr):
 
     @classmethod
     def _validate(cls, input_value: str, /) -> str:
-        return None if not input_value else validate_email(input_value)[1]
+        return validate_email(input_value)[1] if input_value else ''
 
 
 class SchemaBase(BaseModel):

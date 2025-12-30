@@ -24,7 +24,7 @@ class CRUDLoginLog(CRUDPlus[LoginLog]):
         if username is not None:
             filters['username__like'] = f'%{username}%'
         if status is not None:
-            filters['status'] = status
+            filters['status'] = status  # type: ignore[assignment]
         if ip is not None:
             filters['ip__like'] = f'%{ip}%'
 

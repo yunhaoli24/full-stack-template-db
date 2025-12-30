@@ -110,12 +110,15 @@ async def install_zip_plugin(file: UploadFile | str) -> str:
             raise errors.RequestError(msg='插件压缩包内缺少必要文件')
 
         # 插件是否可安装
-        plugin_name = re.match(
+        plugin_name_match = re.match(
             r'^([a-zA-Z0-9_]+)',
             file.split(os.sep)[-1].split('.')[0].strip()
             if isinstance(file, str)
             else file.filename.split('.')[0].strip(),
-        ).group()
+        )
+        if not plugin_name_match:
+            raise errors.RequestError(msg='插件名称格式不正确')
+        plugin_name = plugin_name_match.group()
         full_plugin_path = anyio.Path(PLUGIN_DIR / plugin_name)
         if await full_plugin_path.exists():
             raise errors.ConflictError(msg='此插件已安装')

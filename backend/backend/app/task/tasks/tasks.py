@@ -23,4 +23,4 @@ async def task_demo_async() -> str:
 async def task_demo_params(hello: str, world: str | None = None) -> str:
     """参数示例任务，模拟传参操作"""
     await asleep(1)
-    return hello + world
+    return hello + (world or '')

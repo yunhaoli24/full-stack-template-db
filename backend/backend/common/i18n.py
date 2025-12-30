@@ -54,7 +54,7 @@ class I18n:
                     case 'json':
                         self.locales[lang] = json.loads(f.read())
                     case 'yaml' | 'yml':
-                        self.locales[lang] = yaml.full_load(f.read())
+                        self.locales[lang] = yaml.full_load(f.read())  # type: ignore[attr-defined]
 
     def t(self, key: str, default: Any | None = None, **kwargs) -> str:
         """
@@ -68,9 +68,9 @@ class I18n:
         keys = key.split('.')
 
         try:
-            translation = self.locales[self.current_language]
+            translation: Any = self.locales[self.current_language]
         except KeyError:
-            keys = 'error.language_not_found'
+            keys = ['error', 'language_not_found']
             translation = self.locales[settings.I18N_DEFAULT_LANGUAGE]
 
         for k in keys:
@@ -79,11 +79,15 @@ class I18n:
             else:
                 # Pydantic 兼容
                 translation = None if keys[0] == 'pydantic' else key
+                break
 
+        result: str
         if translation and kwargs:
-            translation = translation.format(**kwargs)
+            result = translation.format(**kwargs) if isinstance(translation, str) else str(translation)
+        else:
+            result = str(translation) if translation is not None else str(default) if default is not None else key
 
-        return translation or default
+        return result
 
 
 # 创建 i18n 单例

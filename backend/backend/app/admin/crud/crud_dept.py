@@ -53,7 +53,7 @@ class CRUDDept(CRUDPlus[Dept]):
         :param status: 部门状态
         :return:
         """
-        filters = {'del_flag': False}
+        filters: dict[str, str | int | bool] = {'del_flag': False}
 
         if name is not None:
             filters['name__like'] = f'%{name}%'

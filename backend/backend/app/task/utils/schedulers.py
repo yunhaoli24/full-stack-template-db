@@ -6,7 +6,7 @@ import math
 
 from datetime import datetime, timedelta
 from multiprocessing.util import Finalize
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from celery import current_app, schedules
 from celery.beat import ScheduleEntry, Scheduler
@@ -277,20 +277,21 @@ class DatabaseScheduler(Scheduler):
     _last_update = None
     _initial_read = True
     _heap_invalidated = False
+    _heap: list[ModelEntry] = []
 
     lock: Lock | None = None
     lock_key = f'{settings.CELERY_REDIS_PREFIX}:beat_lock'
 
     def __init__(self, *args, **kwargs) -> None:
         self.app = kwargs['app']
-        self._dirty = set()
+        self._dirty: set[str] = set()
         super().__init__(*args, **kwargs)
         self._finalize = Finalize(self, self.sync, exitpriority=5)
         self.max_interval = kwargs.get('max_interval') or self.app.conf.beat_max_loop_interval or DEFAULT_MAX_INTERVAL
 
     def install_default_entries(self, data) -> None:  # noqa: ANN001
         """重写父函数"""
-        entries = {}
+        entries: dict[str, Any] = {}
         if self.app.conf.result_expires:
             entries.setdefault(
                 'celery.backend_cleanup',
@@ -390,19 +391,18 @@ class DatabaseScheduler(Scheduler):
 
         last, ts = self._last_update, timezone.from_str(last_update)
         try:
-            if ts and ts > (last or ts):
-                return True
+            return bool(ts and ts > (last or ts))
         finally:
             self._last_update = now
 
-    async def get_all_task_schedulers(self) -> dict:
+    async def get_all_task_schedulers(self) -> dict[str, ModelEntry]:
         """获取所有任务调度"""
         async with async_db_session() as db:
             logger.debug('DatabaseScheduler: Fetching database schedule')
             stmt = select(TaskScheduler).where(TaskScheduler.enabled == True)  # noqa: E712
             query = await db.execute(stmt)
             schedulers = query.scalars().all()
-            s = {}
+            s: dict[str, ModelEntry] = {}
             for scheduler in schedulers:
                 s[scheduler.name] = self.Entry(scheduler, app=self.app)
             return s
@@ -433,7 +433,7 @@ class DatabaseScheduler(Scheduler):
             )
 
         # logger.debug(self._schedule)
-        return self._schedule
+        return self._schedule  # type: ignore[return-value]
 
 
 @beat_init.connect

@@ -31,8 +31,10 @@ async def render_message(subject: str, from_header: str, content: str | dict, te
     if template:
         async with await open_file(PLUGIN_DIR / 'email' / 'templates' / template, encoding='utf-8') as f:
             html = Template(await f.read(), enable_async=True)
+        assert isinstance(content, dict), 'content must be a dict when template is provided'
         mail_body = MIMEText(await html.render_async(**content), 'html', 'utf-8')
     else:
+        assert isinstance(content, str), 'content must be a string when template is not provided'
         mail_body = MIMEText(content, 'plain', 'utf-8')
 
     message.attach(mail_body)

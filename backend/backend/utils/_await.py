@@ -5,7 +5,10 @@ import weakref
 
 from collections.abc import Awaitable, Callable, Coroutine
 from functools import wraps
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
+
+if TYPE_CHECKING:
+    from concurrent.futures import Future
 
 T = TypeVar('T')
 
@@ -33,12 +36,14 @@ class _TaskRunner:
 
     def _target(self) -> None:
         """后台线程的目标函数"""
+        loop = self.__loop
+        assert loop is not None
         try:
-            self.__loop.run_forever()
+            loop.run_forever()
         finally:
-            self.__loop.close()
+            loop.close()
 
-    def run(self, coro: Awaitable[T]) -> T:
+    def run(self, coro: Coroutine[Any, Any, T]) -> T:
         """在后台事件循环上运行协程并返回其结果"""
         with self.__lock:
             name = f'TaskRunner-{threading.get_ident()}'
@@ -46,11 +51,11 @@ class _TaskRunner:
                 self.__loop = asyncio.new_event_loop()
                 self.__thread = threading.Thread(target=self._target, daemon=True, name=name)
                 self.__thread.start()
-            future = asyncio.run_coroutine_threadsafe(coro, self.__loop)
+            future: Future[T] = asyncio.run_coroutine_threadsafe(coro, self.__loop)
             return future.result()
 
 
-_runner_map = weakref.WeakValueDictionary()
+_runner_map: weakref.WeakValueDictionary[str, _TaskRunner] = weakref.WeakValueDictionary()
 
 
 def run_await(coro: Callable[..., Awaitable[T]] | Callable[..., Coroutine[Any, Any, T]]) -> Callable[..., T]:

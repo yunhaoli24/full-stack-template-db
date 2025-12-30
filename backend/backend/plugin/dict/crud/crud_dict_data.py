@@ -63,7 +63,7 @@ class CRUDDictData(CRUDPlus[DictData]):
         :param type_id: 字典类型 ID
         :return:
         """
-        filters = {}
+        filters: dict[str, str | int] = {}
 
         if type_code is not None:
             filters['type_code'] = type_code

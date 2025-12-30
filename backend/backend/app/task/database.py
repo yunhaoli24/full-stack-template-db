@@ -118,7 +118,7 @@ class DatabaseBackend(BaseBackend):
                 task = self.task_cls(task_id)
                 task.status = states.PENDING
                 task.result = None
-            data = task.to_dict()
+            data = task.to_dict() if hasattr(task, 'to_dict') else {}
             if data.get('args', None) is not None:
                 data['args'] = self.decode(data['args'])
             if data.get('kwargs', None) is not None:
@@ -144,6 +144,7 @@ class DatabaseBackend(BaseBackend):
             group = session.query(self.taskset_cls).filter(self.taskset_cls.taskset_id == group_id).first()
             if group:
                 return group.to_dict()
+            return None
 
     @retry
     def _delete_group(self, group_id: str) -> None:

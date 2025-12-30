@@ -12,7 +12,7 @@ async def batch_dequeue(queue: Queue, max_items: int, timeout: float) -> list:
     :param timeout: 总的等待超时时间（秒）
     :return:
     """
-    items = []
+    items: list = []
 
     async def collector() -> None:
         while len(items) < max_items:

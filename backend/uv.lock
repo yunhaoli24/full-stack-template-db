@@ -34,6 +34,15 @@ wheels = [
 ]
 
 [[package]]
+name = "aiosmtplib"
+version = "5.0.0"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/a2/15/c2dc93a58d716bce64b53918d3cf667d86c96a56a9f3a239a9f104643637/aiosmtplib-5.0.0.tar.gz", hash = "sha256:514ac11c31cb767c764077eb3c2eb2ae48df6f63f1e847aeb36119c4fc42b52d" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/99/42/b997c306dc54e6ac62a251787f6b5ec730797eea08e0336d8f0d7b899d5f/aiosmtplib-5.0.0-py3-none-any.whl", hash = "sha256:95eb0f81189780845363ab0627e7f130bca2d0060d46cd3eeb459f066eb7df32" },
+]
+
+[[package]]
 name = "alembic"
 version = "1.17.2"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -693,6 +702,7 @@ standard-no-fastapi-cloud-cli = [
 name = "fastapi-best-architecture"
 source = { editable = "." }
 dependencies = [
+    { name = "aiosmtplib" },
     { name = "alembic" },
     { name = "asgiref" },
     { name = "asyncmy" },
@@ -742,12 +752,14 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-sugar" },
 ]
 lint = [
+    { name = "mypy" },
     { name = "prek" },
+    { name = "pyright" },
+    { name = "types-pyyaml" },
 ]
 server = [
     { name = "aio-pika" },
@@ -756,6 +768,7 @@ server = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiosmtplib", specifier = ">=5.0.0" },
     { name = "alembic", specifier = ">=1.17.2" },
     { name = "asgiref", specifier = ">=3.11.0" },
     { name = "asyncmy", specifier = ">=0.2.10" },
@@ -805,11 +818,15 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "mypy", specifier = ">=1.19.1" },
     { name = "pytest", specifier = ">=9.0.0" },
     { name = "pytest-sugar", specifier = ">=1.1.1" },
 ]
-lint = [{ name = "prek", specifier = ">=0.2.19" }]
+lint = [
+    { name = "mypy", specifier = ">=1.19.1" },
+    { name = "prek", specifier = ">=0.2.19" },
+    { name = "pyright", specifier = ">=1.1.407" },
+    { name = "types-pyyaml", specifier = ">=6.0.12.20250915" },
+]
 server = [
     { name = "aio-pika", specifier = ">=9.5.8" },
     { name = "wait-for-it", specifier = ">=2.3.0" },
@@ -1948,6 +1965,15 @@ wheels = [
 ]
 
 [[package]]
+name = "nodeenv"
+version = "1.10.0"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/24/bf/d1bda4f6168e0b2e9e5958945e01910052158313224ada5ce1fb2e1113b8/nodeenv-1.10.0.tar.gz", hash = "sha256:996c191ad80897d076bdfba80a41994c2b47c68e224c542b48feba42ba00f8bb" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl", hash = "sha256:5bb13e3eed2923615535339b3c620e76779af4cb4c6a90deccc9e36b274d3827" },
+]
+
+[[package]]
 name = "openai"
 version = "1.109.1"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -2762,6 +2788,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pyright"
+version = "1.1.407"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
+dependencies = [
+    { name = "nodeenv" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/a6/1b/0aa08ee42948b61745ac5b5b5ccaec4669e8884b53d31c8ec20b2fcd6b6f/pyright-1.1.407.tar.gz", hash = "sha256:099674dba5c10489832d4a4b2d302636152a9a42d317986c38474c76fe562262" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/dc/93/b69052907d032b00c40cb656d21438ec00b3a471733de137a3f65a49a0a0/pyright-1.1.407-py3-none-any.whl", hash = "sha256:6dd419f54fcc13f03b52285796d65e639786373f433e243f8b94cf93a7444d21" },
+]
+
+[[package]]
 name = "pytest"
 version = "9.0.2"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -3316,6 +3355,15 @@ dependencies = [
 sdist = { url = "https://mirrors.aliyun.com/pypi/packages/85/30/ff9ede605e3bd086b4dd842499814e128500621f7951ca1e5ce84bbf61b1/typer-0.21.0.tar.gz", hash = "sha256:c87c0d2b6eee3b49c5c64649ec92425492c14488096dfbc8a0c2799b2f6f9c53" }
 wheels = [
     { url = "https://mirrors.aliyun.com/pypi/packages/e1/e4/5ebc1899d31d2b1601b32d21cfb4bba022ae6fce323d365f0448031b1660/typer-0.21.0-py3-none-any.whl", hash = "sha256:c79c01ca6b30af9fd48284058a7056ba0d3bf5cf10d0ff3d0c5b11b68c258ac6" },
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.20250915"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/7e/69/3c51b36d04da19b92f9e815be12753125bd8bc247ba0470a982e6979e71c/types_pyyaml-6.0.12.20250915.tar.gz", hash = "sha256:0f8b54a528c303f0e6f7165687dd33fafa81c807fcac23f632b63aa624ced1d3" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/bd/e0/1eed384f02555dde685fff1a1ac805c1c7dcb6dd019c916fe659b1c1f9ec/types_pyyaml-6.0.12.20250915-py3-none-any.whl", hash = "sha256:e7d4d9e064e89a3b3cae120b4990cd370874d2bf12fa5f46c97018dd5d3c9ab6" },
 ]
 
 [[package]]

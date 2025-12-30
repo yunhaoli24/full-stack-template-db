@@ -40,9 +40,9 @@ def default_formatter(record: logging.LogRecord) -> str:
 
     # 重写 sqlalchemy echo 输出
     # https://github.com/sqlalchemy/sqlalchemy/discussions/12791
-    record_name = record['name'] or ''
+    record_name = getattr(record, 'name', '') or ''
     if record_name.startswith('sqlalchemy'):
-        record['message'] = re.sub(r'\s+', ' ', record['message']).strip()
+        record.msg = re.sub(r'\s+', ' ', str(record.msg)).strip()
 
     return settings.LOG_FORMAT if settings.LOG_FORMAT.endswith('\n') else f'{settings.LOG_FORMAT}\n'
 
@@ -50,7 +50,7 @@ def default_formatter(record: logging.LogRecord) -> str:
 def request_id_filter(record: logging.LogRecord) -> logging.LogRecord:
     """请求 ID 过滤器"""
     rid = get_request_trace_id()
-    record['request_id'] = rid[: settings.TRACE_ID_LOG_LENGTH]
+    record.request_id = rid[: settings.TRACE_ID_LOG_LENGTH]
     return record
 
 
@@ -109,8 +109,8 @@ def set_custom_logfile() -> None:
         filename = filepath.split(os.sep)[-1]
         original_filename = filename.split('.')[0]
         if '-' in original_filename:
-            return LOG_DIR / f'{original_filename}.log'
-        return LOG_DIR / f'{original_filename}_{timezone.now().strftime("%Y-%m-%d")}.log'
+            return str(LOG_DIR / f'{original_filename}.log')
+        return str(LOG_DIR / f'{original_filename}_{timezone.now().strftime("%Y-%m-%d")}.log')
 
     # 日志文件通用配置
     # https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add
@@ -126,7 +126,7 @@ def set_custom_logfile() -> None:
     logger.add(
         str(log_access_file),
         level=settings.LOG_FILE_ACCESS_LEVEL,
-        filter=lambda record: record['level'].no <= 25,
+        filter=lambda record: record.level.no <= 25,  # type: ignore[attr-defined]
         backtrace=False,
         diagnose=False,
         **log_config,

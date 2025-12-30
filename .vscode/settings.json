@@ -1,5 +1,14 @@
 {
     "python.defaultInterpreterPath": "backend/.venv/bin/python",
+    "python.analysis.exclude": [
+        "**/node_modules",
+        "**/dist",
+        "**/.venv",
+        "**/.git",
+        "**/__pycache__",
+        "**/frontend",
+    ],
+    "python.analysis.diagnosticMode": "workspace",
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"
     },

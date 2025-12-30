@@ -62,7 +62,14 @@ class UserService:
         return user.roles
 
     @staticmethod
-    async def get_list(*, db: AsyncSession, dept: int, username: str, phone: str, status: int) -> dict[str, Any]:
+    async def get_list(
+        *,
+        db: AsyncSession,
+        dept: int | None,
+        username: str | None,
+        phone: str | None,
+        status: int | None,
+    ) -> dict[str, Any]:
         """
         获取用户列表
 
@@ -204,7 +211,7 @@ class UserService:
         await validate_new_password(db, user.id, password)
         count = await user_dao.reset_password(db, user.id, password)
 
-        history_obj = CreateUserPasswordHistoryParam(user_id=user.id, password=user.password)
+        history_obj = CreateUserPasswordHistoryParam(user_id=user.id, password=user.password or '')
         await password_security_service.save_password_history(db, history_obj)
         await user_dao.update_password_changed_time(db, user.id)
 
@@ -278,6 +285,9 @@ class UserService:
         """
         user = await user_dao.get(db, user_id)
 
+        if user is None:
+            raise errors.NotFoundError(msg='用户不存在')
+
         if user.password and not password_verify(obj.old_password, user.password):
             raise errors.RequestError(msg='原密码错误')
 
@@ -287,7 +297,7 @@ class UserService:
         await validate_new_password(db, user_id, obj.new_password)
         count = await user_dao.reset_password(db, user_id, obj.new_password)
 
-        history_obj = CreateUserPasswordHistoryParam(user_id=user.id, password=user.password)
+        history_obj = CreateUserPasswordHistoryParam(user_id=user.id, password=user.password or '')
         await password_security_service.save_password_history(db, history_obj)
         await user_dao.update_password_changed_time(db, user.id)
 

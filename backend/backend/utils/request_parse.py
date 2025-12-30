@@ -26,6 +26,9 @@ def get_request_ip(request: Request) -> str:
     if forwarded:
         return forwarded.split(',')[0]
 
+    if request.client is None:
+        return '127.0.0.1'
+
     # 忽略 pytest
     if request.client.host == 'testclient':
         return '127.0.0.1'
@@ -47,6 +50,7 @@ async def get_location_online(ip: str, user_agent: str) -> dict | None:
             response = await client.get(ip_api_url, headers=headers)
             if response.status_code == 200:
                 return response.json()
+            return None
         except Exception as e:
             log.error(f'在线获取 IP 地址属地失败，错误信息：{e}')
             return None
@@ -92,7 +96,8 @@ async def parse_ip_info(request: Request) -> IpInfo:
 
     location_info = None
     if settings.IP_LOCATION_PARSE == 'online':
-        location_info = await get_location_online(ip, request.headers.get('User-Agent'))
+        user_agent = request.headers.get('User-Agent') or ''
+        location_info = await get_location_online(ip, user_agent)
     elif settings.IP_LOCATION_PARSE == 'offline':
         location_info = get_location_offline(ip)
 
@@ -115,7 +120,7 @@ def parse_user_agent_info(request: Request) -> UserAgentInfo:
     :param request: FastAPI 请求对象
     :return:
     """
-    user_agent = request.headers.get('User-Agent')
+    user_agent = request.headers.get('User-Agent') or ''
     user_agent_ = parse(user_agent)
     os = user_agent_.get_os()
     browser = user_agent_.get_browser()

@@ -4,14 +4,13 @@ description = """
 A RBAC (Role-Based Access Control) permission control system built on FastAPI, featuring a unique pseudo-three-tier
 architecture design, with built-in basic implementation of fastapi admin as a template library, free and open-source.
 """
-authors = [
-    { name = "Wu Clan", email = "jianhengwu0407@gmail.com" },
-]
+authors = [{ name = "Wu Clan", email = "jianhengwu0407@gmail.com" }]
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dynamic = ['version']
 dependencies = [
+    "aiosmtplib>=5.0.0",
     "alembic>=1.17.2",
     "asgiref>=3.11.0",
     "asyncmy>=0.2.10",
@@ -63,18 +62,14 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-    "mypy>=1.19.1",
-    "pytest>=9.0.0",
-    "pytest-sugar>=1.1.1",
-]
+dev = ["pytest>=9.0.0", "pytest-sugar>=1.1.1"]
 lint = [
     "prek>=0.2.19",
+    "types-pyyaml>=6.0.12.20250915",
+    "mypy>=1.19.1",
+    "pyright>=1.1.407",
 ]
-server = [
-    "aio-pika>=9.5.8",
-    "wait-for-it>=2.3.0",
-]
+server = ["aio-pika>=9.5.8", "wait-for-it>=2.3.0"]
 
 [tool.uv]
 python-downloads = "manual"
@@ -96,3 +91,23 @@ fba = "backend.cli:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pyright]
+typeCheckingMode = "strict"
+
+reportMissingImports = "none"
+reportMissingTypeStubs = "none"
+
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownVariableType = "none"
+reportUnknownParameterType = "none"
+reportMissingModuleSource = "none"
+
+exclude = [
+    "**/.venv",
+    "**/venv",
+    "**/build",
+    "**/dist",
+    "**/.mypy_cache",
+]
