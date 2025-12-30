@@ -38,14 +38,14 @@ class ChatService:
         client = self._get_openai_client()
         try:
             return await client.chat.completions.create(**payload)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             raise GatewayError(msg='OpenAI request failed') from exc
 
     async def create_completion(self, payload: dict[str, Any]) -> dict[str, Any]:
         client = self._get_openai_client()
         try:
             completion = await client.chat.completions.create(**payload)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             raise GatewayError(msg='OpenAI request failed') from exc
         return completion.model_dump()
 
