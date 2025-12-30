@@ -14,7 +14,6 @@ from backend.app.admin.utils.password_security import password_verify
 from backend.common.context import ctx
 from backend.common.enums import LoginLogStatusType
 from backend.common.exception import errors
-from backend.common.i18n import t
 from backend.common.log import log
 from backend.common.response.response_code import CustomErrorCode
 from backend.common.security.jwt import (
@@ -104,10 +103,10 @@ class AuthService:
             await load_login_config(db)
             if settings.LOGIN_CAPTCHA_ENABLED:
                 if not obj.uuid or not obj.captcha:
-                    raise errors.RequestError(msg=t('error.captcha.invalid'))
+                    raise errors.RequestError(msg='验证码不能为空')
                 captcha_code = await redis_client.get(f'{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}')
                 if not captcha_code:
-                    raise errors.RequestError(msg=t('error.captcha.expired'))
+                    raise errors.RequestError(msg='验证码已过期')
                 if captcha_code.lower() != obj.captcha.lower():
                     raise errors.CustomError(error=CustomErrorCode.CAPTCHA_ERROR)
                 await redis_client.delete(f'{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}')
@@ -165,7 +164,7 @@ class AuthService:
                 username=obj.username,
                 login_time=timezone.now(),
                 status=LoginLogStatusType.success.value,
-                msg=t('success.login.success'),
+                msg='登录成功',
             )
             data = GetLoginToken(
                 access_token=access_token_data.access_token,

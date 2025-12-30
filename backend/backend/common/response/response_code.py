@@ -2,8 +2,6 @@ import dataclasses
 
 from enum import Enum
 
-from backend.common.i18n import t
-
 
 class CustomCodeBase(Enum):
     """自定义状态码基类"""
@@ -17,7 +15,13 @@ class CustomCodeBase(Enum):
     def msg(self) -> str:
         """获取状态码信息"""
         message = self.value[1]
-        return t(message)
+        if isinstance(message, str) and message.startswith('response.'):
+            msg_map = {
+                'response.success': '请求成功',
+                'response.error': '请求失败',
+            }
+            return msg_map.get(message, message)
+        return str(message)
 
 
 class CustomResponseCode(CustomCodeBase):
@@ -31,7 +35,7 @@ class CustomResponseCode(CustomCodeBase):
 class CustomErrorCode(CustomCodeBase):
     """自定义错误状态码"""
 
-    CAPTCHA_ERROR = (40001, 'error.captcha.error')
+    CAPTCHA_ERROR = (40001, '验证码错误')
 
 
 @dataclasses.dataclass

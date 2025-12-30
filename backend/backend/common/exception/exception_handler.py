@@ -7,7 +7,6 @@ from uvicorn.protocols.http.h11_impl import STATUS_PHRASES
 
 from backend.common.context import ctx
 from backend.common.exception.errors import BaseExceptionError
-from backend.common.i18n import i18n, t
 from backend.common.response.response_code import CustomResponseCode, StandardResponseCode
 from backend.common.response.response_schema import response_base
 from backend.core.conf import settings
@@ -41,21 +40,7 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
     :param exc: 验证异常
     :return:
     """
-    errors = []
-    for error in exc.errors():
-        # 非 en-US 语言下，使用自定义错误信息
-        if i18n.current_language != 'en-US':
-            custom_message = t(f'pydantic.{error["type"]}')
-            if custom_message:
-                error_ctx = error.get('ctx')
-                if not error_ctx:
-                    error['msg'] = custom_message
-                else:
-                    e = error_ctx.get('error')
-                    if e:
-                        error['msg'] = custom_message.format(**error_ctx)
-                        error['ctx']['error'] = e.__str__().replace("'", '"') if isinstance(e, Exception) else None
-        errors.append(error)
+    errors = list(exc.errors())
     error = errors[0]
     if error.get('type') == 'json_invalid':
         message = 'json解析失败'
@@ -71,7 +56,7 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
         'msg': msg,
         'data': data,
     }
-    ctx.__request_validation_exception__ = content  # 用于在中间件中获取异常信息
+    ctx.__request_validation_exception__ = content
     content.update(trace_id=get_request_trace_id())
     return MsgSpecJSONResponse(status_code=StandardResponseCode.HTTP_422, content=content)
 

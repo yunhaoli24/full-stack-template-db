@@ -13,7 +13,6 @@ from backend.app.admin.service.login_log_service import login_log_service
 from backend.common.context import ctx
 from backend.common.enums import LoginLogStatusType
 from backend.common.exception import errors
-from backend.common.i18n import t
 from backend.common.security import jwt
 from backend.core.conf import settings
 from backend.database.redis import redis_client
@@ -116,7 +115,7 @@ class OAuth2Service:
             username=sys_user.username,
             login_time=timezone.now(),
             status=LoginLogStatusType.success.value,
-            msg=t('success.login.oauth2_success'),
+            msg='OAuth2登录成功',
         )
         await redis_client.delete(f'{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{ctx.ip}')
         response.set_cookie(

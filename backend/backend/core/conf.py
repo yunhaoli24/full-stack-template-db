@@ -217,9 +217,6 @@ class Settings(BaseSettings):
     PLUGIN_PIP_MAX_RETRY: int = 3
     PLUGIN_REDIS_PREFIX: str = 'fba:plugin'
 
-    # I18n 配置
-    I18N_DEFAULT_LANGUAGE: str = 'zh-CN'
-
     # Grafana
     GRAFANA_METRICS: bool = False
     GRAFANA_APP_NAME: str = 'fba_server'

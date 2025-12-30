@@ -25,7 +25,6 @@ from backend.core.path_conf import STATIC_DIR, UPLOAD_DIR
 from backend.database.db import create_tables
 from backend.database.redis import redis_client
 from backend.middleware.access_middleware import AccessMiddleware
-from backend.middleware.i18n_middleware import I18nMiddleware
 from backend.middleware.jwt_auth_middleware import JwtAuthMiddleware
 from backend.middleware.opera_log_middleware import OperaLogMiddleware
 from backend.middleware.state_middleware import StateMiddleware
@@ -146,9 +145,6 @@ def register_middleware(app: FastAPI) -> None:
         backend=JwtAuthMiddleware(),
         on_error=JwtAuthMiddleware.auth_exception_handler,
     )
-
-    # I18n
-    app.add_middleware(I18nMiddleware)
 
     # Access log
     app.add_middleware(AccessMiddleware)
