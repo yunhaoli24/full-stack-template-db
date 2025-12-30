@@ -64,12 +64,3 @@ class TokenPayload:
 @dataclasses.dataclass
 class UploadUrl:
     url: str
-
-
-@dataclasses.dataclass
-class SnowflakeInfo:
-    timestamp: int
-    datetime: str
-    datacenter_id: int
-    worker_id: int
-    sequence: int

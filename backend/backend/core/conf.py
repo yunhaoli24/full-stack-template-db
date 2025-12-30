@@ -41,7 +41,6 @@ class Settings(BaseSettings):
     DATABASE_POOL_ECHO: bool | Literal['debug'] = False
     DATABASE_SCHEMA: str = 'fba'
     DATABASE_CHARSET: str = 'utf8mb4'
-    DATABASE_PK_MODE: Literal['autoincrement', 'snowflake'] = 'autoincrement'
 
     # .env Redis
     REDIS_HOST: str
@@ -51,15 +50,6 @@ class Settings(BaseSettings):
 
     # Redis
     REDIS_TIMEOUT: int = 5
-
-    # .env Snowflake
-    SNOWFLAKE_DATACENTER_ID: int | None = None
-    SNOWFLAKE_WORKER_ID: int | None = None
-
-    # Snowflake
-    SNOWFLAKE_REDIS_PREFIX: str = 'fba:snowflake'
-    SNOWFLAKE_HEARTBEAT_INTERVAL_SECONDS: int = 30
-    SNOWFLAKE_NODE_TTL_SECONDS: int = 60
 
     # .env Token
     TOKEN_SECRET_KEY: str  # 密钥 secrets.token_urlsafe(32)

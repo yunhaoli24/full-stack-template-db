@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, Request
 from packaging.requirements import Requirement
 from starlette.concurrency import run_in_threadpool
 
-from backend.common.enums import DataBaseType, PrimaryKeyType, StatusType
+from backend.common.enums import DataBaseType, StatusType
 from backend.common.exception import errors
 from backend.common.log import log
 from backend.core.conf import settings
@@ -68,21 +68,16 @@ def get_plugin_models() -> list[object]:
     return objs
 
 
-async def get_plugin_sql(plugin: str, db_type: DataBaseType, pk_type: PrimaryKeyType) -> str | None:
+async def get_plugin_sql(plugin: str, db_type: DataBaseType) -> str | None:
     """
-    获取插件 SQL 脚本
+    获取插件 SQL 文件
 
     :param plugin: 插件名称
     :param db_type: 数据库类型
-    :param pk_type: 主键类型
     :return:
     """
     postgresql_dir = PLUGIN_DIR / plugin / 'sql' / 'postgresql'
-    sql_file = (
-        postgresql_dir / 'init.sql'
-        if pk_type == PrimaryKeyType.autoincrement
-        else postgresql_dir / 'init_snowflake.sql'
-    )
+    sql_file = postgresql_dir / 'init.sql'
 
     path = anyio.Path(sql_file)
     if not await path.exists():

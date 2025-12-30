@@ -5,14 +5,8 @@ from sqlalchemy import BigInteger, DateTime, Text, TypeDecorator
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 
-from backend.common.enums import PrimaryKeyType
-from backend.core.conf import settings
-from backend.utils.snowflake import snowflake
 from backend.utils.timezone import timezone
 
-# 通用 Mapped 类型主键, 需手动添加，参考以下使用方式
-# MappedBase -> id: Mapped[id_key]
-# DataClassBase && Base -> id: Mapped[id_key] = mapped_column(init=False)
 id_key = Annotated[
     int,
     mapped_column(
@@ -23,18 +17,6 @@ id_key = Annotated[
         autoincrement=True,
         sort_order=-999,
         comment='主键 ID',
-    )
-    if PrimaryKeyType.autoincrement == settings.DATABASE_PK_MODE
-    # 雪花算法 Mapped 类型主键
-    # 详情：https://fastapi-practices.github.io/fastapi_best_architecture_docs/backend/reference/pk.html
-    else mapped_column(
-        BigInteger,
-        primary_key=True,
-        unique=True,
-        index=True,
-        default=snowflake.generate,
-        sort_order=-999,
-        comment='雪花算法主键 ID',
     ),
 ]
 

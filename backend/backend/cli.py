@@ -17,7 +17,7 @@ from sqlalchemy import text
 from watchfiles import PythonFilter
 
 from backend import __version__
-from backend.common.enums import DataBaseType, PrimaryKeyType
+from backend.common.enums import DataBaseType
 from backend.common.exception.errors import BaseExceptionError
 from backend.core.conf import settings
 from backend.core.path_conf import BASE_PATH
@@ -44,15 +44,6 @@ async def init() -> None:
     panel_content.append(f'{settings.DATABASE_TYPE}', style='yellow')
     panel_content.append('\n  • 数据库：')
     panel_content.append(f'{settings.DATABASE_SCHEMA}', style='yellow')
-    panel_content.append('\n  • 主键模式：')
-    panel_content.append(
-        f'{settings.DATABASE_PK_MODE}',
-        style='yellow',
-    )
-    pk_details = panel_content.from_markup(
-        '[link=https://fastapi-practices.github.io/fastapi_best_architecture_docs/backend/reference/pk.html]（了解详情）[/]'
-    )
-    panel_content.append(pk_details)
     panel_content.append('\n\n【Redis 配置】', style='bold green')
     panel_content.append('\n\n  • 数据库：')
     panel_content.append(f'{settings.REDIS_DATABASE}', style='yellow')
@@ -171,7 +162,6 @@ async def install_plugin(
     repo_url: str | None,
     no_sql: bool,  # noqa: FBT001
     db_type: DataBaseType,
-    pk_type: PrimaryKeyType,
 ) -> None:
     if not path and not repo_url:
         raise cappa.Exit('path 或 repo_url 必须指定其中一项', code=1)
@@ -192,7 +182,7 @@ async def install_plugin(
 
         console.print(f'插件 {plugin_name} 安装成功', style='bold green')
 
-        sql_file = await get_plugin_sql(plugin_name, db_type, pk_type)
+        sql_file = await get_plugin_sql(plugin_name, db_type)
         if sql_file and not no_sql:
             console.print('开始自动执行插件 SQL 脚本...', style='bold cyan')
             await execute_sql_scripts(sql_file)
@@ -204,11 +194,7 @@ async def install_plugin(
 async def get_sql_scripts() -> list[str]:
     sql_scripts = []
     db_dir = BASE_PATH / 'sql' / 'postgresql'
-    main_sql_file = (
-        db_dir / 'init_test_data.sql'
-        if PrimaryKeyType.autoincrement == settings.DATABASE_PK_MODE
-        else db_dir / 'init_snowflake_test_data.sql'
-    )
+    main_sql_file = db_dir / 'init_test_data.sql'
 
     main_sql_path = anyio.Path(main_sql_file)
     if await main_sql_path.exists():
@@ -216,11 +202,7 @@ async def get_sql_scripts() -> list[str]:
 
     plugins = get_plugins()
     for plugin in plugins:
-        plugin_sql = await get_plugin_sql(
-            plugin,
-            DataBaseType(settings.DATABASE_TYPE),
-            PrimaryKeyType(settings.DATABASE_PK_MODE),
-        )
+        plugin_sql = await get_plugin_sql(plugin, DataBaseType(settings.DATABASE_TYPE))
         if plugin_sql:
             sql_scripts.append(str(plugin_sql))
 
@@ -340,13 +322,9 @@ class Add:
         DataBaseType,
         cappa.Arg(default='postgresql', help='执行插件 SQL 脚本的数据库类型'),
     ]
-    pk_type: Annotated[
-        PrimaryKeyType,
-        cappa.Arg(default='autoincrement', help='执行插件 SQL 脚本数据库主键类型'),
-    ]
 
     async def __call__(self) -> None:
-        await install_plugin(self.path, self.repo_url, self.no_sql, self.db_type, self.pk_type)
+        await install_plugin(self.path, self.repo_url, self.no_sql, self.db_type)
 
 
 @cappa.command(help='一个高效的 fba 命令行界面', default_long=True)

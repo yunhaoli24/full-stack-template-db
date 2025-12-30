@@ -130,10 +130,3 @@ class DataBaseType(StrEnum):
     """数据库类型"""
 
     postgresql = 'postgresql'
-
-
-class PrimaryKeyType(StrEnum):
-    """主键类型"""
-
-    autoincrement = 'autoincrement'
-    snowflake = 'snowflake'
