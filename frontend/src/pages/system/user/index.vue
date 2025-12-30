@@ -279,7 +279,7 @@ watch(dialogOpen, (open) => {
 </script>
 
 <template>
-  <BasicPage title="Users" description="Manage system users and permissions." sticky>
+  <BasicPage title="Users" sticky>
     <template #actions>
       <UiButton @click="openCreate">
         <Plus class="mr-2 size-4" />

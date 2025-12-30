@@ -5,7 +5,7 @@ const { settingsNavItems } = useSidebar()
 </script>
 
 <template>
-  <BasicPage title="Settings" description="Manage your store settings.">
+  <BasicPage title="Settings">
     <TwoColLayout>
       <template #aside>
         <TwoColAside :nav="settingsNavItems" />

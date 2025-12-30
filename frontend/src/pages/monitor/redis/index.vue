@@ -42,7 +42,6 @@ function formatNumber(value: string) {
 <template>
   <BasicPage
     title="Redis Monitor"
-    description="Real-time Redis server monitoring and statistics."
     sticky
   >
     <div v-if="isLoading" class="flex items-center justify-center py-12">

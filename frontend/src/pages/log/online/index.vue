@@ -71,7 +71,6 @@ async function handleKickConfirm() {
 <template>
   <BasicPage
     title="Online Users"
-    description="Monitor and manage currently logged-in users."
     sticky
   >
     <template #actions>

@@ -185,7 +185,7 @@ async function handleRulesSave() {
 </script>
 
 <template>
-  <BasicPage title="Data Scopes" description="Manage data permission scopes." sticky>
+  <BasicPage title="Data Scopes" sticky>
     <template #actions>
       <UiButton @click="openCreate">
         <Plus class="mr-2 size-4" />

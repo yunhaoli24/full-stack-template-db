@@ -173,7 +173,6 @@ function showDetail(result: TaskResult) {
 <template>
   <BasicPage
     title="Task Execution Records"
-    description="View task execution history and results."
     sticky
   >
     <template #actions>

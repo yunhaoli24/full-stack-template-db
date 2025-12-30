@@ -180,7 +180,7 @@ async function handleDeleteConfirm() {
 </script>
 
 <template>
-  <BasicPage title="System Configs" description="Manage system parameter configuration." sticky>
+  <BasicPage title="System Configs" sticky>
     <template #actions>
       <UiButton variant="outline" :disabled="isFetching" @click="refreshList">
         <RefreshCcw class="mr-2 size-4" />

@@ -185,7 +185,7 @@ async function handleDeleteConfirm() {
 </script>
 
 <template>
-  <BasicPage title="Notices" description="Manage system notices and announcements." sticky>
+  <BasicPage title="Notices" sticky>
     <template #actions>
       <UiButton variant="outline" :disabled="isFetching" @click="refreshList">
         <RefreshCcw class="mr-2 size-4" />

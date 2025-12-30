@@ -25,19 +25,9 @@ const firstKey = computed(() => navigator?.userAgent.includes('Mac OS') ? '⌘' 
 
 <template>
   <div>
-    <div
-      class="text-sm items-center justify-between text-muted-foreground border border-border bg-muted/5 px-4 py-2 rounded-md md:min-w-[220px] cursor-pointer hidden md:flex"
-      @click="handleOpenChange"
-    >
-      <div class="flex items-center gap-2">
-        <SearchIcon class="size-4" />
-        <span class="text-xs font-semibold text-muted-foreground">Search Menu</span>
-      </div>
-      <UiKbd>{{ firstKey }} + k</UiKbd>
-    </div>
-
-    <UiButton variant="outline" size="icon" class="md:hidden" @click="handleOpenChange">
+    <UiButton variant="outline" size="icon" @click="handleOpenChange">
       <SearchIcon />
+      <span class="sr-only">Search menu ({{ firstKey }} + k)</span>
     </UiButton>
 
     <UiCommandDialog v-model:open="open">

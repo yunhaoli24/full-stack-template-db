@@ -235,7 +235,7 @@ function formatType(type: number) {
 </script>
 
 <template>
-  <BasicPage title="Menus" description="Manage navigation menus and RBAC permissions." sticky>
+  <BasicPage title="Menus" sticky>
     <template #actions>
       <UiButton @click="openCreate(null)">
         <Plus class="mr-2 size-4" />

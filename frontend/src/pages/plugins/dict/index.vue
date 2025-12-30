@@ -190,7 +190,6 @@ async function handleDeleteConfirm() {
 <template>
   <BasicPage
     title="Dictionary Management"
-    description="Manage system dictionary types and data."
     sticky
   >
     <template #actions>

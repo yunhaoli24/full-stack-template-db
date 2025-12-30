@@ -200,7 +200,7 @@ async function handleDeleteConfirm() {
 </script>
 
 <template>
-  <BasicPage title="Data Rules" description="Manage data permission rules." sticky>
+  <BasicPage title="Data Rules" sticky>
     <template #actions>
       <UiButton @click="openCreate">
         <Plus class="mr-2 size-4" />

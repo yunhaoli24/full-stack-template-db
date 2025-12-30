@@ -201,7 +201,6 @@ function formatData(data: Record<string, unknown> | null) {
 <template>
   <BasicPage
     title="Operation Logs"
-    description="View system operation history and user activities."
     sticky
   >
     <template #actions>

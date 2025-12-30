@@ -186,7 +186,6 @@ function showDetail(log: LoginLog) {
 <template>
   <BasicPage
     title="Login Logs"
-    description="View user login history and authentication records."
     sticky
   >
     <template #actions>

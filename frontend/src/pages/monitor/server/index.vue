@@ -37,7 +37,6 @@ function getUsageVariant(percentage: number) {
 <template>
   <BasicPage
     title="Server Monitor"
-    description="Real-time server performance and resource monitoring."
     sticky
   >
     <div v-if="isLoading" class="flex items-center justify-center py-12">

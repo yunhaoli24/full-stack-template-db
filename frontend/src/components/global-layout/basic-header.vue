@@ -17,9 +17,6 @@ defineProps<LayoutHeaderProps>()
       <h1 class="text-2xl font-bold">
         {{ title }}
       </h1>
-      <p v-if="description" class="text-muted-foreground">
-        {{ description }}
-      </p>
     </main>
 
     <aside class="flex items-center gap-2 flex-wrap">

@@ -188,7 +188,7 @@ async function handleDeleteConfirm() {
 </script>
 
 <template>
-  <BasicPage title="Departments" description="Manage department hierarchy and assignments." sticky>
+  <BasicPage title="Departments" sticky>
     <template #actions>
       <UiButton @click="openCreate(null)">
         <Plus class="mr-2 size-4" />

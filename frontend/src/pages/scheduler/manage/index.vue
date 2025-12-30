@@ -275,7 +275,7 @@ function formatDate(dateStr: string | null) {
 </script>
 
 <template>
-  <BasicPage title="Task Schedulers" description="Manage Celery task schedulers." sticky>
+  <BasicPage title="Task Schedulers" sticky>
     <template #actions>
       <UiButton @click="openCreate">
         <Plus class="mr-2 size-4" />

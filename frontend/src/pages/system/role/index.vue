@@ -180,7 +180,7 @@ watch(dialogOpen, (open) => {
 </script>
 
 <template>
-  <BasicPage title="Roles" description="Manage system roles and permissions." sticky>
+  <BasicPage title="Roles" sticky>
     <template #actions>
       <UiButton @click="openCreate">
         <Plus class="mr-2 size-4" />

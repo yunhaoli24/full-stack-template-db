@@ -17,7 +17,7 @@ const activeTab = ref(tabs.value[0].value)
 </script>
 
 <template>
-  <BasicPage title="workspace" description="workspace description" sticky>
+  <BasicPage title="workspace" sticky>
     <template #actions>
       <Button
         @click="() => toast('hello', {

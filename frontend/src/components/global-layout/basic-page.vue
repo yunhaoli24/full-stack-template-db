@@ -1,21 +1,29 @@
 <script lang="ts" setup>
+import { onBeforeUnmount, useSlots, watchEffect } from 'vue'
+
+import { useLayoutHeader } from './layout-header'
 import type { LayoutHeaderProps } from './types'
 
-import BasicHeader from './basic-header.vue'
+const props = defineProps<LayoutHeaderProps>()
+const slots = useSlots()
 
-defineProps<LayoutHeaderProps>()
+const { setHeader, clearHeader } = useLayoutHeader()
+
+watchEffect(() => {
+  setHeader({
+    title: props.title,
+    sticky: props.sticky,
+    actions: slots.actions,
+  })
+})
+
+onBeforeUnmount(() => {
+  clearHeader()
+})
 </script>
 
 <template>
-  <main>
-    <BasicHeader :title="title" :description="description" :sticky="sticky">
-      <template #actions>
-        <slot name="actions" />
-      </template>
-    </BasicHeader>
-
-    <main class="py-4">
-      <slot />
-    </main>
+  <main class="py-4">
+    <slot />
   </main>
 </template>
