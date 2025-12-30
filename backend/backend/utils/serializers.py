@@ -1,7 +1,7 @@
 from collections import defaultdict, namedtuple
 from collections.abc import Sequence
 from decimal import Decimal
-from typing import Any, TypeVar
+from typing import Any, TypeAlias, TypeVar
 
 from fastapi.encoders import decimal_encoder
 from msgspec import json
@@ -9,7 +9,7 @@ from sqlalchemy import Row, RowMapping
 from sqlalchemy.orm import ColumnProperty, SynonymProperty, class_mapper
 from starlette.responses import JSONResponse
 
-RowData = Row[Any] | RowMapping | Any
+RowData: TypeAlias = Row[Any] | RowMapping | Any
 
 R = TypeVar('R', bound=RowData)
 
@@ -63,7 +63,7 @@ def select_as_dict(row: R, *, use_alias: bool = False) -> dict[str, Any]:
             del result['_sa_instance_state']
     else:
         result = {}
-        mapper = class_mapper(row.__class__)  # type: ignore
+        mapper = class_mapper(row.__class__)
         for prop in mapper.iterate_properties:
             if isinstance(prop, (ColumnProperty, SynonymProperty)):
                 key = prop.key
@@ -115,9 +115,9 @@ def select_join_serialize(  # noqa: C901
         if not relationship_list:
             return {}, {}, {}
 
-        parsed_relation_graph = defaultdict(dict)
-        parsed_reverse_relation = {}
-        parsed_custom_names = {}
+        parsed_relation_graph: dict[str, dict[str, str]] = defaultdict(dict)
+        parsed_reverse_relation: dict[str, str] = {}
+        parsed_custom_names: dict[tuple[str, str], str] = {}
 
         for rel_str in relationship_list:
             parts = rel_str.split(':', 1)
@@ -195,8 +195,8 @@ def select_join_serialize(  # noqa: C901
                 cls_idxs[obj_class_name] = idx
 
     # 数据收集和分组
-    main_data = {}
-    grouped_data = defaultdict(lambda: defaultdict(list))
+    main_data: dict[Any, Any] = {}
+    grouped_data: dict[Any, dict[str, list[Any]]] = defaultdict(lambda: defaultdict(list))
 
     for data_row in rows_list:
         data_row_items = data_row if hasattr(data_row, '__getitem__') else (data_row,)
@@ -282,7 +282,7 @@ def select_join_serialize(  # noqa: C901
         nested_result = {col: getattr(nested_main_obj, col, None) for col in main_columns}
 
         # 构建关系层级数据结构
-        hierarchy = defaultdict(lambda: defaultdict(list))
+        hierarchy: dict[str, dict[Any, list[Any]]] = defaultdict(lambda: defaultdict(list))
         for iter_row in rows_list:
             iter_row_items = iter_row if hasattr(iter_row, '__getitem__') else (iter_row,)
             if not iter_row_items or iter_row_items[0] is None:
@@ -357,7 +357,7 @@ def select_join_serialize(  # noqa: C901
         return nested_result
 
     # 构建最终结果
-    final_result_list = []
+    final_result_list: list[dict[str, Any] | tuple[Any, ...]] = []
     for current_main_id in sorted(main_data.keys()):
         current_main_obj = main_data[current_main_id]
 
@@ -368,9 +368,9 @@ def select_join_serialize(  # noqa: C901
 
         if not return_as_dict:
             all_fields = list(final_result_data.keys())
-            result_type = namedtuple('Result', all_fields)  # noqa: PYI024
+            result_type = namedtuple('Result', list(all_fields))  # type: ignore[misc]  # noqa: PYI024
             final_result_list.append(result_type(**final_result_data))
         else:
             final_result_list.append(final_result_data)
 
-    return final_result_list[0] if len(final_result_list) == 1 else final_result_list
+    return final_result_list[0] if len(final_result_list) == 1 else final_result_list  # type: ignore[return-value]

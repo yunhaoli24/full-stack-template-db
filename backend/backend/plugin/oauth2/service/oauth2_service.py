@@ -130,7 +130,7 @@ class OAuth2Service:
             access_token=access_token_data.access_token,
             access_token_expire_time=access_token_data.access_token_expire_time,
             session_uuid=access_token_data.session_uuid,
-            user=sys_user,  # type: ignore
+            user=sys_user,
         )
         return data
 

@@ -246,7 +246,7 @@ class ModelEntry(ScheduleEntry):
         exchange: str | None = None,
         routing_key: str | None = None,
         start_time: datetime | None = None,
-        expires: datetime | None = None,
+        expires: datetime | int | timedelta | None = None,
         expire_seconds: int | None = None,
         *,
         one_off: bool = False,

@@ -65,7 +65,7 @@ def _init_logging(resource: Resource) -> None:
     _logs.set_logger_provider(logger_provider)
 
     otel_logging_handler = LoggingHandler(logger_provider=logger_provider)
-    log.add(  # type: ignore
+    log.add(
         otel_logging_handler,
         level=settings.LOG_STD_LEVEL,
         format=settings.LOG_FORMAT,
@@ -96,5 +96,5 @@ def init_otel(app: FastAPI) -> None:
 
     LoggingInstrumentor().instrument(set_logging_format=True)
     SQLAlchemyInstrumentor().instrument(engine=async_engine.sync_engine)
-    RedisInstrumentor.instrument_client(redis_client)  # type: ignore
+    RedisInstrumentor.instrument_client(redis_client)
     FastAPIInstrumentor.instrument_app(app)

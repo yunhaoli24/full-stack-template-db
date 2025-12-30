@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 from starlette_context.errors import ContextDoesNotExistError
 
@@ -54,7 +54,7 @@ class I18n:
                     case 'json':
                         self.locales[lang] = json.loads(f.read())
                     case 'yaml' | 'yml':
-                        self.locales[lang] = yaml.full_load(f.read())  # type: ignore[attr-defined]
+                        self.locales[lang] = yaml.full_load(f.read())
 
     def t(self, key: str, default: Any | None = None, **kwargs) -> str:
         """

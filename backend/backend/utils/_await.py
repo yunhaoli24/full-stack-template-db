@@ -5,7 +5,7 @@ import weakref
 
 from collections.abc import Awaitable, Callable, Coroutine
 from functools import wraps
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
 if TYPE_CHECKING:
     from concurrent.futures import Future
@@ -43,7 +43,7 @@ class _TaskRunner:
         finally:
             loop.close()
 
-    def run(self, coro: Coroutine[Any, Any, T]) -> T:
+    def run(self, coro: Union[Coroutine[Any, Any, T], 'Future[T]']) -> T:
         """在后台事件循环上运行协程并返回其结果"""
         with self.__lock:
             name = f'TaskRunner-{threading.get_ident()}'
@@ -51,7 +51,10 @@ class _TaskRunner:
                 self.__loop = asyncio.new_event_loop()
                 self.__thread = threading.Thread(target=self._target, daemon=True, name=name)
                 self.__thread.start()
-            future: Future[T] = asyncio.run_coroutine_threadsafe(coro, self.__loop)
+            if asyncio.iscoroutine(coro):
+                future: Future[T] = asyncio.run_coroutine_threadsafe(coro, self.__loop)
+                return future.result()
+            future = coro
             return future.result()
 
 
@@ -73,7 +76,7 @@ def run_await(coro: Callable[..., Awaitable[T]] | Callable[..., Coroutine[Any, A
             name = f'TaskRunner-{threading.get_ident()}'
             if name not in _runner_map:
                 _runner_map[name] = _TaskRunner()
-            return _runner_map[name].run(inner)
+            return _runner_map[name].run(inner)  # type: ignore[arg-type]
         except RuntimeError:
             # 如果没有，则创建一个新的事件循环
             try:

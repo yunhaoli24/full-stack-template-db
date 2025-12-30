@@ -59,21 +59,24 @@ dependencies = [
     "sqlparse>=0.5.4",
     "starlette-context>=0.4.0",
     "user-agents>=2.2.0",
+    "aio-pika>=9.5.8",
+    "wait-for-it>=2.3.0",
 ]
 
 [dependency-groups]
-dev = ["pytest>=9.0.0", "pytest-sugar>=1.1.1"]
-lint = [
+dev = [
+    "pytest>=9.0.0",
+    "pytest-sugar>=1.1.1",
     "prek>=0.2.19",
     "types-pyyaml>=6.0.12.20250915",
     "mypy>=1.19.1",
     "pyright>=1.1.407",
+    "ruff>=0.14.10",
 ]
-server = ["aio-pika>=9.5.8", "wait-for-it>=2.3.0"]
 
 [tool.uv]
 python-downloads = "manual"
-default-groups = ["dev", "lint"]
+default-groups = ["dev"]
 
 [[tool.uv.index]]
 name = "aliyun"
@@ -91,23 +94,3 @@ fba = "backend.cli:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.pyright]
-typeCheckingMode = "strict"
-
-reportMissingImports = "none"
-reportMissingTypeStubs = "none"
-
-reportUnknownMemberType = "none"
-reportUnknownArgumentType = "none"
-reportUnknownVariableType = "none"
-reportUnknownParameterType = "none"
-reportMissingModuleSource = "none"
-
-exclude = [
-    "**/.venv",
-    "**/venv",
-    "**/build",
-    "**/dist",
-    "**/.mypy_cache",
-]

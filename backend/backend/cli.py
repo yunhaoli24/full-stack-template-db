@@ -222,8 +222,8 @@ async def get_sql_scripts() -> list[str]:
     for plugin in plugins:
         plugin_sql = await get_plugin_sql(
             plugin,
-            DataBaseType(settings.DATABASE_TYPE),  # type: ignore[arg-type]
-            PrimaryKeyType(settings.DATABASE_PK_MODE),  # type: ignore[arg-type]
+            DataBaseType(settings.DATABASE_TYPE),
+            PrimaryKeyType(settings.DATABASE_PK_MODE),
         )
         if plugin_sql:
             sql_scripts.append(str(plugin_sql))

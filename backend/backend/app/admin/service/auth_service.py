@@ -172,7 +172,7 @@ class AuthService:
                 access_token_expire_time=access_token_data.access_token_expire_time,
                 session_uuid=access_token_data.session_uuid,
                 password_expire_days_remaining=days_remaining,
-                user=user,  # type: ignore
+                user=user,
             )
             return data
 

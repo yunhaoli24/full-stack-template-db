@@ -126,7 +126,7 @@ def set_custom_logfile() -> None:
     logger.add(
         str(log_access_file),
         level=settings.LOG_FILE_ACCESS_LEVEL,
-        filter=lambda record: record.level.no <= 25,  # type: ignore[attr-defined]
+        filter=lambda record: record.level.no <= 25,
         backtrace=False,
         diagnose=False,
         **log_config,

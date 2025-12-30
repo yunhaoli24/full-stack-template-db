@@ -48,9 +48,9 @@ async def get_location_online(ip: str, user_agent: str) -> dict | None:
         headers = {'User-Agent': user_agent}
         try:
             response = await client.get(ip_api_url, headers=headers)
-            if response.status_code == 200:
-                return response.json()
-            return None
+            if response.status_code != 200:
+                return None
+            return response.json()
         except Exception as e:
             log.error(f'在线获取 IP 地址属地失败，错误信息：{e}')
             return None
