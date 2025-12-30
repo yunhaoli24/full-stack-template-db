@@ -27,7 +27,7 @@ const hasLayoutHeader = computed(() => {
   <UiSidebarProvider :default-open="defaultOpen.get(SIDEBAR_COOKIE_NAME)">
     <AppSidebar />
     <UiSidebarInset
-      class="w-full max-w-full peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)] peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))]"
+      class="w-full max-w-full h-screen overflow-hidden peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)] peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))]"
     >
       <header
         :class="cn(
@@ -63,7 +63,7 @@ const hasLayoutHeader = computed(() => {
       </header>
       <div
         :class="cn(
-          'p-4 grow',
+          'p-4 overflow-auto flex-1',
           contentLayout === 'centered' ? 'container mx-auto ' : '',
         )"
       >
