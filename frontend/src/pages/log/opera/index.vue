@@ -211,48 +211,46 @@ function formatData(data: Record<string, unknown> | null) {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <div class="mb-4 flex flex-wrap gap-4">
-          <UiInput
-            v-model="searchUsername"
-            placeholder="Search by username"
-            class="max-w-xs"
-            @keyup.enter="handleSearch"
-          />
-          <UiSelect v-model="searchStatus" @update:model-value="handleSearch">
-            <UiSelectTrigger class="max-w-xs">
-              <UiSelectValue placeholder="All status" />
-            </UiSelectTrigger>
-            <UiSelectContent>
-              <UiSelectGroup>
-                <UiSelectItem
-                  v-for="option in statusOptions"
-                  :key="option.value ?? 'all'"
-                  :value="option.value ?? -1"
-                >
-                  {{ option.label }}
-                </UiSelectItem>
-              </UiSelectGroup>
-            </UiSelectContent>
-          </UiSelect>
-          <UiInput
-            v-model="searchIp"
-            placeholder="Search by IP"
-            class="max-w-xs"
-            @keyup.enter="handleSearch"
-          />
-          <UiButton @click="handleSearch"> Search </UiButton>
-        </div>
+    <div class="mb-4 flex flex-wrap gap-4">
+      <UiInput
+        v-model="searchUsername"
+        placeholder="Search by username"
+        class="max-w-xs"
+        @keyup.enter="handleSearch"
+      />
+      <UiSelect v-model="searchStatus" @update:model-value="handleSearch">
+        <UiSelectTrigger class="max-w-xs">
+          <UiSelectValue placeholder="All status" />
+        </UiSelectTrigger>
+        <UiSelectContent>
+          <UiSelectGroup>
+            <UiSelectItem
+              v-for="option in statusOptions"
+              :key="option.value ?? 'all'"
+              :value="option.value ?? -1"
+            >
+              {{ option.label }}
+            </UiSelectItem>
+          </UiSelectGroup>
+        </UiSelectContent>
+      </UiSelect>
+      <UiInput
+        v-model="searchIp"
+        placeholder="Search by IP"
+        class="max-w-xs"
+        @keyup.enter="handleSearch"
+      />
+      <UiButton @click="handleSearch"> Search </UiButton>
+    </div>
 
-        <OperaLogDataTable
-          :data="logs"
-          :columns="columns"
-          :loading="isLoading"
-          :server-pagination="serverPagination"
-        />
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <OperaLogDataTable
+        :data="logs"
+        :columns="columns"
+        :loading="isLoading"
+        :server-pagination="serverPagination"
+      />
+    </div>
 
     <UiDialog v-model:open="detailDialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto max-w-4xl">

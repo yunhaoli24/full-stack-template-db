@@ -179,32 +179,30 @@ function showDetail(result: TaskResult) {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <div class="mb-4 flex gap-4">
-          <UiInput
-            v-model="searchName"
-            placeholder="Search by name"
-            class="max-w-xs"
-            @keyup.enter="handleSearch"
-          />
-          <UiInput
-            v-model="searchTaskId"
-            placeholder="Search by task ID"
-            class="max-w-xs"
-            @keyup.enter="handleSearch"
-          />
-          <UiButton @click="handleSearch"> Search </UiButton>
-        </div>
+    <div class="mb-4 flex gap-4">
+      <UiInput
+        v-model="searchName"
+        placeholder="Search by name"
+        class="max-w-xs"
+        @keyup.enter="handleSearch"
+      />
+      <UiInput
+        v-model="searchTaskId"
+        placeholder="Search by task ID"
+        class="max-w-xs"
+        @keyup.enter="handleSearch"
+      />
+      <UiButton @click="handleSearch"> Search </UiButton>
+    </div>
 
-        <RecordDataTable
-          :data="results"
-          :columns="columns"
-          :loading="isLoading"
-          :server-pagination="serverPagination"
-        />
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <RecordDataTable
+        :data="results"
+        :columns="columns"
+        :loading="isLoading"
+        :server-pagination="serverPagination"
+      />
+    </div>
 
     <UiDialog v-model:open="detailDialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto max-w-3xl">

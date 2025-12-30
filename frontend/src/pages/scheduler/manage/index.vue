@@ -283,37 +283,35 @@ function formatDate(dateStr: string | null) {
       </UiButton>
     </template>
 
-    <UiCard>
-      <UiCardContent class="py-4">
-        <div class="mb-4 flex gap-4">
-          <UiInput
-            v-model="searchName"
-            placeholder="Search by name"
-            class="max-w-xs"
-            @keyup.enter="handleSearch"
-          />
-          <UiSelect v-model="searchType" class="max-w-xs">
-            <UiSelectTrigger>
-              <UiSelectValue placeholder="All types" />
-            </UiSelectTrigger>
-            <UiSelectContent>
-              <UiSelectGroup>
-                <UiSelectItem
-                  v-for="option in schedulerTypeOptions"
-                  :key="option.value"
-                  :value="String(option.value)"
-                >
-                  {{ option.label }}
-                </UiSelectItem>
-              </UiSelectGroup>
-            </UiSelectContent>
-          </UiSelect>
-          <UiButton @click="handleSearch"> Search </UiButton>
-        </div>
+    <div class="mb-4 flex gap-4">
+      <UiInput
+        v-model="searchName"
+        placeholder="Search by name"
+        class="max-w-xs"
+        @keyup.enter="handleSearch"
+      />
+      <UiSelect v-model="searchType" class="max-w-xs">
+        <UiSelectTrigger>
+          <UiSelectValue placeholder="All types" />
+        </UiSelectTrigger>
+        <UiSelectContent>
+          <UiSelectGroup>
+            <UiSelectItem
+              v-for="option in schedulerTypeOptions"
+              :key="option.value"
+              :value="String(option.value)"
+            >
+              {{ option.label }}
+            </UiSelectItem>
+          </UiSelectGroup>
+        </UiSelectContent>
+      </UiSelect>
+      <UiButton @click="handleSearch"> Search </UiButton>
+    </div>
 
-        <SchedulerDataTable :data="schedulers" :columns="columns" :loading="isLoading" />
-      </UiCardContent>
-    </UiCard>
+    <div class="overflow-x-auto">
+      <SchedulerDataTable :data="schedulers" :columns="columns" :loading="isLoading" />
+    </div>
 
     <UiDialog v-model:open="dialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
