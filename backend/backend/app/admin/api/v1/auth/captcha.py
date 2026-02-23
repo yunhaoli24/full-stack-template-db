@@ -2,11 +2,11 @@ import uuid
 
 from fast_captcha import img_captcha
 from fastapi import APIRouter, Depends
-from fastapi_limiter.depends import RateLimiter
 from starlette.concurrency import run_in_threadpool
 
 from backend.app.admin.schema.captcha import GetCaptchaDetail
 from backend.common.response.response_schema import ResponseSchemaModel, response_base
+from backend.common.security.limiter import create_rate_limiter
 from backend.core.conf import settings
 from backend.database.db import CurrentSession
 from backend.database.redis import redis_client
@@ -18,7 +18,7 @@ router = APIRouter()
 @router.get(
     '/captcha',
     summary='获取登录验证码',
-    dependencies=[Depends(RateLimiter(times=5, seconds=10))],
+    dependencies=[Depends(create_rate_limiter(limit=5, seconds=10))],
 )
 async def get_captcha(db: CurrentSession) -> ResponseSchemaModel[GetCaptchaDetail]:
     await load_login_config(db)

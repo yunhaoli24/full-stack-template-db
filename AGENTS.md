@@ -1,46 +1,42 @@
-# 仓库指南
+# 开发指南（精简版）
 
-## 项目结构与模块组织
-- `backend/` 是 FastAPI 服务。主包在 `backend/backend/`，包含 `app/`（API、schema、service、crud、model）、`common/`、`core/`、`middleware/`、`plugin/`，以及用于迁移的 `alembic/`。
-- 后端测试位于 `backend/backend/app/admin/tests`，命名为 `test_*.py`。
-- `frontend/` 是 Vue 3 + Vite 应用。核心代码在 `frontend/src/`，包含 `pages/`（自动路由视图）、`components/`、`assets/`、`stores/`、`services/` 和 `composables/`。
+本文件只保留“快速入口 + 必须遵守的约定”。长文档与经验笔记统一放到 `docs/`，并在此处维护链接索引。
+总结本线程中的知识，并记住这些知识以备将来使用。任何在将来进行类似操作时可能派上用场的知识都应记住。将这些知识存储在文档中，存储之后审阅文档，及时更新无用和过时的知识。
 
-## 构建、测试与开发命令
-后端（在 `backend/` 目录运行）：
-- `uv sync` 从 `pyproject.toml` 和 `uv.lock` 安装依赖。
-- `python backend/run.py` 启动带自动重载的开发服务。
-- `pytest` 运行后端测试。
-- `bash backend/scripts/lint.sh` 运行仓库 lint 检查（prek）。
-- `bash backend/scripts/format.sh` 使用 Ruff 检查格式。
-- `docker compose -f docker-compose.yml up` 启动完整后端栈（DB、Redis、RabbitMQ、server）。
+## 文档入口（先看这里）
 
-前端（在 `frontend/` 目录运行）：
-- `pnpm install` 安装依赖。
-- `pnpm dev` 启动开发服务。
-- `pnpm build` 构建生产包。
-- `pnpm preview` 本地预览生产包。
-- `pnpm lint` 运行 `oxlint` 和 `oxfmt`。
+- `docs/backend-runtime.md`：后端运行与全栈启动脚本要点
 
-## 编码风格与命名规范
-- Python：4 空格缩进，Ruff 格式化（行宽 120、单引号）。Ruff 规则强制类型注解。模块/函数用 `snake_case`，类用 `PascalCase`。
-- 前端：TypeScript + Vue SFC，使用 `oxlint/oxfmt`。`.vue` 文件名用 `kebab-case`，composable 用 `use-*.ts`（见 `frontend/src/composables/`）。
+## 开发约定（必须）
 
-## 功能实现约定
-- 前端新增功能先对照已有相似页面实现，优先复用现有组件；表格统一复用封装组件 `frontend/src/components/data-table/data-table.vue`（如需页面级封装放在对应 `pages/.../components/`）。
-- 前端 API 接口按模块放在 `frontend/src/services/api/<domain>/`；接口 types 放在 `frontend/src/services/types/<domain>/`，通用 types 放在 `frontend/src/types/`。
-- 后端新增功能按 API -> schema -> service -> CRUD -> model 分层落位；API 路由在 `backend/backend/app/admin/api/v1/<domain>/`，schema/service/crud/model 分别放在 `backend/backend/app/admin/schema/`、`backend/backend/app/admin/service/`、`backend/backend/app/admin/crud/`、`backend/backend/app/admin/model/`。
+- **Lint 错误**: 用户提到 lint 错误时，**必须运行** `bash backend/scripts/lint.sh` 查看具体错误
+- 提交前质量门禁：**必须先使用 subagent 执行 `code-simplifier` 和 `development-quality-check`，完成代码质量检查后再提交或发起 PR/MR。**
+- 不需要向后兼容：涉及旧功能更改时允许直接重构。
+- **当前仓库现状（必须按现状开发）**：
+  - 后端限流使用仓库内统一入口与统一用法，新增规则保持同一模式
+  - 全栈开发统一通过根目录 `./dev.sh` 启动，脚本负责拉起所需服务
+  - 启动脚本负责处理运行时冲突与进程回收，保证本地联调可持续运行
+- Git 协作：任何代码更改**必须先 `checkout` 新分支**（如 `feat/*`、`fix/*`），在分支完成后通过 PR 合并。（如果已经非master分支就不用checkout）
+- 禁止直接在 `master` 分支提交与推送；多人协作统一走“分支 + PR + Review”流程，避免冲突。
+- **自动编译**: 前后端服务已通过 nohup 启动，支持热重载
+- **等待编译**: 代码修改后等待几秒钟让自动编译完成
 
-## 测试指南
-- 后端使用 `pytest`。在 `backend/backend/app/admin/tests` 现有套件旁新增测试，命名遵循 `test_*.py`。
-- 前端 `frontend/package.json` 未配置测试运行器，只有在功能需要时才新增。
 
-## 提交与 PR 指南
-- Git 历史简短且非正式，近期提交主题如 `refactor: ...`、`update`。提交信息保持简洁明确，必要时用 `type: summary`。
-- PR 需包含摘要、测试说明、关联 issue，以及 UI 变更的截图或动图。
+## 维护规则（把知识放对地方）
 
-## 配置与密钥
-- 本地运行前拷贝 `.env` 模板：`backend/backend/.env.example` 和 `frontend/.env.example`。
-- 避免将真实凭据与 API Key 提交到 Git 历史中。
+- 文档用途：用于了解仓库**当前现状**（入口、约束、流程），帮助快速建立上下文。
+- 具体实现以代码为准：文档不展开实现细节，必要时只给代码路径入口。
+- 文档内容必须可在仓库中直接对应到代码或脚本路径，避免主观描述。
+- 禁止写容易与代码脱节的信息：第三方库具体版本、临时命令输出、“新接口/旧接口”等表述。
+- 代码变更影响现状时，必须同步更新 `AGENTS.md` 索引与对应 `docs/` 文档。
+- 新增"经验/踩坑/接口细节"时：优先写进 `docs/` 的对应文档，并在本文件的"文档入口"里加链接。
+- 本文件只保留索引与硬性约束；避免继续膨胀成百科。
+- 文档默认只写结论、约束、入口和流程；实现细节以代码为准。
+- 禁止在规范文档中堆积大段代码示例，必要时只保留一行命令或路径引用。
+- 文档只描述当前实现与当前流程，不写兼容性迁移说明（如“旧版/不再/兼容模式”）。
 
-## 架构概览
-- 后端采用伪三层流程：API routes -> schema -> service -> CRUD -> model。
+## Skills（专用工作流）
+
+- 代码简化：`code-simplifier` - 在不改变行为的前提下简化代码，提升可读性与可维护性
+- 开发质量检查：`development-quality-check` - 检查和提升代码质量，确保符合开发规范
+- GitLab PR/CI CLI：`skills/gitlab-pr-ci-cli` - 使用 GitLab CLI 管理 MR 和 CI 流程
