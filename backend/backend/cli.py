@@ -2,8 +2,9 @@ import asyncio
 import subprocess
 import sys
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeVar, cast
 
 import anyio
 import cappa
@@ -28,6 +29,12 @@ from backend.utils.console import console
 from backend.utils.file_ops import install_git_plugin, install_zip_plugin, parse_sql_script
 
 output_help = '\n更多信息，尝试 "[cyan]--help[/]"'
+CommandClassT = TypeVar('CommandClassT')
+
+
+def typed_cappa_command(*args: object, **kwargs: object) -> Callable[[type[CommandClassT]], type[CommandClassT]]:
+    """Provide a typed wrapper for cappa.command class decorators."""
+    return cast('Callable[[type[CommandClassT]], type[CommandClassT]]', cappa.command(*args, **kwargs))
 
 
 class CustomReloadFilter(PythonFilter):
@@ -222,14 +229,14 @@ async def execute_sql_scripts(sql_scripts: str, *, is_init: bool = False) -> Non
         console.print('SQL 脚本已执行完成', style='bold green')
 
 
-@cappa.command(help='初始化 fba 项目', default_long=True)
+@typed_cappa_command(help='初始化 fba 项目', default_long=True)
 @dataclass
 class Init:
     async def __call__(self) -> None:
         await init()
 
 
-@cappa.command(help='运行 API 服务', default_long=True)
+@typed_cappa_command(help='运行 API 服务', default_long=True)
 @dataclass
 class Run:
     host: Annotated[
@@ -257,7 +264,7 @@ class Run:
         run(host=self.host, port=self.port, reload=self.reload, workers=self.workers)
 
 
-@cappa.command(help='从当前主机启动 Celery worker 服务', default_long=True)
+@typed_cappa_command(help='从当前主机启动 Celery worker 服务', default_long=True)
 @dataclass
 class Worker:
     log_level: Annotated[
@@ -269,7 +276,7 @@ class Worker:
         run_celery_worker(log_level=self.log_level)
 
 
-@cappa.command(help='从当前主机启动 Celery beat 服务', default_long=True)
+@typed_cappa_command(help='从当前主机启动 Celery beat 服务', default_long=True)
 @dataclass
 class Beat:
     log_level: Annotated[
@@ -281,7 +288,7 @@ class Beat:
         run_celery_beat(log_level=self.log_level)
 
 
-@cappa.command(help='从当前主机启动 Celery flower 服务', default_long=True)
+@typed_cappa_command(help='从当前主机启动 Celery flower 服务', default_long=True)
 @dataclass
 class Flower:
     port: Annotated[
@@ -297,13 +304,13 @@ class Flower:
         run_celery_flower(port=self.port, basic_auth=self.basic_auth)
 
 
-@cappa.command(help='运行 Celery 服务')
+@typed_cappa_command(help='运行 Celery 服务')
 @dataclass
 class Celery:
     subcmd: cappa.Subcommands[Worker | Beat | Flower]
 
 
-@cappa.command(help='新增插件', default_long=True)
+@typed_cappa_command(help='新增插件', default_long=True)
 @dataclass
 class Add:
     path: Annotated[
@@ -327,7 +334,7 @@ class Add:
         await install_plugin(self.path, self.repo_url, self.no_sql, self.db_type)
 
 
-@cappa.command(help='一个高效的 fba 命令行界面', default_long=True)
+@typed_cappa_command(help='一个高效的 fba 命令行界面', default_long=True)
 @dataclass
 class FbaCli:
     sql: Annotated[

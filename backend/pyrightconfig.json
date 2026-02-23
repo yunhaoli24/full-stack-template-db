@@ -33,7 +33,6 @@
     "reportUnknownLambdaType": "none",
     "reportOptionalOperand": "none",
     "reportUnnecessaryComparison": "none",
-    "reportInvalidTypeForm": "none",
     "exclude": [
         "**/.venv",
         "**/venv",

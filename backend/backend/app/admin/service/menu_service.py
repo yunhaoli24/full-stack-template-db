@@ -1,4 +1,4 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +9,9 @@ from backend.app.admin.schema.menu import CreateMenuParam, UpdateMenuParam
 from backend.app.admin.utils.cache import user_cache_manager
 from backend.common.exception import errors
 from backend.utils.build_tree import get_tree_data, get_vben5_tree_data
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class MenuService:
@@ -50,6 +53,7 @@ class MenuService:
         :param request: FastAPI 请求对象
         :return:
         """
+        menu_data: Sequence[Menu] | None
         if request.user.is_superuser:
             menu_data = await menu_dao.get_sidebar(db, None)
         else:

@@ -44,7 +44,6 @@
         "reportUnknownLambdaType": "none",
         "reportOptionalOperand": "none",
         "reportUnnecessaryComparison": "none",
-        "reportInvalidTypeForm": "none",
     },
     "python.analysis.diagnosticMode": "workspace",
     "[python]": {
