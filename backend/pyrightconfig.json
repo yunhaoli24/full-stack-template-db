@@ -15,10 +15,6 @@
     "reportUntypedBaseClass": "none",
     "reportUntypedNamedTuple": "none",
     "reportInvalidTypeVarUse": "none",
-    "reportMissingParameterType": "none",
-    "reportUnusedFunction": "none",
-    "reportCallIssue": "none",
-    "reportReturnType": "none",
     "exclude": [
         "**/.venv",
         "**/venv",
