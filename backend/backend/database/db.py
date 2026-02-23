@@ -1,7 +1,7 @@
 import sys
 
 from collections.abc import AsyncGenerator
-from typing import Annotated
+from typing import Annotated, TypeAlias
 from uuid import uuid4
 
 from fastapi import Depends
@@ -107,5 +107,5 @@ SQLALCHEMY_DATABASE_URL = create_database_url()
 async_engine, async_db_session = create_async_engine_and_session(SQLALCHEMY_DATABASE_URL)
 
 # Session Annotated
-CurrentSession = Annotated[AsyncSession, Depends(get_db)]
-CurrentSessionTransaction = Annotated[AsyncSession, Depends(get_db_transaction)]
+CurrentSession: TypeAlias = Annotated[AsyncSession, Depends(get_db)]
+CurrentSessionTransaction: TypeAlias = Annotated[AsyncSession, Depends(get_db_transaction)]
