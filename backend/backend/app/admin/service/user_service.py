@@ -23,7 +23,6 @@ from backend.common.enums import UserPermissionType
 from backend.common.exception import errors
 from backend.common.pagination import paging_data
 from backend.common.response.response_code import CustomErrorCode
-from backend.common.security.jwt import get_token, jwt_decode
 from backend.core.conf import settings
 from backend.database.redis import redis_client
 from backend.utils.serializers import select_join_serialize
@@ -134,7 +133,7 @@ class UserService:
         return count
 
     @staticmethod
-    async def update_permission(*, db: AsyncSession, request: Request, pk: int, type: UserPermissionType) -> int:  # noqa: C901
+    async def update_permission(*, db: AsyncSession, request: Request, pk: int, type: UserPermissionType) -> int:
         """
         更新用户权限
 
@@ -144,50 +143,25 @@ class UserService:
         :param type: 权限类型
         :return:
         """
+        user = await user_dao.get(db, pk)
+        if not user:
+            raise errors.NotFoundError(msg='用户不存在')
+        if pk == request.user.id:
+            raise errors.ForbiddenError(msg='禁止修改自身权限')
+
         match type:
             case UserPermissionType.superuser:
-                user = await user_dao.get(db, pk)
-                if not user:
-                    raise errors.NotFoundError(msg='用户不存在')
-                if pk == request.user.id:
-                    raise errors.ForbiddenError(msg='禁止修改自身权限')
                 count = await user_dao.set_super(db, pk, is_super=not user.is_superuser)
             case UserPermissionType.staff:
-                user = await user_dao.get(db, pk)
-                if not user:
-                    raise errors.NotFoundError(msg='用户不存在')
-                if pk == request.user.id:
-                    raise errors.ForbiddenError(msg='禁止修改自身权限')
                 count = await user_dao.set_staff(db, pk, is_staff=not user.is_staff)
             case UserPermissionType.status:
-                user = await user_dao.get(db, pk)
-                if not user:
-                    raise errors.NotFoundError(msg='用户不存在')
-                if pk == request.user.id:
-                    raise errors.ForbiddenError(msg='禁止修改自身权限')
                 count = await user_dao.set_status(db, pk, 0 if user.status == 1 else 1)
             case UserPermissionType.multi_login:
-                user = await user_dao.get(db, pk)
-                if not user:
-                    raise errors.NotFoundError(msg='用户不存在')
-                multi_login = user.is_multi_login if pk != user.id else request.user.is_multi_login
-                new_multi_login = not multi_login
+                new_multi_login = not user.is_multi_login
                 count = await user_dao.set_multi_login(db, pk, multi_login=new_multi_login)
-                token = get_token(request)
-                token_payload = jwt_decode(token)
-                if pk == user.id:
-                    # 系统管理员修改自身时，除当前 token 外，其他 token 失效
-                    if not new_multi_login:
-                        key_prefix = f'{settings.TOKEN_REDIS_PREFIX}:{user.id}'
-                        await redis_client.delete_prefix(
-                            key_prefix,
-                            exclude=f'{key_prefix}:{token_payload.session_uuid}',
-                        )
-                else:
-                    # 系统管理员修改他人时，他人 token 全部失效
-                    if not new_multi_login:
-                        key_prefix = f'{settings.TOKEN_REDIS_PREFIX}:{user.id}'
-                        await redis_client.delete_prefix(key_prefix)
+                if not new_multi_login:
+                    key_prefix = f'{settings.TOKEN_REDIS_PREFIX}:{user.id}'
+                    await redis_client.delete_prefix(key_prefix)
             case _:
                 raise errors.RequestError(msg='权限类型不存在')
 

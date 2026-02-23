@@ -63,13 +63,14 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
             try:
                 response = await call_next(request)
                 elapsed = round((time.perf_counter() - ctx.perf_time) * 1000, 3)
-                for e in [
+                exception_keys = [
                     '__request_http_exception__',
                     '__request_validation_exception__',
                     '__request_assertion_error__',
                     '__request_custom_exception__',
-                ]:
-                    exception = ctx.get(e)
+                ]
+                for exception_key in exception_keys:
+                    exception = ctx.get(exception_key)
                     if exception:
                         code = exception.get('code')
                         msg = exception.get('msg')
@@ -78,7 +79,7 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
                             app_name=settings.GRAFANA_APP_NAME,
                             method=method,
                             path=path,
-                            exception_type=type(e).__name__,
+                            exception_type=exception_key,
                         ).inc()
                         break
             except Exception as e:

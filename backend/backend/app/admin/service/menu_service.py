@@ -23,7 +23,6 @@ class MenuService:
         :param pk: 菜单 ID
         :return:
         """
-
         menu = await menu_dao.get(db, menu_id=pk)
         if not menu:
             raise errors.NotFoundError(msg='菜单不存在')
@@ -39,10 +38,8 @@ class MenuService:
         :param status: 状态
         :return:
         """
-
         menu_data = await menu_dao.get_all(db, title=title, status=status)
-        menu_tree = get_tree_data(menu_data)
-        return menu_tree
+        return get_tree_data(menu_data)
 
     @staticmethod
     async def get_sidebar(*, db: AsyncSession, request: Request) -> list[dict[str, Any]]:
@@ -53,21 +50,15 @@ class MenuService:
         :param request: FastAPI 请求对象
         :return:
         """
-        menu_data = None
         if request.user.is_superuser:
             menu_data = await menu_dao.get_sidebar(db, None)
         else:
-            roles = request.user.roles
             menu_ids: set[int] = set()
-            if roles:
-                for role in roles:
-                    menu_ids.update(menu.id for menu in role.menus)
-                menu_data = await menu_dao.get_sidebar(db, list(menu_ids))
+            for role in request.user.roles or []:
+                menu_ids.update(menu.id for menu in role.menus)
+            menu_data = await menu_dao.get_sidebar(db, list(menu_ids)) if menu_ids else None
 
-        if menu_data:
-            return get_vben5_tree_data(menu_data)
-
-        return []
+        return get_vben5_tree_data(menu_data) if menu_data else []
 
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateMenuParam) -> None:

@@ -87,7 +87,6 @@ async def parse_ip_info(request: Request) -> IpInfo:
     :param request: FastAPI 请求对象
     :return:
     """
-    country, region, city = None, None, None
     ip = get_request_ip(request)
     location = await redis_client.get(f'{settings.IP_LOCATION_REDIS_PREFIX}:{ip}')
     if location:
@@ -101,6 +100,7 @@ async def parse_ip_info(request: Request) -> IpInfo:
     elif settings.IP_LOCATION_PARSE == 'offline':
         location_info = get_location_offline(ip)
 
+    country, region, city = None, None, None
     if location_info:
         country = location_info.get('country')
         region = location_info.get('regionName')

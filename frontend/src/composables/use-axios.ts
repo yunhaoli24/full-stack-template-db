@@ -17,7 +17,6 @@ function createAxiosInstance() {
     isRedirecting = true;
 
     authStore.clearAuthInfo();
-    const currentPath = router.currentRoute.value.path;
     const redirectPath =
       router.currentRoute.value.fullPath ||
       (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/");
@@ -29,7 +28,7 @@ function createAxiosInstance() {
       }
     };
 
-    if (currentPath !== "/auth/sign-in") {
+    if (router.currentRoute.value.path !== "/auth/sign-in") {
       void router
         .replace({
           path: "/auth/sign-in",
@@ -44,10 +43,7 @@ function createAxiosInstance() {
           }
         }, 100);
       }
-      return;
-    }
-
-    if (typeof window !== "undefined" && window.location.pathname !== "/auth/sign-in") {
+    } else if (typeof window !== "undefined" && window.location.pathname !== "/auth/sign-in") {
       fallbackRedirect();
     }
   };

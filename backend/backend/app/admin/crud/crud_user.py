@@ -165,16 +165,12 @@ class CRUDUser(CRUDPlus[User]):
 
         count = await self.update_model(db, user_id, obj)
 
-        role_stmt = select(Role).where(Role.id.in_(role_ids))
-        result = await db.execute(role_stmt)
+        result = await db.execute(select(Role).where(Role.id.in_(role_ids)))
         roles = result.scalars().all()
 
-        user_role_stmt = delete(user_role).where(user_role.c.user_id == user_id)
-        await db.execute(user_role_stmt)
-
+        await db.execute(delete(user_role).where(user_role.c.user_id == user_id))
         user_role_data = [AddUserRoleParam(user_id=user_id, role_id=role.id).model_dump() for role in roles]
-        user_role_stmt = insert(user_role)
-        await db.execute(user_role_stmt, user_role_data)
+        await db.execute(insert(user_role), user_role_data)
 
         return count
 

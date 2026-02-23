@@ -5,216 +5,70 @@ description: Check and improve code quality to ensure compliance with developmen
 
 # 开发质量检查 Skill
 
-专门用于检查和提升代码质量的 Skill，确保代码符合 `docs/工程化/代码开发规范.md` 中的标准。
+用于在当前仓库内执行可落地的代码质量检查与改进，确保改动符合现有约束与流程。
 
 ## 何时使用
 
-当需要：
-- 检查新代码是否符合开发规范
-- 进行代码审查或重构
-- 修复代码质量问题
-- 进行全面的质量改进
+- 新增功能后需要做提交前质量检查
+- 代码评审发现质量问题，需要集中修复
+- 重构后需要验证行为未回归
+- 准备提交或发起 PR/MR 之前
 
-## 必须遵守的项目约束
+## 当前仓库约束（必须遵守）
 
-- 后端测试只允许 API 级别黑盒测试，禁止编写组件级测试。
-- 后端测试命令必须带 10 分钟超时：`timeout 600 bash backend/scripts/shell/test.sh`。
-- 涉及坐标计算时优先 2D 坐标；仅在 2D 无法满足需求时使用 3D。
-- Python 相关检查命令统一通过 `uv` 执行：优先使用已封装 `uv` 的脚本（如 `backend/scripts/shell/lint.sh`、`backend/scripts/shell/test.sh`），避免直接调用系统 Python 工具。
+- 本地全栈联调统一入口是根目录 `./dev.sh`。
+- 用户提到 lint 错误时，必须先运行后端 lint 脚本查看具体错误。
+- Python 相关命令优先使用 `uv` 或已封装脚本，不直接依赖系统 Python 全局工具。
+- 文档只记录当前现状（入口/约束/流程）；现状变化时同步更新 `AGENTS.md` 与 `docs/backend/` 下对应文档。
+- Git 协作采用分支 + PR + Review，不直接在 `master` 上提交。
 
-## 文档精简边界（提交前必查）
+## 质量检查流程
 
-- 文档默认写“结论/边界/入口/流程”，不写大段实现细节和代码展开。
-- 修改文档时优先更新现有文档，不新增碎片化文档。
+### 1) 明确范围
 
-## 检查流程
+- 先基于改动文件确定检查范围（后端/前端/文档）。
+- 优先关注本次改动涉及的代码，不做无关大面积改写。
 
-### 1. 阅读开发规范
-首先阅读 `docs/工程化/代码开发规范.md` 了解所有要求：
-- 优先使用现有类型
-- 禁止使用硬编码字典
-- 代码复用原则
+### 2) 执行可用检查命令
 
-### 2. 使用现有类型系统
-
-检查是否从 `base/types.py` 导入类型：
-- FloatArray
-- IntArray
-- FloatArray1D
-- IntArray1D
-- Float32Array
-- BoolArray
-- Pose2DSequence
-- WholeBodyPose2DSequence
-- ImageArray
-- MaskArray
-- PlanarTrack
-- PlanarTracks
-
-禁止在模块中重新定义这些类型。
-
-### 3. 检查常量使用
-
-检查以下文件中是否已定义需要的常量：
-- `base/constants.py` - 通用常量（数学常量、阈值、窗口大小、关键点索引）
-- `running/constants.py` - 跑步相关参数
-- `obstacle/constants.py` - 越障相关参数
-- `jumping/constants.py` - 跳跃相关参数
-
-如果常量不存在，应添加到对应的 constants.py 文件，而不是使用魔法数字。
-
-### 4. Pydantic BaseModel 替换字典
-
-检查是否有函数参数使用 `dict` 作为类型提示：
-- 如果用于配置参数，应创建 Pydantic BaseModel
-- 如果用于动态模板参数，dict[str, str] 是可接受的
-
-示例：
-```python
-# 不好的做法
-def analyze(data: dict[str, Any], params: dict[str, Any]) -> dict[str, Any]:
-    pass
-
-# 好的做法
-class AnalyzeParams(BaseModel):
-    threshold: float
-    window_size: int = 11
-    enable_smoothing: bool = True
-
-def analyze(data: FloatArray, params: AnalyzeParams) -> dict[str, Any]:
-    pass
-```
-
-### 5. 代码复用检查
-
-检查是否有重复的逻辑或工具函数：
-- 搜索相似的代码模式
-- 查看是否可以提取到公共模块
-- 优先使用已有的工具函数
-
-### 6. 异常处理规范
-
-检查异常处理：
-- 避免使用裸 `except Exception:`
-- 使用具体的异常类型（如 `YAMLError`, `ValidationError`, `IOError`, `OSError`, `TypeError`）
-- 在日志中包含异常详情
-
-### 7. 运行质量检查工具
-
-执行以下命令确保代码质量：
 ```bash
-# 后端 lint（包含 ruff/mypy/pyright）
-# 注意：该脚本会执行 ruff --fix 和 ruff format，可能直接修改代码
-# 说明：脚本内部通过 uv 运行工具链
-bash backend/scripts/shell/lint.sh
+# 后端 lint（在 backend 目录执行）
+cd backend && bash backend/scripts/lint.sh
 
-# 后端测试（API 黑盒，10 分钟超时）
-# 说明：脚本内部通过 uv 运行 pytest/ray
-timeout 600 bash backend/scripts/shell/test.sh
+# 后端测试（需要时执行，建议带 10 分钟超时）
+cd backend && timeout 600 uv run pytest
+
+# 前端 lint（前端改动时执行）
+cd frontend && pnpm lint
 ```
 
-## 常见问题模式
+说明：
+- `backend/scripts/lint.sh` 实际文件路径为 `backend/backend/scripts/lint.sh`（因命令在 `backend/` 目录执行）。
+- 后端 lint 脚本会触发自动修复/格式化，需要在运行后复查变更。
 
-### 模式 1: 重复类型定义
-❌ 不好的做法：
-```python
-from numpy import typing as npt
+### 3) 代码审查重点
 
-FloatArray = npt.NDArray[np.float64]
-BoolArray = npt.NDArray[np.bool_]
-```
+- 可读性：命名清晰、结构直观、控制复杂度。
+- 一致性：沿用现有模块模式，不引入风格割裂实现。
+- 复用性：避免重复逻辑，优先复用现有公共能力。
+- 异常处理：避免无差别兜底捕获，日志包含必要上下文。
+- 变更最小化：只改与目标相关内容，避免顺手重写无关区域。
 
-✅ 好的做法：
-```python
-from app.components.motion_analysis.base.types import FloatArray, BoolArray
-```
+### 4) 文档与流程一致性
 
-### 模式 2: 魔法数字
-❌ 不好的做法：
-```python
-if len(landmarks) < 5:
-    pass
+- 若改动影响“当前现状”类信息（入口、约束、流程），同步更新：
+  - `AGENTS.md`
+  - `docs/backend/README.md`
+  - `docs/backend/` 下受影响的主题文档
 
-smooth_window = 11
-```
+## 提交前清单
 
-✅ 好的做法：
-```python
-from app.components.motion_analysis.jumping.constants import MIN_FRAMES_FOR_STABILITY, DEFAULT_SMOOTH_WINDOW
+- [ ] 已按改动范围执行必要检查命令
+- [ ] lint/test 报错已定位并修复
+- [ ] 关键改动已做自检，无明显行为回归
+- [ ] 文档与当前实现保持一致
+- [ ] 满足分支协作流程（分支 + PR）
 
-if len(landmarks) < MIN_FRAMES_FOR_STABILITY:
-    pass
+## 与其他 Skill 的配合
 
-smooth_window = DEFAULT_SMOOTH_WINDOW
-```
-
-### 模式 3: 硬编码字典参数
-❌ 不好的做法：
-```python
-def analyze_video(video_path: str, params: dict[str, Any]) -> dict[str, Any]:
-    threshold = params.get('threshold', 0.5)
-```
-
-✅ 好的做法：
-```python
-class AnalyzeVideoParams(BaseModel):
-    threshold: float = 0.5
-    enable_tracking: bool = True
-
-def analyze_video(video_path: str, params: AnalyzeVideoParams) -> dict[str, Any]:
-    threshold = params.threshold
-```
-
-### 模式 4: 宽泛的异常捕获
-❌ 不好的做法：
-```python
-try:
-    load_yaml_config(config_path)
-except Exception as e:
-    logger.error(f"Failed to load config")
-```
-
-✅ 好的做法：
-```python
-try:
-    load_yaml_config(config_path)
-except (YAMLError, IOError, OSError) as e:
-    logger.error(f"Failed to load config: {e}")
-```
-
-## 检查清单
-
-在完成代码修改后，确认：
-- [ ] 使用了 `base/types.py` 中的现有类型
-- [ ] 魔法数字已替换为 constants.py 中的常量
-- [ ] 字典参数已替换为 Pydantic BaseModel
-- [ ] 使用了具体的异常类型
-- [ ] 没有重复的类型定义
-- [ ] 代码遵循复用原则
-- [ ] 涉及坐标计算时遵循“优先 2D，必要时 3D”
-- [ ] Python 相关命令通过 `uv` 或已封装 `uv` 的脚本执行
-- [ ] 通过 `bash backend/scripts/shell/lint.sh` 质量检查
-- [ ] 仅新增/修改 API 级别黑盒测试
-- [ ] 通过 `timeout 600 bash backend/scripts/shell/test.sh`
-- [ ] 文档遵循精简边界
-
-## 工作流程
-
-1. **识别检查范围**：确定需要检查的文件或模块
-2. **阅读规范**：参考 `docs/工程化/代码开发规范.md`
-3. **逐项检查**：
-   - 类型使用
-   - 常量使用
-   - 参数设计
-   - 异常处理
-   - 代码复用
-4. **修复问题**：按照规范修改代码
-5. **验证修复**：先运行 `bash backend/scripts/shell/lint.sh`，再运行 `timeout 600 bash backend/scripts/shell/test.sh`
-6. **提交更改**：创建分支 -> 修复代码 -> 运行检查 -> 提交 PR
-
-## 相关文档
-
-- `docs/工程化/代码开发规范.md` - 完整的开发规范
-- `docs/工程化/CI排障经验.md` - CI 相关问题排查经验
-- `backend/app/components/motion_analysis/base/types.py` - 类型定义
-- `backend/app/components/motion_analysis/base/constants.py` - 通用常量
+- 提交前质量门禁顺序：先执行 `code-simplifier`，再执行 `development-quality-check`。

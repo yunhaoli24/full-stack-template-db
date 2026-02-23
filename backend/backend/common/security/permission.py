@@ -117,19 +117,20 @@ def filter_data_permission(  # noqa: C901
                 return value
 
         condition = None
+        value = cast_value(data_rule.value)
         match data_rule.expression:
             case RoleDataRuleExpressionType.eq:
-                condition = column_obj == cast_value(data_rule.value)
+                condition = column_obj == value
             case RoleDataRuleExpressionType.ne:
-                condition = column_obj != cast_value(data_rule.value)
+                condition = column_obj != value
             case RoleDataRuleExpressionType.gt:
-                condition = column_obj > cast_value(data_rule.value)
+                condition = column_obj > value
             case RoleDataRuleExpressionType.ge:
-                condition = column_obj >= cast_value(data_rule.value)
+                condition = column_obj >= value
             case RoleDataRuleExpressionType.lt:
-                condition = column_obj < cast_value(data_rule.value)
+                condition = column_obj < value
             case RoleDataRuleExpressionType.le:
-                condition = column_obj <= cast_value(data_rule.value)
+                condition = column_obj <= value
             case RoleDataRuleExpressionType.in_:
                 values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
                 condition = column_obj.in_(values)

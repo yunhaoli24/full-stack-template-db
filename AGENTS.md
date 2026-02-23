@@ -5,7 +5,9 @@
 
 ## 文档入口（先看这里）
 
-- `docs/backend-runtime.md`：后端运行与全栈启动脚本要点
+- `docs/backend/README.md`：后端文档索引（先看）
+- `docs/backend/dev-startup.md`：全栈开发启动与进程回收约束
+- `docs/backend/rate-limiter.md`：后端限流统一入口与新增规则约束
 
 ## 开发约定（必须）
 

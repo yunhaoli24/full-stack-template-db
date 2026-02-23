@@ -135,7 +135,7 @@ async def install_zip_plugin(file: UploadFile | str) -> str:
         zf.extractall(full_plugin_path, members)
 
     await install_requirements_async(plugin_dir_name)
-    await redis_client.set(f'{settings.PLUGIN_REDIS_PREFIX}:changed', 'ture')
+    await redis_client.set(f'{settings.PLUGIN_REDIS_PREFIX}:changed', 'true')
 
     return plugin_name
 
@@ -161,7 +161,7 @@ async def install_git_plugin(repo_url: str) -> str:
         raise errors.ServerError(msg='插件安装失败，请稍后重试') from e
 
     await install_requirements_async(repo_name)
-    await redis_client.set(f'{settings.PLUGIN_REDIS_PREFIX}:changed', 'ture')
+    await redis_client.set(f'{settings.PLUGIN_REDIS_PREFIX}:changed', 'true')
 
     return repo_name
 

@@ -72,13 +72,10 @@ class RoleService:
         :param pk: 角色 ID
         :return:
         """
-
-        role = await role_dao.get(db, pk)
-        if not role:
+        if not await role_dao.get(db, pk):
             raise errors.NotFoundError(msg='角色不存在')
         menus = await role_dao.get_menus(db, pk)
-        menu_tree: list[dict[str, Any]] = get_tree_data(menus) if menus else []
-        return menu_tree
+        return get_tree_data(menus) if menus else []
 
     @staticmethod
     async def get_scopes(*, db: AsyncSession, pk: int) -> list[int]:
@@ -89,12 +86,10 @@ class RoleService:
         :param pk:
         :return:
         """
-
         role = await role_dao.get_join(db, pk)
         if not role:
             raise errors.NotFoundError(msg='角色不存在')
-        scope_ids = [scope.id for scope in role.scopes]
-        return scope_ids
+        return [scope.id for scope in role.scopes]
 
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateRoleParam) -> None:

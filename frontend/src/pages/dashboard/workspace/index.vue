@@ -25,13 +25,17 @@ const pageTitle = computed(() => {
 
 const pageDescription = computed(() => {
   const path = route.path
-  // 简化的描述映射
-  if (path.includes('dashboard')) return '仪表板相关功能'
-  if (path.includes('system')) return '系统管理功能'
-  if (path.includes('log')) return '日志查看功能'
-  if (path.includes('monitor')) return '系统监控功能'
-  if (path.includes('scheduler')) return '任务调度功能'
-  if (path.includes('plugins')) return '插件管理功能'
+  const descriptions: Record<string, string> = {
+    dashboard: '仪表板相关功能',
+    system: '系统管理功能',
+    log: '日志查看功能',
+    monitor: '系统监控功能',
+    scheduler: '任务调度功能',
+    plugins: '插件管理功能',
+  }
+  for (const [key, desc] of Object.entries(descriptions)) {
+    if (path.includes(key)) return desc
+  }
   return '功能待实现'
 })
 </script>

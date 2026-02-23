@@ -137,12 +137,11 @@ class AuthService:
                 expires=timezone.to_utc(refresh_token_data.refresh_token_expire_time),
                 httponly=True,
             )
-        except errors.NotFoundError as e:
+        except errors.NotFoundError:
             log.error('登陆错误: 用户名不存在')
-            raise errors.NotFoundError(msg=e.msg or '用户名不存在')
+            raise
         except (errors.RequestError, errors.CustomError) as e:
-            if not user:
-                log.error('登陆错误: 用户密码有误')
+            log.error(f'登陆错误: {e.msg or str(e)}')
             task = BackgroundTask(
                 login_log_service.create,
                 db=db,
