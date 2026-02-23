@@ -95,16 +95,16 @@ def filter_data_permission(  # noqa: C901
         if table is None:
             continue
         rule_column = data_rule.column
-        if rule_column not in table.columns.keys():  # type: ignore[attr-defined]
+        if rule_column not in table.columns.keys():  # pyright: ignore
             continue
         if rule_column in settings.DATA_PERMISSION_COLUMN_EXCLUDE:
             continue
 
         # 构建过滤条件
         column_obj = (
-            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column]  # type: ignore[attr-defined]
+            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column]  # pyright: ignore
         )
-        column_type = table.columns[rule_column].type.python_type  # type: ignore[attr-defined]
+        column_type = table.columns[rule_column].type.python_type  # pyright: ignore
 
         def cast_value(value: Any) -> Any:
             """类型转换"""
@@ -134,7 +134,7 @@ def filter_data_permission(  # noqa: C901
             case RoleDataRuleExpressionType.not_in:
                 values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
                 condition = column_obj.not_in(values)
-            case _:  # type: ignore[reportUnknownVariableType]
+            case _:  # pyright: ignore
                 condition = None
 
         # 根据运算符添加到对应列表
@@ -144,7 +144,7 @@ def filter_data_permission(  # noqa: C901
                     where_and_list.append(condition)
                 case RoleDataRuleOperatorType.OR:
                     where_or_list.append(condition)
-                case _:  # type: ignore[reportUnknownVariableType]
+                case _:  # pyright: ignore
                     pass
 
     # 组合所有条件

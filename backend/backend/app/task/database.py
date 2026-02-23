@@ -1,4 +1,6 @@
-from celery import states  # type: ignore[attr-defined]
+from typing import cast
+
+from celery import states  # pyright: ignore
 from celery.backends.base import BaseBackend
 from celery.backends.database import retry, session_cleanup
 from celery.exceptions import ImproperlyConfigured
@@ -70,13 +72,15 @@ class DatabaseBackend(BaseBackend):
             **self.engine_options,
         )
 
-    @retry  # type: ignore[misc]
+    @retry  # pyright: ignore
     def _store_result(self, task_id, result, state, traceback=None, request=None, **kwargs) -> None:  # noqa: ANN001
         """Store return value and state of an executed task."""
         session = self.result_session()
         with session_cleanup(session):
-            task = list(session.query(self.task_cls).filter(self.task_cls.task_id == task_id))
-            task = task and task[0]
+            task = cast(
+                'Task | TaskExtended | None',
+                session.query(self.task_cls).filter(self.task_cls.task_id == task_id).first(),
+            )
             if not task:
                 task = self.task_cls(task_id)
                 task.task_id = task_id
@@ -107,25 +111,27 @@ class DatabaseBackend(BaseBackend):
             value = meta.get(column)
             setattr(task, column, value)
 
-    @retry  # type: ignore[misc]
+    @retry  # pyright: ignore
     def _get_task_meta_for(self, task_id: str):  # noqa: ANN202
         """Get task meta-data for a task by id."""
         session = self.result_session()
         with session_cleanup(session):
-            task = list(session.query(self.task_cls).filter(self.task_cls.task_id == task_id))
-            task = task and task[0]
+            task = cast(
+                'Task | TaskExtended | None',
+                session.query(self.task_cls).filter(self.task_cls.task_id == task_id).first(),
+            )
             if not task:
                 task = self.task_cls(task_id)
                 task.status = states.PENDING
                 task.result = None
-            data = task.to_dict() if hasattr(task, 'to_dict') else {}
+            data = task.to_dict()
             if data.get('args', None) is not None:
                 data['args'] = self.decode(data['args'])
             if data.get('kwargs', None) is not None:
                 data['kwargs'] = self.decode(data['kwargs'])
             return self.meta_from_decoded(data)
 
-    @retry  # type: ignore[misc]
+    @retry  # pyright: ignore
     def _save_group(self, group_id: str, result: PickleType):  # noqa: ANN202
         """Store the result of an executed group."""
         session = self.result_session()
@@ -136,7 +142,7 @@ class DatabaseBackend(BaseBackend):
             session.commit()
             return result
 
-    @retry  # type: ignore[misc]
+    @retry  # pyright: ignore
     def _restore_group(self, group_id: str) -> dict | None:
         """Get meta-data for group by id."""
         session = self.result_session()
@@ -146,7 +152,7 @@ class DatabaseBackend(BaseBackend):
                 return group.to_dict()
             return None
 
-    @retry  # type: ignore[misc]
+    @retry  # pyright: ignore
     def _delete_group(self, group_id: str) -> None:
         """Delete meta-data for group by id."""
         session = self.result_session()
@@ -155,7 +161,7 @@ class DatabaseBackend(BaseBackend):
             session.flush()
             session.commit()
 
-    @retry  # type: ignore[misc]
+    @retry  # pyright: ignore
     def _forget(self, task_id: str) -> None:
         """Forget about result."""
         session = self.result_session()

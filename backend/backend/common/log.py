@@ -4,6 +4,8 @@ import os
 import re
 import sys
 
+from typing import Any
+
 from loguru import logger
 
 from backend.core.conf import settings
@@ -47,7 +49,7 @@ def default_formatter(record: logging.LogRecord) -> str:
     return settings.LOG_FORMAT if settings.LOG_FORMAT.endswith('\n') else f'{settings.LOG_FORMAT}\n'
 
 
-def request_id_filter(record: logging.LogRecord | dict) -> logging.LogRecord | dict:
+def request_id_filter(record: logging.LogRecord | dict[str, Any]) -> logging.LogRecord | dict[str, Any]:
     """请求 ID 过滤器"""
     rid = get_request_trace_id()
     if isinstance(record, dict):
@@ -55,6 +57,21 @@ def request_id_filter(record: logging.LogRecord | dict) -> logging.LogRecord | d
     else:
         record.request_id = rid[: settings.TRACE_ID_LOG_LENGTH]
     return record
+
+
+def loguru_request_id_filter(record: dict[str, Any]) -> bool:
+    request_id_filter(record)
+    return True
+
+
+def access_level_filter(record: dict[str, Any]) -> bool:
+    level_no = getattr(record.get('level'), 'no', 0)
+    return bool(level_no <= 25)
+
+
+def error_level_filter(record: dict[str, Any]) -> bool:
+    level_no = getattr(record.get('level'), 'no', 0)
+    return bool(level_no >= 30)
 
 
 def setup_logging() -> None:
@@ -92,7 +109,7 @@ def setup_logging() -> None:
                 'sink': sys.stdout,
                 'level': settings.LOG_STD_LEVEL,
                 'format': default_formatter,
-                'filter': lambda record: request_id_filter(record),
+                'filter': loguru_request_id_filter,
             },
         ],
     )
@@ -115,6 +132,9 @@ def set_custom_logfile() -> None:
             return str(LOG_DIR / f'{original_filename}.log')
         return str(LOG_DIR / f'{original_filename}_{timezone.now().strftime("%Y-%m-%d")}.log')
 
+    def compression_handler(filepath: str) -> None:
+        os.rename(filepath, compression(filepath))
+
     # 日志文件通用配置
     # https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add
     log_config = {
@@ -122,14 +142,14 @@ def set_custom_logfile() -> None:
         'enqueue': True,
         'rotation': '00:00',
         'retention': '7 days',
-        'compression': lambda filepath: os.rename(filepath, compression(filepath)),
+        'compression': compression_handler,
     }
 
     # 标准输出文件
     logger.add(
         str(log_access_file),
         level=settings.LOG_FILE_ACCESS_LEVEL,
-        filter=lambda record: record['level'].no <= 25,
+        filter=access_level_filter,
         backtrace=False,
         diagnose=False,
         **log_config,
@@ -139,7 +159,7 @@ def set_custom_logfile() -> None:
     logger.add(
         str(log_error_file),
         level=settings.LOG_FILE_ERROR_LEVEL,
-        filter=lambda record: record['level'].no >= 30,
+        filter=error_level_filter,
         backtrace=True,
         diagnose=True,
         **log_config,

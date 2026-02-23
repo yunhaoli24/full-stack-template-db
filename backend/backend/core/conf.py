@@ -270,7 +270,7 @@ class Settings(BaseSettings):
     EMAIL_CAPTCHA_REDIS_PREFIX: str = 'fba:email:captcha'
     EMAIL_CAPTCHA_EXPIRE_SECONDS: int = 60 * 3  # 3 分钟
 
-    @model_validator(mode='before')  # type: ignore[misc]
+    @model_validator(mode='before')  # pyright: ignore
     @classmethod
     def check_env(cls, values: Any) -> Any:
         """检查环境变量"""

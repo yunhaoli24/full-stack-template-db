@@ -1,6 +1,8 @@
+from typing import Any, cast
+
 import sqlalchemy as sa
 
-from celery import states  # type: ignore[attr-defined]
+from celery import states  # pyright: ignore
 from sqlalchemy.types import PickleType
 
 from backend.common.model import MappedBase, TimeZone
@@ -14,8 +16,8 @@ from backend.utils.timezone import timezone
 class Task(MappedBase):
     """Task result/status."""
 
-    __tablename__ = 'task_result'
-    __table_args__ = {'comment': '任务结果表'}
+    __tablename__ = cast('Any', 'task_result')
+    __table_args__ = cast('Any', {'comment': '任务结果表'})
 
     id = sa.Column(sa.Integer, sa.Sequence('task_id_sequence'), primary_key=True, autoincrement=True)
     task_id = sa.Column(sa.String(155), unique=True)
@@ -54,8 +56,8 @@ class Task(MappedBase):
 class TaskExtended(Task):
     """For the extend result."""
 
-    __tablename__ = 'task_result'
-    __table_args__ = {'extend_existing': True, 'comment': '任务结果表'}
+    __tablename__ = cast('Any', 'task_result')
+    __table_args__ = cast('Any', {'extend_existing': True, 'comment': '任务结果表'})
 
     name = sa.Column(sa.String(155), nullable=True)
     args = sa.Column(sa.LargeBinary, nullable=True)
@@ -80,8 +82,8 @@ class TaskExtended(Task):
 class TaskSet(MappedBase):
     """TaskSet result."""
 
-    __tablename__ = 'task_set_result'
-    __table_args__ = {'comment': '任务集结果表'}
+    __tablename__ = cast('Any', 'task_set_result')
+    __table_args__ = cast('Any', {'comment': '任务集结果表'})
 
     id = sa.Column(sa.Integer, sa.Sequence('taskset_id_sequence'), autoincrement=True, primary_key=True)
     taskset_id = sa.Column(sa.String(155), unique=True)
@@ -107,3 +109,6 @@ class TaskSet(MappedBase):
         cls.__table__.schema = schema
         cls.id.default.schema = schema
         cls.__table__.name = name or cls.__tablename__
+
+
+TaskResult = TaskExtended

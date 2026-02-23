@@ -19,7 +19,7 @@ from backend.plugin.config.service.config_service import config_service
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有参数配置', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/all', summary='获取所有参数配置', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_all_configs(
     db: CurrentSession,
     type: Annotated[str | None, Query(description='参数配置类型')] = None,
@@ -28,7 +28,7 @@ async def get_all_configs(
     return response_base.success(data=configs)
 
 
-@router.get('/{pk}', summary='获取参数配置详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取参数配置详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_config(
     db: CurrentSession, pk: Annotated[int, Path(description='参数配置 ID')]
 ) -> ResponseSchemaModel[GetConfigDetail]:
@@ -43,7 +43,7 @@ async def get_config(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def get_configs_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='参数配置名称')] = None,
@@ -60,15 +60,15 @@ async def get_configs_paginated(
         Depends(RequestPermission('sys:config:add')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def create_config(db: CurrentSessionTransaction, obj: CreateConfigParam) -> ResponseModel:
     await config_service.create(db=db, obj=obj)
     return response_base.success()
 
 
-@router.put('', summary='批量更新参数配置', dependencies=[Depends(RequestPermission('sys.config.edits')), DependsRBAC])  # type: ignore[misc,arg-type]
+@router.put('', summary='批量更新参数配置', dependencies=[Depends(RequestPermission('sys.config.edits')), DependsRBAC])  # pyright: ignore
 async def bulk_update_config(db: CurrentSessionTransaction, objs: list[UpdateConfigsParam]) -> ResponseModel:
-    count = await config_service.bulk_update(db=db, objs=objs)  # type: ignore[arg-type]
+    count = await config_service.bulk_update(db=db, objs=objs)
     if count > 0:
         return response_base.success()
     return response_base.fail()
@@ -81,7 +81,7 @@ async def bulk_update_config(db: CurrentSessionTransaction, objs: list[UpdateCon
         Depends(RequestPermission('sys:config:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_config(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='参数配置 ID')], obj: UpdateConfigParam
 ) -> ResponseModel:
@@ -98,7 +98,7 @@ async def update_config(
         Depends(RequestPermission('sys:config:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_configs(
     db: CurrentSessionTransaction, pks: Annotated[list[int], Body(description='参数配置 ID 列表')]
 ) -> ResponseModel:

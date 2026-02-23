@@ -15,7 +15,7 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/{pk}', summary='获取部门详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取部门详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_dept(
     db: CurrentSession, pk: Annotated[int, Path(description='部门 ID')]
 ) -> ResponseSchemaModel[GetDeptDetail]:
@@ -23,7 +23,7 @@ async def get_dept(
     return response_base.success(data=data)
 
 
-@router.get('', summary='获取部门树', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('', summary='获取部门树', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_dept_tree(
     db: CurrentSession,
     data_filter: Annotated[ColumnElement[bool], Depends(DataPermissionFilter(Dept))],
@@ -45,7 +45,7 @@ async def get_dept_tree(
         Depends(RequestPermission('sys:dept:add')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def create_dept(db: CurrentSessionTransaction, obj: CreateDeptParam) -> ResponseModel:
     await dept_service.create(db=db, obj=obj)
     return response_base.success()
@@ -58,7 +58,7 @@ async def create_dept(db: CurrentSessionTransaction, obj: CreateDeptParam) -> Re
         Depends(RequestPermission('sys:dept:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_dept(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='部门 ID')], obj: UpdateDeptParam
 ) -> ResponseModel:
@@ -75,7 +75,7 @@ async def update_dept(
         Depends(RequestPermission('sys:dept:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_dept(db: CurrentSessionTransaction, pk: Annotated[int, Path(description='部门 ID')]) -> ResponseModel:
     count = await dept_service.delete(db=db, pk=pk)
     if count > 0:

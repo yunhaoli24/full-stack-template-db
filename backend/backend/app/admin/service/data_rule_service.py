@@ -59,7 +59,7 @@ class DataRuleService:
         table = model_ins if isinstance(model_ins, Table) else model_ins.__table__  # type: ignore[attr-defined]
         model_columns = [
             GetDataRuleColumnDetail(key=column.key, comment=column.comment)
-            for column in table.columns  # type: ignore[attr-defined]
+            for column in table.columns  # pyright: ignore
             if column.key not in settings.DATA_PERMISSION_COLUMN_EXCLUDE
         ]
         return model_columns

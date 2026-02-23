@@ -19,13 +19,13 @@ from backend.plugin.dict.service.dict_data_service import dict_data_service
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有字典数据', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/all', summary='获取所有字典数据', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_all_dict_datas(db: CurrentSession) -> ResponseSchemaModel[list[GetDictDataDetail]]:
     data = await dict_data_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取字典数据详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取字典数据详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_dict_data(
     db: CurrentSession,
     pk: Annotated[int, Path(description='字典数据 ID')],
@@ -34,7 +34,7 @@ async def get_dict_data(
     return response_base.success(data=data)
 
 
-@router.get('/type-codes/{code}', summary='获取字典数据列表', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/type-codes/{code}', summary='获取字典数据列表', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_dict_data_by_type_code(
     db: CurrentSession,
     code: Annotated[str, Path(description='字典类型编码')],
@@ -50,7 +50,7 @@ async def get_dict_data_by_type_code(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def get_dict_datas_paginated(
     db: CurrentSession,
     type_code: Annotated[str | None, Query(description='字典类型编码')] = None,
@@ -77,7 +77,7 @@ async def get_dict_datas_paginated(
         Depends(RequestPermission('dict:data:add')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def create_dict_data(db: CurrentSessionTransaction, obj: CreateDictDataParam) -> ResponseModel:
     await dict_data_service.create(db=db, obj=obj)
     return response_base.success()
@@ -90,7 +90,7 @@ async def create_dict_data(db: CurrentSessionTransaction, obj: CreateDictDataPar
         Depends(RequestPermission('dict:data:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_dict_data(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='字典数据 ID')],
@@ -109,7 +109,7 @@ async def update_dict_data(
         Depends(RequestPermission('dict:data:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_dict_datas(db: CurrentSessionTransaction, obj: DeleteDictDataParam) -> ResponseModel:
     count = await dict_data_service.delete(db=db, obj=obj)
     if count > 0:

@@ -17,7 +17,7 @@ async def check_sys_config_table_exists() -> bool:
     global _sys_config_table_exists
     if _sys_config_table_exists is None:
         async with async_engine.begin() as conn:
-            _sys_config_table_exists = await conn.run_sync(lambda c: inspect(c).has_table('sys_config', schema=None))  # type: ignore[arg-type]
+            _sys_config_table_exists = await conn.run_sync(lambda c: inspect(c).has_table('sys_config', schema=None))  # pyright: ignore
     return _sys_config_table_exists
 
 

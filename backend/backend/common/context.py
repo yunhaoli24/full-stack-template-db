@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from starlette_context.ctx import _Context, context
 
@@ -20,9 +20,27 @@ class TypedContextProtocol(Protocol):
 
     permission: str | None
     language: str
+    __request_validation_exception__: Any
+    __request_http_exception__: Any
+    __request_assertion_error__: Any
+    __request_custom_exception__: Any
+
+    def exists(self) -> bool: ...
+
+    def get(self, key: str, default: Any = None) -> Any: ...
+
+    def __getattr__(self, name: str) -> Any: ...
+
+    def __setattr__(self, name: str, value: Any) -> None: ...
 
 
-class TypedContext(TypedContextProtocol, _Context):
+class TypedContext(_Context):
+    def exists(self) -> bool:
+        return context.exists()
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return context.get(key, default)
+
     def __getattr__(self, name: str) -> Any:
         return context.get(name)
 
@@ -30,4 +48,4 @@ class TypedContext(TypedContextProtocol, _Context):
         context[name] = value
 
 
-ctx = TypedContext()
+ctx = cast('TypedContextProtocol', TypedContext())

@@ -3,7 +3,8 @@ import urllib.parse
 
 import celery_aio_pool
 
-from celery import celery  # type: ignore[attr-defined]
+from celery import celery  # pyright: ignore
+from celery.app.base import Celery
 
 from backend.app.task.tasks.beat import LOCAL_BEAT_SCHEDULE
 from backend.core.conf import settings
@@ -20,14 +21,14 @@ def find_task_packages() -> list[str]:
     return packages
 
 
-def init_celery() -> celery.Celery:
+def init_celery() -> Celery:
     """初始化 Celery 应用"""
 
     # TODO: Update this work if celery version >= 6.0.0
     # https://github.com/fastapi-practices/fastapi_best_architecture/issues/321
     # https://github.com/celery/celery/issues/7874
-    celery.app.trace.build_tracer = celery_aio_pool.build_async_tracer  # type: ignore[attr-defined]
-    celery.app.trace.reset_worker_optimizations()  # type: ignore[attr-defined]
+    celery.app.trace.build_tracer = celery_aio_pool.build_async_tracer  # pyright: ignore
+    celery.app.trace.reset_worker_optimizations()  # pyright: ignore
 
     broker_url = f'amqp://{settings.CELERY_RABBITMQ_USERNAME}:{urllib.parse.quote(settings.CELERY_RABBITMQ_PASSWORD)}@{settings.CELERY_RABBITMQ_HOST}:{settings.CELERY_RABBITMQ_PORT}/{settings.CELERY_RABBITMQ_VHOST}'
     if settings.CELERY_BROKER == 'redis':
@@ -36,7 +37,7 @@ def init_celery() -> celery.Celery:
     result_backend = f'db+postgresql+psycopg://{settings.DATABASE_USER}:{urllib.parse.quote(settings.DATABASE_PASSWORD)}@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}'
 
     # https://docs.celeryq.dev/en/stable/userguide/configuration.html
-    app = celery.Celery(  # type: ignore[attr-defined]
+    app = Celery(
         'fba_celery',
         broker_url=broker_url,
         broker_connection_retry_on_startup=True,
@@ -67,4 +68,4 @@ def init_celery() -> celery.Celery:
 
 
 # 创建 Celery 实例
-celery_app: celery.Celery = init_celery()
+celery_app: Celery = init_celery()

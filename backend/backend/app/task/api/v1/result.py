@@ -14,7 +14,7 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/{pk}', summary='获取任务结果详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取任务结果详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_task_result(
     db: CurrentSession,
     pk: Annotated[int, Path(description='任务结果 ID')],
@@ -30,7 +30,7 @@ async def get_task_result(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def get_task_results_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='任务名称')] = None,
@@ -47,7 +47,7 @@ async def get_task_results_paginated(
         Depends(RequestPermission('sys:task:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_task_result(db: CurrentSessionTransaction, obj: DeleteTaskResultParam) -> ResponseModel:
     count = await task_result_service.delete(db=db, obj=obj)
     if count > 0:

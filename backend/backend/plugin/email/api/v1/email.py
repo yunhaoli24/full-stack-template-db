@@ -15,7 +15,7 @@ from backend.plugin.email.utils.send import send_email
 router = APIRouter()
 
 
-@router.post('/captcha', summary='发送电子邮件验证码', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.post('/captcha', summary='发送电子邮件验证码', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def send_email_captcha(
     db: CurrentSession,
     recipients: Annotated[str | list[str], Body(embed=True, description='邮件接收者')],

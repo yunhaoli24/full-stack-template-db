@@ -7,7 +7,7 @@ from backend.utils.redis_info import redis_info
 router = APIRouter()
 
 
-@router.get('', summary='redis 监控', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('', summary='redis 监控', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_redis_info() -> ResponseModel:
     data = {
         'info': await redis_info.get_info(),

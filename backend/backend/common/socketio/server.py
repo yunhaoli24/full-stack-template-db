@@ -8,8 +8,8 @@ from backend.core.conf import settings
 from backend.database.redis import redis_client
 
 # 创建 Socket.IO 服务器实例
-sio = socketio.AsyncServer(  # type: ignore[attr-defined]
-    client_manager=socketio.AsyncRedisManager(  # type: ignore[attr-defined]
+sio = socketio.AsyncServer(  # pyright: ignore
+    client_manager=socketio.AsyncRedisManager(  # pyright: ignore
         f'redis://:{urllib.parse.quote(settings.REDIS_PASSWORD)}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/{settings.REDIS_DATABASE}',
     ),
     async_mode='asgi',
@@ -19,7 +19,7 @@ sio = socketio.AsyncServer(  # type: ignore[attr-defined]
 )
 
 
-@sio.event  # type: ignore[misc]
+@sio.event  # pyright: ignore
 async def connect(sid, environ, auth) -> bool:
     """Socket 连接事件"""
     if not auth:
@@ -47,7 +47,7 @@ async def connect(sid, environ, auth) -> bool:
     return True
 
 
-@sio.event  # type: ignore[misc]
+@sio.event  # pyright: ignore
 async def disconnect(sid) -> None:
     """Socket 断开连接事件"""
     await redis_client.spop(settings.TOKEN_ONLINE_REDIS_PREFIX)

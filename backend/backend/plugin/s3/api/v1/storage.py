@@ -20,13 +20,13 @@ from backend.plugin.s3.service.storage import s3_storage_service
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有 S3 存储详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/all', summary='获取所有 S3 存储详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_all_s3_storages(db: CurrentSession) -> ResponseSchemaModel[list[GetS3StorageDetail]]:
     s3_storage = await s3_storage_service.get_all(db=db)
     return response_base.success(data=s3_storage)
 
 
-@router.get('/{pk}', summary='获取 S3 存储详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取 S3 存储详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_s3_storage(
     db: CurrentSession, pk: Annotated[int, Path(description='S3 存储 ID')]
 ) -> ResponseSchemaModel[GetS3StorageDetail]:
@@ -41,7 +41,7 @@ async def get_s3_storage(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def get_s3_storages_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='存储名称')] = None,
@@ -58,7 +58,7 @@ async def get_s3_storages_paginated(
         Depends(RequestPermission('s3:storage:add')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def create_s3_storage(db: CurrentSessionTransaction, obj: CreateS3StorageParam) -> ResponseModel:
     await s3_storage_service.create(db=db, obj=obj)
     return response_base.success()
@@ -71,7 +71,7 @@ async def create_s3_storage(db: CurrentSessionTransaction, obj: CreateS3StorageP
         Depends(RequestPermission('s3:storage:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_s3_storage(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='S3 存储 ID')], obj: UpdateS3StorageParam
 ) -> ResponseModel:
@@ -88,7 +88,7 @@ async def update_s3_storage(
         Depends(RequestPermission('s3:storage:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_s3_storages(db: CurrentSessionTransaction, obj: DeleteS3StorageParam) -> ResponseModel:
     count = await s3_storage_service.delete(db=db, obj=obj)
     if count > 0:

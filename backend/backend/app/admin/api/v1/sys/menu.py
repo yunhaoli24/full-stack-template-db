@@ -13,13 +13,13 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/sidebar', summary='获取用户菜单侧边栏', description='已适配 vben admin v5', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/sidebar', summary='获取用户菜单侧边栏', description='已适配 vben admin v5', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_user_sidebar(db: CurrentSession, request: Request) -> ResponseSchemaModel[list[dict[str, Any] | None]]:
     menu = await menu_service.get_sidebar(db=db, request=request)
     return response_base.success(data=menu)
 
 
-@router.get('/{pk}', summary='获取菜单详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取菜单详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_menu(
     db: CurrentSession, pk: Annotated[int, Path(description='菜单 ID')]
 ) -> ResponseSchemaModel[GetMenuDetail]:
@@ -27,7 +27,7 @@ async def get_menu(
     return response_base.success(data=data)
 
 
-@router.get('', summary='获取菜单树', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('', summary='获取菜单树', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_menu_tree(
     db: CurrentSession,
     title: Annotated[str | None, Query(description='菜单标题')] = None,
@@ -44,7 +44,7 @@ async def get_menu_tree(
         Depends(RequestPermission('sys:menu:add')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def create_menu(db: CurrentSessionTransaction, obj: CreateMenuParam) -> ResponseModel:
     await menu_service.create(db=db, obj=obj)
     return response_base.success()
@@ -57,7 +57,7 @@ async def create_menu(db: CurrentSessionTransaction, obj: CreateMenuParam) -> Re
         Depends(RequestPermission('sys:menu:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_menu(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='菜单 ID')], obj: UpdateMenuParam
 ) -> ResponseModel:
@@ -74,7 +74,7 @@ async def update_menu(
         Depends(RequestPermission('sys:menu:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_menu(db: CurrentSessionTransaction, pk: Annotated[int, Path(description='菜单 ID')]) -> ResponseModel:
     count = await menu_service.delete(db=db, pk=pk)
     if count > 0:

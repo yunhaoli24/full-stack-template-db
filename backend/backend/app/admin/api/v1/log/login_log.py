@@ -21,7 +21,7 @@ router = APIRouter()
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def get_login_logs_paginated(
     db: CurrentSession,
     username: Annotated[str | None, Query(description='用户名')] = None,
@@ -40,7 +40,7 @@ async def get_login_logs_paginated(
         Depends(RequestPermission('log:login:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_login_logs(db: CurrentSessionTransaction, obj: DeleteLoginLogParam) -> ResponseModel:
     count = await login_log_service.delete(db=db, obj=obj)
     if count > 0:
@@ -55,7 +55,7 @@ async def delete_login_logs(db: CurrentSessionTransaction, obj: DeleteLoginLogPa
         Depends(RequestPermission('log:login:clear')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_all_login_logs(db: CurrentSessionTransaction) -> ResponseModel:
     await login_log_service.delete_all(db=db)
     return response_base.success()

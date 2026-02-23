@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from celery import schedules  # type: ignore[attr-defined]
+from celery import schedules  # pyright: ignore
 from celery.schedules import ParseException, crontab
 
 from backend.common.exception import errors

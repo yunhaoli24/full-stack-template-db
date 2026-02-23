@@ -1,5 +1,5 @@
-import asyncio
 import functools
+import inspect
 import time
 
 from collections.abc import Callable
@@ -74,4 +74,4 @@ def timer(func) -> Callable:  # noqa: ANN001
 
         log.info(f'{func.__module__}.{func.__name__} | {elapsed * factor:.3f} {unit}')
 
-    return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
+    return async_wrapper if inspect.iscoroutinefunction(func) else sync_wrapper

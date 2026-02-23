@@ -19,13 +19,13 @@ from backend.plugin.dict.service.dict_type_service import dict_type_service
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有字典数据', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/all', summary='获取所有字典数据', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_all_dict_types(db: CurrentSession) -> ResponseSchemaModel[list[GetDictTypeDetail]]:
     data = await dict_type_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取字典类型详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{pk}', summary='获取字典类型详情', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_dict_type(
     db: CurrentSession,
     pk: Annotated[int, Path(description='字典类型 ID')],
@@ -41,7 +41,7 @@ async def get_dict_type(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def get_dict_types_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='字典类型名称')] = None,
@@ -58,7 +58,7 @@ async def get_dict_types_paginated(
         Depends(RequestPermission('dict:type:add')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def create_dict_type(db: CurrentSessionTransaction, obj: CreateDictTypeParam) -> ResponseModel:
     await dict_type_service.create(db=db, obj=obj)
     return response_base.success()
@@ -71,7 +71,7 @@ async def create_dict_type(db: CurrentSessionTransaction, obj: CreateDictTypePar
         Depends(RequestPermission('dict:type:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_dict_type(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='字典类型 ID')],
@@ -90,7 +90,7 @@ async def update_dict_type(
         Depends(RequestPermission('dict:type:del')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def delete_dict_types(db: CurrentSessionTransaction, obj: DeleteDictTypeParam) -> ResponseModel:
     count = await dict_type_service.delete(db=db, obj=obj)
     if count > 0:

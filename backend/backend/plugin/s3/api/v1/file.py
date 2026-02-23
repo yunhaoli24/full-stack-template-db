@@ -22,7 +22,7 @@ router = APIRouter()
         Depends(RequestPermission('s3:file:upload')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def upload_s3_files(
     db: CurrentSession, file: Annotated[UploadFile, File()], storage: Annotated[int, Query(description='S3 存储 ID')]
 ) -> ResponseSchemaModel[UploadUrl]:

@@ -15,13 +15,13 @@ from backend.common.security.rbac import DependsRBAC
 router = APIRouter()
 
 
-@router.get('', summary='获取所有插件', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('', summary='获取所有插件', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_all_plugins() -> ResponseSchemaModel[list[dict[str, Any]]]:
     plugins = await plugin_service.get_all()
     return response_base.success(data=plugins)
 
 
-@router.get('/changed', summary='是否存在插件变更', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/changed', summary='是否存在插件变更', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def plugin_changed() -> ResponseSchemaModel[bool]:
     plugins = await plugin_service.changed()
     return response_base.success(data=bool(plugins))
@@ -35,7 +35,7 @@ async def plugin_changed() -> ResponseSchemaModel[bool]:
         Depends(RequestPermission('sys:plugin:install')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def install_plugin(
     type: Annotated[PluginType, Query(description='插件类型')],
     file: Annotated[UploadFile | None, File()] = None,
@@ -58,7 +58,7 @@ async def install_plugin(
         Depends(RequestPermission('sys:plugin:uninstall')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def uninstall_plugin(plugin: Annotated[str, Path(description='插件名称')]) -> ResponseModel:
     await plugin_service.uninstall(plugin=plugin)
     return response_base.success(
@@ -73,13 +73,13 @@ async def uninstall_plugin(plugin: Annotated[str, Path(description='插件名称
         Depends(RequestPermission('sys:plugin:edit')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def update_plugin_status(plugin: Annotated[str, Path(description='插件名称')]) -> ResponseModel:
     await plugin_service.update_status(plugin=plugin)
     return response_base.success()
 
 
-@router.get('/{plugin}', summary='下载插件', dependencies=[DependsJwtAuth])  # type: ignore[misc]
+@router.get('/{plugin}', summary='下载插件', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def download_plugin(plugin: Annotated[str, Path(description='插件名称')]) -> StreamingResponse:
     bio = await plugin_service.build(plugin=plugin)
     return StreamingResponse(

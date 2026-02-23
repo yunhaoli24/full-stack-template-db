@@ -10,6 +10,7 @@ from backend.plugin.config.model import Config
 from backend.plugin.config.schema.config import (
     CreateConfigParam,
     UpdateConfigParam,
+    UpdateConfigsParam,
 )
 
 
@@ -93,7 +94,7 @@ class ConfigService:
         return count
 
     @staticmethod
-    async def bulk_update(*, db: AsyncSession, objs: list[UpdateConfigParam]) -> int:
+    async def bulk_update(*, db: AsyncSession, objs: list[UpdateConfigsParam]) -> int:
         """
         批量更新参数配置
 

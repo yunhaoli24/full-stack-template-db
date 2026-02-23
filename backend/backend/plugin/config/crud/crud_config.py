@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
 from backend.plugin.config.model import Config
-from backend.plugin.config.schema.config import CreateConfigParam, UpdateConfigParam
+from backend.plugin.config.schema.config import CreateConfigParam, UpdateConfigParam, UpdateConfigsParam
 
 
 class CRUDConfig(CRUDPlus[Config]):
@@ -79,7 +79,7 @@ class CRUDConfig(CRUDPlus[Config]):
         """
         return await self.update_model(db, pk, obj)
 
-    async def bulk_update(self, db: AsyncSession, objs: list[UpdateConfigParam]) -> int:
+    async def bulk_update(self, db: AsyncSession, objs: list[UpdateConfigsParam]) -> int:
         """
         批量更新参数配置
 

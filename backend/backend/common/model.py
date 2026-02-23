@@ -94,12 +94,12 @@ class MappedBase(AsyncAttrs, DeclarativeBase):
     `mapped_column() <https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.mapped_column>`__
     """
 
-    @declared_attr.directive  # type: ignore[misc]
+    @declared_attr.directive  # pyright: ignore
     def __tablename__(self) -> str:
         """生成表名"""
         return self.__name__.lower()
 
-    @declared_attr.directive  # type: ignore[misc]
+    @declared_attr.directive  # pyright: ignore
     def __table_args__(self) -> dict:
         """表配置"""
         return {'comment': self.__doc__ or ''}

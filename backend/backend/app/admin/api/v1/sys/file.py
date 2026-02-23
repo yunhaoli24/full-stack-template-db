@@ -18,7 +18,7 @@ router = APIRouter()
         Depends(RequestPermission('sys:file:upload')),
         DependsRBAC,
     ],
-)  # type: ignore[misc]
+)  # pyright: ignore
 async def upload_files(file: Annotated[UploadFile, File()]) -> ResponseSchemaModel[UploadUrl]:
     upload_file_verify(file)
     filename = await upload_file(file)
