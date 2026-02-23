@@ -11,10 +11,6 @@
     "reportOptionalSubscript": "warning",
     "reportOptionalCall": "warning",
     "reportIncompatibleMethodOverride": "none",
-    "reportMissingTypeArgument": "none",
-    "reportUntypedBaseClass": "none",
-    "reportUntypedNamedTuple": "none",
-    "reportInvalidTypeVarUse": "none",
     "exclude": [
         "**/.venv",
         "**/venv",

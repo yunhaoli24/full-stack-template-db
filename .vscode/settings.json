@@ -22,10 +22,6 @@
         "reportOptionalSubscript": "none",
         "reportOptionalCall": "none",
         "reportIncompatibleMethodOverride": "none",
-        "reportMissingTypeArgument": "none",
-        "reportUntypedBaseClass": "none",
-        "reportUntypedNamedTuple": "none",
-        "reportInvalidTypeVarUse": "none",
     },
     "python.analysis.diagnosticMode": "workspace",
     "[python]": {
