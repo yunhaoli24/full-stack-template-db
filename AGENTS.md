@@ -7,15 +7,13 @@
 
 - `docs/backend/README.md`：后端文档索引（先看）
 - `docs/backend/dev-startup.md`：全栈开发启动与进程回收约束
-- `docs/backend/rate-limiter.md`：后端限流统一入口与新增规则约束
 
 ## 开发约定（必须）
 
-- **Lint 错误**: 用户提到 lint 错误时，**必须运行** `bash backend/scripts/lint.sh` 查看具体错误
+- **Lint 错误**: 用户提到 lint 错误时，**必须运行** `bash backend/backend/scripts/lint.sh` 查看具体错误
 - 提交前质量门禁：**必须先使用 subagent 执行 `code-simplifier` 和 `development-quality-check`，完成代码质量检查后再提交或发起 PR/MR。**
 - 不需要向后兼容：涉及旧功能更改时允许直接重构。
 - **当前仓库现状（必须按现状开发）**：
-  - 后端限流使用仓库内统一入口与统一用法，新增规则保持同一模式
   - 全栈开发统一通过根目录 `./dev.sh` 启动，脚本负责拉起所需服务
   - 启动脚本负责处理运行时冲突与进程回收，保证本地联调可持续运行
 - Git 协作：任何代码更改**必须先 `checkout` 新分支**（如 `feat/*`、`fix/*`），在分支完成后通过 PR 合并。（如果已经非master分支就不用checkout）

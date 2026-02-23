@@ -34,8 +34,6 @@
     "reportOptionalOperand": "none",
     "reportUnnecessaryComparison": "none",
     "reportInvalidTypeForm": "none",
-    "reportUntypedClassDecorator": "none",
-    "reportMissingModuleSource": "none",
     "exclude": [
         "**/.venv",
         "**/venv",

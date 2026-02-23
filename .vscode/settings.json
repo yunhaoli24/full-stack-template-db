@@ -45,8 +45,6 @@
         "reportOptionalOperand": "none",
         "reportUnnecessaryComparison": "none",
         "reportInvalidTypeForm": "none",
-        "reportUntypedClassDecorator": "none",
-        "reportMissingModuleSource": "none",
     },
     "python.analysis.diagnosticMode": "workspace",
     "[python]": {

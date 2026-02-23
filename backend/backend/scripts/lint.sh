@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-prek run --all-files
+uv run prek run --all-files
