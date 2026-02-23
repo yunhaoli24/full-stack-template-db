@@ -64,7 +64,7 @@ def jwt_decode(token: str) -> TokenPayload:
     )
 
 
-async def create_access_token(user_id: int, *, multi_login: bool, **kwargs) -> AccessToken:
+async def create_access_token(user_id: int, *, multi_login: bool, **kwargs: Any) -> AccessToken:
     """
     生成加密 token
 
@@ -134,7 +134,7 @@ async def create_new_token(
     user_id: int,
     *,
     multi_login: bool,
-    **kwargs,
+    **kwargs: Any,
 ) -> NewToken:
     """
     生成新的 token

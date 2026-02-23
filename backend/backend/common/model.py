@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from sqlalchemy import BigInteger, DateTime, Text, TypeDecorator
+from sqlalchemy.engine import Dialect
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 
@@ -27,10 +28,10 @@ class UniversalText(TypeDecorator[str]):
     impl = Text
     cache_ok = True
 
-    def process_bind_param(self, value: str | None, dialect) -> str | None:  # noqa: ANN001
+    def process_bind_param(self, value: str | None, dialect: Dialect) -> str | None:
         return value
 
-    def process_result_value(self, value: str | None, dialect) -> str | None:  # noqa: ANN001
+    def process_result_value(self, value: str | None, dialect: Dialect) -> str | None:
         return value
 
 
@@ -44,13 +45,13 @@ class TimeZone(TypeDecorator[datetime]):
     def python_type(self) -> type[datetime]:
         return datetime
 
-    def process_bind_param(self, value: datetime | None, dialect) -> datetime | None:  # noqa: ANN001
+    def process_bind_param(self, value: datetime | None, dialect: Dialect) -> datetime | None:
         if value is not None and value.utcoffset() != timezone.now().utcoffset():
             # TODO 处理夏令时偏移
             value = timezone.from_datetime(value)
         return value
 
-    def process_result_value(self, value: datetime | None, dialect) -> datetime | None:  # noqa: ANN001
+    def process_result_value(self, value: datetime | None, dialect: Dialect) -> datetime | None:
         if value is not None and value.tzinfo is None:
             value = value.replace(tzinfo=timezone.tz_info)
         return value

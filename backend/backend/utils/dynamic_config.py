@@ -1,4 +1,5 @@
 from sqlalchemy import inspect
+from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.conf import settings
@@ -16,9 +17,13 @@ async def check_sys_config_table_exists() -> bool:
     """
     global _sys_config_table_exists
     if _sys_config_table_exists is None:
+
+        def _has_sys_config_table(sync_conn: Connection) -> bool:
+            return bool(inspect(sync_conn).has_table('sys_config', schema=None))
+
         async with async_engine.begin() as conn:
-            _sys_config_table_exists = await conn.run_sync(lambda c: inspect(c).has_table('sys_config', schema=None))  # pyright: ignore
-    return _sys_config_table_exists
+            _sys_config_table_exists = await conn.run_sync(_has_sys_config_table)
+    return bool(_sys_config_table_exists)
 
 
 async def load_user_security_config(db: AsyncSession) -> None:  # noqa: C901

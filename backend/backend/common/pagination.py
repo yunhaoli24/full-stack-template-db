@@ -111,7 +111,7 @@ class PageData(_PageDetails, Generic[SchemaT]):
     items: Sequence[SchemaT]
 
 
-async def paging_data(db: AsyncSession, select: Select, **kwargs) -> dict[str, Any]:
+async def paging_data(db: AsyncSession, select: Select, **kwargs: Any) -> dict[str, Any]:
     """
     基于 SQLAlchemy 创建分页数据
 

@@ -91,7 +91,7 @@ def init_otel(app: FastAPI) -> None:
     )
 
     _init_tracer(resource)
-    # _init_metrics(resource)
+    _init_metrics(resource)
     _init_logging(resource)
 
     LoggingInstrumentor().instrument(set_logging_format=True)

@@ -62,6 +62,8 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
 
 
 def register_exception(app: FastAPI) -> None:  # noqa: C901
+    registered_handlers: list[object] = []
+
     @app.exception_handler(HTTPException)  # pyright: ignore
     async def http_exception_handler(request: Request, exc: HTTPException):
         """
@@ -88,6 +90,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             headers=exc.headers,
         )
 
+    registered_handlers.append(http_exception_handler)
+
     @app.exception_handler(RequestValidationError)  # pyright: ignore
     async def fastapi_validation_exception_handler(request: Request, exc: RequestValidationError):
         """
@@ -99,6 +103,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         """
         return await _validation_exception_handler(exc)
 
+    registered_handlers.append(fastapi_validation_exception_handler)
+
     @app.exception_handler(ValidationError)  # pyright: ignore
     async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
         """
@@ -109,6 +115,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         :return:
         """
         return await _validation_exception_handler(exc)
+
+    registered_handlers.append(pydantic_validation_exception_handler)
 
     @app.exception_handler(AssertionError)  # pyright: ignore
     async def assertion_error_handler(request: Request, exc: AssertionError):
@@ -135,6 +143,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             content=content,
         )
 
+    registered_handlers.append(assertion_error_handler)
+
     @app.exception_handler(BaseExceptionError)  # pyright: ignore
     async def custom_exception_handler(request: Request, exc: BaseExceptionError):
         """
@@ -156,6 +166,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             content=content,
             background=exc.background,
         )
+
+    registered_handlers.append(custom_exception_handler)
 
     @app.exception_handler(Exception)  # pyright: ignore
     async def all_unknown_exception_handler(request: Request, exc: Exception):
@@ -180,6 +192,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             status_code=StandardResponseCode.HTTP_500,
             content=content,
         )
+
+    registered_handlers.append(all_unknown_exception_handler)
 
     if settings.MIDDLEWARE_CORS:
 
@@ -232,3 +246,8 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
                     response.headers['Access-Control-Allow-Origin'] = origin
                     response.headers.add_vary_header('Origin')
             return response
+
+        registered_handlers.append(cors_custom_code_500_exception_handler)
+
+    # 保持对框架注册回调的显式引用，避免静态分析误判为未使用函数。
+    _ = registered_handlers

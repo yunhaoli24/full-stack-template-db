@@ -1,11 +1,10 @@
-from typing import cast
+from typing import Any, cast
 
 from celery import states  # pyright: ignore
 from celery.backends.base import BaseBackend
 from celery.backends.database import retry, session_cleanup
 from celery.exceptions import ImproperlyConfigured
 from celery.utils.time import maybe_timedelta
-from sqlalchemy import PickleType
 from sqlalchemy.orm import Session
 
 from backend.app.task.model.result import Task, TaskExtended, TaskSet
@@ -26,7 +25,13 @@ class DatabaseBackend(BaseBackend):
     task_cls = Task
     taskset_cls = TaskSet
 
-    def __init__(self, dburi=None, engine_options=None, url=None, **kwargs) -> None:  # noqa: ANN001
+    def __init__(
+        self,
+        dburi: str | None = None,
+        engine_options: dict[str, Any] | None = None,
+        url: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         # The `url` argument was added later and is used by
         # the app to set backend by url (celery.app.backends.by_url)
         super().__init__(expires_type=maybe_timedelta, url=url, **kwargs)
@@ -56,14 +61,14 @@ class DatabaseBackend(BaseBackend):
             self._create_tables()
 
     @property
-    def extended_result(self):  # noqa: ANN201
+    def extended_result(self) -> bool:
         return self.app.conf.find_value_for_key('extended', 'result')
 
     def _create_tables(self) -> None:
         """Create the task and taskset tables."""
         self.result_session()
 
-    def result_session(self, session_manager=None) -> Session:  # noqa: ANN001
+    def result_session(self, session_manager: SessionManager | None = None) -> Session:
         if session_manager is None:
             session_manager = self.session_manager
         return session_manager.session_factory(
@@ -73,7 +78,15 @@ class DatabaseBackend(BaseBackend):
         )
 
     @retry  # pyright: ignore
-    def _store_result(self, task_id, result, state, traceback=None, request=None, **kwargs) -> None:  # noqa: ANN001
+    def _store_result(
+        self,
+        task_id: str,
+        result: Any,
+        state: str,
+        traceback: str | None = None,
+        request: Any = None,
+        **kwargs: Any,
+    ) -> None:
         """Store return value and state of an executed task."""
         session = self.result_session()
         with session_cleanup(session):
@@ -90,7 +103,14 @@ class DatabaseBackend(BaseBackend):
             self._update_result(task, result, state, traceback=traceback, request=request)
             session.commit()
 
-    def _update_result(self, task, result, state, traceback=None, request=None) -> None:  # noqa: ANN001
+    def _update_result(
+        self,
+        task: Task | TaskExtended,
+        result: Any,
+        state: str,
+        traceback: str | None = None,
+        request: Any = None,
+    ) -> None:
         meta = self._get_result_meta(
             result=result,
             state=state,
@@ -112,7 +132,7 @@ class DatabaseBackend(BaseBackend):
             setattr(task, column, value)
 
     @retry  # pyright: ignore
-    def _get_task_meta_for(self, task_id: str):  # noqa: ANN202
+    def _get_task_meta_for(self, task_id: str) -> dict[str, Any]:
         """Get task meta-data for a task by id."""
         session = self.result_session()
         with session_cleanup(session):
@@ -132,7 +152,7 @@ class DatabaseBackend(BaseBackend):
             return self.meta_from_decoded(data)
 
     @retry  # pyright: ignore
-    def _save_group(self, group_id: str, result: PickleType):  # noqa: ANN202
+    def _save_group(self, group_id: str, result: Any) -> Any:
         """Store the result of an executed group."""
         session = self.result_session()
         with session_cleanup(session):
@@ -179,7 +199,11 @@ class DatabaseBackend(BaseBackend):
             session.query(self.taskset_cls).filter(self.taskset_cls.date_done < (now - expires)).delete()
             session.commit()
 
-    def __reduce__(self, args=(), kwargs=None):  # noqa: ANN001, ANN204
+    def __reduce__(
+        self,
+        args: tuple[Any, ...] = (),
+        kwargs: dict[str, Any] | None = None,
+    ) -> Any:
         kwargs = kwargs or {}
         kwargs.update({'dburi': self.url, 'expires': self.expires, 'engine_options': self.engine_options})
         return super().__reduce__(args, kwargs)

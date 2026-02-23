@@ -42,7 +42,7 @@ logger = get_logger('fba.schedulers')
 class ModelEntry(ScheduleEntry):
     """任务调度实体"""
 
-    def __init__(self, model: TaskScheduler, app=None) -> None:  # noqa:ANN001,C901
+    def __init__(self, model: TaskScheduler, app: Any = None) -> None:  # noqa:C901
         super().__init__(
             app=app or current_app._get_current_object(),
             name=model.name,
@@ -161,7 +161,7 @@ class ModelEntry(ScheduleEntry):
                 logger.warning(f'任务 {self.model.name} 不存在，跳过更新')
 
     @classmethod
-    async def from_entry(cls, name, app=None, **entry) -> ModelEntry:  # noqa: ANN001
+    async def from_entry(cls, name: str, app: Any = None, **entry: Any) -> ModelEntry:
         """保存或更新本地任务调度"""
         async with async_db_session.begin() as db:
             stmt = select(TaskScheduler).where(TaskScheduler.name == name)
@@ -222,8 +222,8 @@ class ModelEntry(ScheduleEntry):
         args: tuple | None = None,
         kwargs: dict | None = None,
         options: dict | None = None,
-        **entry,
-    ) -> dict:
+        **entry: Any,
+    ) -> dict[str, Any]:
         model_schedule = await cls.to_model_schedule(name, task, schedule)
         model_dict = select_as_dict(model_schedule)
         for k in ['id', 'created_time', 'updated_time']:
@@ -282,14 +282,14 @@ class DatabaseScheduler(Scheduler):
     lock: Lock | None = None
     lock_key = f'{settings.CELERY_REDIS_PREFIX}:beat_lock'
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.app = kwargs['app']
         self._dirty: set[str] = set()
         super().__init__(*args, **kwargs)
         self._finalize = Finalize(self, self.sync, exitpriority=5)
         self.max_interval = kwargs.get('max_interval') or self.app.conf.beat_max_loop_interval or DEFAULT_MAX_INTERVAL
 
-    def install_default_entries(self, data) -> None:  # noqa: ANN001
+    def install_default_entries(self, data: dict[str, Any]) -> None:
         """重写父函数"""
         entries: dict[str, Any] = {}
         if self.app.conf.result_expires:
@@ -303,14 +303,14 @@ class DatabaseScheduler(Scheduler):
             )
         self.update_from_dict(entries)
 
-    def schedules_equal(self, *args, **kwargs) -> bool:
+    def schedules_equal(self, *args: Any, **kwargs: Any) -> bool:
         """重写父函数"""
         if self._heap_invalidated:
             self._heap_invalidated = False
             return False
         return super().schedules_equal(*args, **kwargs)
 
-    def reserve(self, entry):  # noqa: ANN001, ANN201
+    def reserve(self, entry: ModelEntry) -> ModelEntry:
         """重写父函数"""
         new_entry = next(entry)
         # 需要按名称存储条目，因为条目可能会发生变化
@@ -347,7 +347,7 @@ class DatabaseScheduler(Scheduler):
             # 请稍后重试（仅针对失败的）
             self._dirty |= failed
 
-    def tick(self, **kwargs) -> float:
+    def tick(self, **kwargs: Any) -> float:
         """重写父函数"""
         if self.lock:
             logger.debug('beat: Extending lock...')
@@ -438,13 +438,16 @@ class DatabaseScheduler(Scheduler):
 
 
 @beat_init.connect  # pyright: ignore
-def acquire_distributed_beat_lock(sender=None, **kwargs) -> None:  # noqa: ANN001
+def acquire_distributed_beat_lock(sender: Any = None, **kwargs: Any) -> None:
     """
     尝试在启动时获取锁
 
     :param sender: 接收方应响应的发送方
     :return:
     """
+    if sender is None:
+        return
+
     scheduler = sender.scheduler
     if not scheduler.lock_key:
         return

@@ -1,5 +1,7 @@
 import urllib.parse
 
+from typing import Any
+
 import socketio
 
 from backend.common.log import log
@@ -20,7 +22,7 @@ sio = socketio.AsyncServer(  # pyright: ignore
 
 
 @sio.event  # pyright: ignore
-async def connect(sid, environ, auth) -> bool:
+async def connect(_sid: str, _environ: dict[str, Any], auth: dict[str, Any] | None) -> bool:
     """Socket 连接事件"""
     if not auth:
         log.error('WebSocket 连接失败：无授权')
@@ -48,6 +50,6 @@ async def connect(sid, environ, auth) -> bool:
 
 
 @sio.event  # pyright: ignore
-async def disconnect(sid) -> None:
+async def disconnect(_sid: str) -> None:
     """Socket 断开连接事件"""
     await redis_client.spop(settings.TOKEN_ONLINE_REDIS_PREFIX)

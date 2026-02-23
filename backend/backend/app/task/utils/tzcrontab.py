@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from celery import schedules  # pyright: ignore
 from celery.schedules import ParseException, crontab
@@ -10,7 +11,15 @@ from backend.utils.timezone import timezone
 class TzAwareCrontab(schedules.crontab):
     """时区感知 Crontab"""
 
-    def __init__(self, minute='*', hour='*', day_of_week='*', day_of_month='*', month_of_year='*', app=None) -> None:  # noqa: ANN001
+    def __init__(
+        self,
+        minute: str = '*',
+        hour: str = '*',
+        day_of_week: str = '*',
+        day_of_month: str = '*',
+        month_of_year: str = '*',
+        app: Any = None,
+    ) -> None:
         super().__init__(
             minute=minute,
             hour=hour,
