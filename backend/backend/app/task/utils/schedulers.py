@@ -141,7 +141,7 @@ class ModelEntry(ScheduleEntry):
 
     next = __next__
 
-    async def save(self, fields: tuple = ()) -> None:
+    async def save(self, fields: tuple[str, ...] = ()) -> None:
         """
         保存任务状态字段
 
@@ -219,9 +219,9 @@ class ModelEntry(ScheduleEntry):
         name: str,
         task: str,
         schedule: schedules.schedule | TzAwareCrontab,
-        args: tuple | None = None,
-        kwargs: dict | None = None,
-        options: dict | None = None,
+        args: tuple[Any, ...] | None = None,
+        kwargs: dict[str, Any] | None = None,
+        options: dict[str, Any] | None = None,
         **entry: Any,
     ) -> dict[str, Any]:
         model_schedule = await cls.to_model_schedule(name, task, schedule)
@@ -250,7 +250,7 @@ class ModelEntry(ScheduleEntry):
         expire_seconds: int | None = None,
         *,
         one_off: bool = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         data = {
             'queue': queue,
             'exchange': exchange,
@@ -365,7 +365,7 @@ class DatabaseScheduler(Scheduler):
 
         super().close()
 
-    def update_from_dict(self, beat_dict: dict) -> None:
+    def update_from_dict(self, beat_dict: dict[str, dict[str, Any]]) -> None:
         """重写父函数"""
         s = {}
         name: str | None = None

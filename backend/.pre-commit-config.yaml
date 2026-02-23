@@ -20,16 +20,21 @@ repos:
           - '--unsafe-fixes'
       - id: ruff-format
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+  - repo: local
     hooks:
       - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
 
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.408
+  - repo: local
     hooks:
-    - id: pyright
-      args:
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
+        language: system
+        types_or: [python, pyi]
+        args:
           - --threads=4
 
   - repo: https://github.com/astral-sh/uv-pre-commit

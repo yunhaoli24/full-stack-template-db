@@ -1,3 +1,5 @@
+from typing import Any
+
 import httpx
 
 from fastapi import Request
@@ -35,7 +37,7 @@ def get_request_ip(request: Request) -> str:
     return request.client.host
 
 
-async def get_location_online(ip: str, user_agent: str) -> dict | None:
+async def get_location_online(ip: str, user_agent: str) -> dict[str, Any] | None:
     """
     在线获取 IP 地址属地，无法保证可用性，准确率较高
 
@@ -60,7 +62,7 @@ async def get_location_online(ip: str, user_agent: str) -> dict | None:
 __xdb_searcher = XdbSearcher(contentBuff=XdbSearcher.loadContentFromFile(dbfile=STATIC_DIR / 'ip2region_v4.xdb'))
 
 
-def get_location_offline(ip: str) -> dict | None:
+def get_location_offline(ip: str) -> dict[str, Any] | None:
     """
     离线获取 IP 地址属地，无法保证准确率，100% 可用
 

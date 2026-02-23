@@ -3,14 +3,12 @@ import inspect
 import os.path
 
 from functools import lru_cache
-from typing import Any, TypeVar
+from typing import Any
 
 import sqlalchemy as sa
 
 from backend.common.exception import errors
 from backend.common.log import log
-
-T = TypeVar('T')
 
 
 @lru_cache(maxsize=512)
@@ -24,7 +22,7 @@ def import_module_cached(module_path: str) -> Any:
     return importlib.import_module(module_path)
 
 
-def dynamic_import_data_model(module_path: str) -> type[T]:
+def dynamic_import_data_model(module_path: str) -> type[object]:
     """
     动态导入数据模型
 

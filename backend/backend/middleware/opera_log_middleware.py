@@ -3,7 +3,6 @@ import time
 from asyncio import Queue
 from typing import Any
 
-from asgiref.sync import sync_to_async
 from fastapi import Response
 from starlette.datastructures import UploadFile
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -32,7 +31,7 @@ from backend.utils.trace_id import get_request_trace_id
 class OperaLogMiddleware(BaseHTTPMiddleware):
     """操作日志中间件"""
 
-    opera_log_queue: Queue = Queue(maxsize=100000)
+    opera_log_queue: Queue[CreateOperaLogParam] = Queue(maxsize=100000)
 
     async def dispatch(self, request: Request, call_next: Any) -> Response:
         """
@@ -159,7 +158,7 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
         :param request: FastAPI 请求对象
         :return:
         """
-        args = {}
+        args: dict[str, Any] = {}
 
         # 查询参数
         query_params = dict(request.query_params)
@@ -201,8 +200,7 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
         return args or None
 
     @staticmethod
-    @sync_to_async  # pyright: ignore
-    def desensitization(args: dict[str, Any]) -> dict[str, Any]:
+    async def desensitization(args: dict[str, Any]) -> dict[str, Any]:
         """
         脱敏处理
 

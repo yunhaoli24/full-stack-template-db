@@ -20,7 +20,7 @@ PYTEST_BASE_URL = f'http://testserver{settings.FASTAPI_API_V1_PATH}'
 
 
 @pytest.fixture(scope='module')  # pyright: ignore
-def client() -> Generator:
+def client() -> Generator[TestClient, None, None]:
     with TestClient(app, base_url=PYTEST_BASE_URL) as c:
         yield c
 

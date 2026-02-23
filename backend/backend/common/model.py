@@ -101,7 +101,7 @@ class MappedBase(AsyncAttrs, DeclarativeBase):
         return self.__name__.lower()
 
     @declared_attr.directive  # pyright: ignore
-    def __table_args__(self) -> dict:
+    def __table_args__(self) -> dict[str, str]:
         """表配置"""
         return {'comment': self.__doc__ or ''}
 

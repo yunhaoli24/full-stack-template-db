@@ -11,17 +11,6 @@
     ],
     "python.analysis.diagnosticSeverityOverrides": {
         "typeCheckingMode": "strict",
-        "reportMissingImports": "none",
-        "reportMissingTypeStubs": "none",
-        "reportUnknownMemberType": "none",
-        "reportUnknownArgumentType": "none",
-        "reportUnknownVariableType": "none",
-        "reportUnknownParameterType": "none",
-        "reportGeneralTypeIssues": "none",
-        "reportOptionalMemberAccess": "none",
-        "reportOptionalSubscript": "none",
-        "reportOptionalCall": "none",
-        "reportIncompatibleMethodOverride": "none",
     },
     "python.analysis.diagnosticMode": "workspace",
     "[python]": {

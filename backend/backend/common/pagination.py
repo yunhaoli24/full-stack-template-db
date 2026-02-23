@@ -62,7 +62,7 @@ class _CustomPage(_PageDetails, AbstractPage[T], Generic[T]):
     @classmethod
     def create(
         cls,
-        items: list,
+        items: list[T],
         params: _CustomPageParams,
         total: int = 0,
     ) -> Self:
@@ -120,7 +120,7 @@ async def paging_data(db: AsyncSession, select: Select, **kwargs: Any) -> dict[s
     :param kwargs: 更多 fastapi-pagination apaginate 参数
     :return:
     """
-    paginated_data: _CustomPage = await apaginate(db, select, **kwargs)
+    paginated_data: _CustomPage[Any] = await apaginate(db, select, **kwargs)
     page_data = paginated_data.model_dump()
     return page_data
 

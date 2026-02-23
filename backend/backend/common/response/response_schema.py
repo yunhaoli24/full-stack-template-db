@@ -69,7 +69,7 @@ class ResponseBase:
         *,
         res: CustomResponseCode | CustomResponse,
         data: Any | None,
-    ) -> ResponseModel | ResponseSchemaModel:
+    ) -> ResponseModel | ResponseSchemaModel[Any]:
         """
         请求返回通用方法
 
@@ -84,7 +84,7 @@ class ResponseBase:
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_200,
         data: Any | None = None,
-    ) -> ResponseModel | ResponseSchemaModel:
+    ) -> ResponseModel | ResponseSchemaModel[Any]:
         """
         成功响应
 
@@ -99,7 +99,7 @@ class ResponseBase:
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_400,
         data: Any = None,
-    ) -> ResponseModel | ResponseSchemaModel:
+    ) -> ResponseModel | ResponseSchemaModel[Any]:
         """
         失败响应
 

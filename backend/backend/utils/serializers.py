@@ -1,7 +1,7 @@
 from collections import defaultdict, namedtuple
 from collections.abc import Sequence
 from decimal import Decimal
-from typing import Any, TypeAlias, TypeVar
+from typing import Any, TypeAlias
 
 from fastapi.encoders import decimal_encoder
 from msgspec import json
@@ -10,8 +10,6 @@ from sqlalchemy.orm import ColumnProperty, SynonymProperty, class_mapper
 from starlette.responses import JSONResponse
 
 RowData: TypeAlias = Row[Any] | RowMapping | Any
-
-R = TypeVar('R', bound=RowData)
 
 
 class MsgSpecJSONResponse(JSONResponse):
@@ -23,7 +21,7 @@ class MsgSpecJSONResponse(JSONResponse):
         return json.encode(content)
 
 
-def select_columns_serialize(row: R) -> dict[str, Any]:
+def select_columns_serialize(row: RowData) -> dict[str, Any]:
     """
     序列化 SQLAlchemy 查询表的列，不包含关联列
 
@@ -39,7 +37,7 @@ def select_columns_serialize(row: R) -> dict[str, Any]:
     return result
 
 
-def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
+def select_list_serialize(row: Sequence[RowData]) -> list[dict[str, Any]]:
     """
     序列化 SQLAlchemy 查询列表
 
@@ -49,7 +47,7 @@ def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
     return [select_columns_serialize(item) for item in row]
 
 
-def select_as_dict(row: R, *, use_alias: bool = False) -> dict[str, Any]:
+def select_as_dict(row: RowData, *, use_alias: bool = False) -> dict[str, Any]:
     """
     将 SQLAlchemy 查询结果转换为字典，可以包含关联数据
 
@@ -73,7 +71,7 @@ def select_as_dict(row: R, *, use_alias: bool = False) -> dict[str, Any]:
 
 
 def select_join_serialize(  # noqa: C901
-    row: R | Sequence[R],
+    row: RowData | Sequence[RowData],
     relationships: list[str] | None = None,
     *,
     return_as_dict: bool = False,
@@ -110,7 +108,9 @@ def select_join_serialize(  # noqa: C901
         """获取关系键名"""
         return custom_field or (model_name if rel_type in ('o2o', 'm2o') else f'{model_name}s')
 
-    def parse_relationships(relationship_list: list[str]) -> tuple[dict, dict, dict]:
+    def parse_relationships(
+        relationship_list: list[str],
+    ) -> tuple[dict[str, dict[str, str]], dict[str, str], dict[tuple[str, str], str]]:
         """解析关系定义"""
         if not relationship_list:
             return {}, {}, {}
@@ -220,7 +220,7 @@ def select_join_serialize(  # noqa: C901
         return None
 
     # 预生成 namedtuple 类型
-    namedtuple_cache = {}
+    namedtuple_cache: dict[str, Any] = {}
     if not return_as_dict:
         for cls_name, columns in model_info.items():
             if columns:
@@ -233,7 +233,10 @@ def select_join_serialize(  # noqa: C901
                         full_columns.append(rel_key)
                     full_columns = sorted(set(full_columns))  # 去重并排序
 
-                namedtuple_cache[cls_name] = namedtuple(cls_name.capitalize(), full_columns or columns)  # noqa: PYI024
+                namedtuple_cache[cls_name] = namedtuple(  # noqa: PYI024
+                    cls_name.capitalize(),
+                    full_columns or columns,
+                )  # pyright: ignore[reportUntypedNamedTuple]
 
     def build_flat_result(build_main_id: int, build_main_obj: Any) -> dict[str, Any]:  # noqa: C901
         """构建扁平化结果"""
@@ -307,7 +310,7 @@ def select_join_serialize(  # noqa: C901
                             if parent_obj_id is not None:
                                 hierarchy[related_class_name][parent_obj_id].append(related_obj)
 
-        def build_recursive(current_cls_name: str, current_parent_id: int) -> list:
+        def build_recursive(current_cls_name: str, current_parent_id: int) -> list[Any]:
             """递归构建嵌套数据"""
             recursive_objs = get_unique_objects(hierarchy[current_cls_name].get(current_parent_id, []))
             if not recursive_objs:

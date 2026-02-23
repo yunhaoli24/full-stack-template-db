@@ -14,7 +14,7 @@ class _EnumBase:
         return list(cls.__members__.keys())  # type: ignore[attr-defined]
 
     @classmethod
-    def get_member_values(cls) -> list:
+    def get_member_values(cls) -> list[Any]:
         """获取枚举成员值列表"""
         return [item.value for item in cls.__members__.values()]  # type: ignore[attr-defined]
 

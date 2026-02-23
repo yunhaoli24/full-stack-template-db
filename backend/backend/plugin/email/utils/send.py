@@ -1,5 +1,6 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from typing import Any
 
 from aiosmtplib import SMTP
 from anyio import open_file
@@ -13,7 +14,7 @@ from backend.utils.dynamic_config import load_email_config
 from backend.utils.timezone import timezone
 
 
-async def render_message(subject: str, from_header: str, content: str | dict, template: str | None) -> bytes:
+async def render_message(subject: str, from_header: str, content: str | dict[str, Any], template: str | None) -> bytes:
     """
     渲染邮件内容
 
@@ -46,7 +47,7 @@ async def send_email(
     db: AsyncSession,
     recipients: str | list[str],
     subject: str,
-    content: str | dict,
+    content: str | dict[str, Any],
     template: str | None = None,
 ) -> None:
     """

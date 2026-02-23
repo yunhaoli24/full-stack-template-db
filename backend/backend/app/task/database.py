@@ -163,7 +163,7 @@ class DatabaseBackend(BaseBackend):
             return result
 
     @retry  # pyright: ignore
-    def _restore_group(self, group_id: str) -> dict | None:
+    def _restore_group(self, group_id: str) -> dict[str, Any] | None:
         """Get meta-data for group by id."""
         session = self.result_session()
         with session_cleanup(session):

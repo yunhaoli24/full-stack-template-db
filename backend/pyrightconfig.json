@@ -1,16 +1,5 @@
 {
     "typeCheckingMode": "strict",
-    "reportMissingImports": "none",
-    "reportMissingTypeStubs": "none",
-    "reportUnknownMemberType": "none",
-    "reportUnknownArgumentType": "none",
-    "reportUnknownVariableType": "none",
-    "reportUnknownParameterType": "none",
-    "reportGeneralTypeIssues": "warning",
-    "reportOptionalMemberAccess": "warning",
-    "reportOptionalSubscript": "warning",
-    "reportOptionalCall": "warning",
-    "reportIncompatibleMethodOverride": "none",
     "exclude": [
         "**/.venv",
         "**/venv",

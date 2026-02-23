@@ -34,7 +34,7 @@ class Task(MappedBase):
     def __init__(self, task_id: str) -> None:
         self.task_id = task_id
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'task_id': self.task_id,
             'status': self.status,
@@ -66,7 +66,7 @@ class TaskExtended(Task):
     retries = sa.Column(sa.Integer, nullable=True)
     queue = sa.Column(sa.String(155), nullable=True)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         task_dict = super().to_dict()
         task_dict.update({
             'name': self.name,
@@ -94,7 +94,7 @@ class TaskSet(MappedBase):
         self.taskset_id = taskset_id
         self.result = result
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'taskset_id': self.taskset_id,
             'result': self.result,
