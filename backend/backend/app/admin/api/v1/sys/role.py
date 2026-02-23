@@ -23,13 +23,13 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有角色', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='获取所有角色', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_all_roles(db: CurrentSession) -> ResponseSchemaModel[list[GetRoleDetail]]:
     data = await role_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}/menus', summary='获取角色菜单树', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/menus', summary='获取角色菜单树', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_role_menu_tree(
     db: CurrentSession,
     pk: Annotated[int, Path(description='角色 ID')],
@@ -38,7 +38,7 @@ async def get_role_menu_tree(
     return response_base.success(data=menu)
 
 
-@router.get('/{pk}/scopes', summary='获取角色所有数据范围', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/scopes', summary='获取角色所有数据范围', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_role_scopes(
     db: CurrentSession, pk: Annotated[int, Path(description='角色 ID')]
 ) -> ResponseSchemaModel[list[int]]:
@@ -46,7 +46,7 @@ async def get_role_scopes(
     return response_base.success(data=rule)
 
 
-@router.get('/{pk}', summary='获取角色详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='获取角色详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_role(
     db: CurrentSession, pk: Annotated[int, Path(description='角色 ID')]
 ) -> ResponseSchemaModel[GetRoleWithRelationDetail]:
@@ -61,7 +61,7 @@ async def get_role(
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_roles_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='角色名称')] = None,
@@ -78,7 +78,7 @@ async def get_roles_paginated(
         Depends(RequestPermission('sys:role:add')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def create_role(db: CurrentSessionTransaction, obj: CreateRoleParam) -> ResponseModel:
     await role_service.create(db=db, obj=obj)
     return response_base.success()
@@ -91,7 +91,7 @@ async def create_role(db: CurrentSessionTransaction, obj: CreateRoleParam) -> Re
         Depends(RequestPermission('sys:role:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_role(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='角色 ID')], obj: UpdateRoleParam
 ) -> ResponseModel:
@@ -108,7 +108,7 @@ async def update_role(
         Depends(RequestPermission('sys:role:menu:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_role_menus(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='角色 ID')],
@@ -127,7 +127,7 @@ async def update_role_menus(
         Depends(RequestPermission('sys:role:scope:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_role_scopes(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='角色 ID')],
@@ -146,7 +146,7 @@ async def update_role_scopes(
         Depends(RequestPermission('sys:role:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_roles(db: CurrentSessionTransaction, obj: DeleteRoleParam) -> ResponseModel:
     count = await role_service.delete(db=db, obj=obj)
     if count > 0:

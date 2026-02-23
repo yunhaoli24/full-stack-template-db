@@ -201,7 +201,7 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
         return args or None
 
     @staticmethod
-    @sync_to_async
+    @sync_to_async  # type: ignore[misc]
     def desensitization(args: dict[str, Any]) -> dict[str, Any]:
         """
         脱敏处理

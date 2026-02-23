@@ -8,7 +8,7 @@ from backend.utils.server_info import server_info
 router = APIRouter()
 
 
-@router.get('', summary='server 监控', dependencies=[DependsJwtAuth])
+@router.get('', summary='server 监控', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_server_info() -> ResponseModel:
     data = {
         # 扔到线程池，避免阻塞

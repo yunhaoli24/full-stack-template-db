@@ -18,13 +18,13 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有任务调度', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='获取所有任务调度', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_all_task_schedulers(db: CurrentSession) -> ResponseSchemaModel[list[GetTaskSchedulerDetail]]:
     schedulers = await task_scheduler_service.get_all(db=db)
     return response_base.success(data=schedulers)
 
 
-@router.get('/{pk}', summary='获取任务调度详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='获取任务调度详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_task_scheduler(
     db: CurrentSession,
     pk: Annotated[int, Path(description='任务调度 ID')],
@@ -40,7 +40,7 @@ async def get_task_scheduler(
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_task_scheduler_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='任务调度名称')] = None,
@@ -57,7 +57,7 @@ async def get_task_scheduler_paginated(
         Depends(RequestPermission('sys:task:add')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def create_task_scheduler(db: CurrentSessionTransaction, obj: CreateTaskSchedulerParam) -> ResponseModel:
     await task_scheduler_service.create(db=db, obj=obj)
     return response_base.success()
@@ -70,7 +70,7 @@ async def create_task_scheduler(db: CurrentSessionTransaction, obj: CreateTaskSc
         Depends(RequestPermission('sys:task:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_task_scheduler(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='任务调度 ID')],
@@ -89,7 +89,7 @@ async def update_task_scheduler(
         Depends(RequestPermission('sys:task:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_task_scheduler_status(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='任务调度 ID')]
 ) -> ResponseModel:
@@ -106,7 +106,7 @@ async def update_task_scheduler_status(
         Depends(RequestPermission('sys:task:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_task_scheduler(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='任务调度 ID')]
 ) -> ResponseModel:
@@ -123,7 +123,7 @@ async def delete_task_scheduler(
         Depends(RequestPermission('sys:task:exec')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def execute_task(db: CurrentSession, pk: Annotated[int, Path(description='任务调度 ID')]) -> ResponseModel:
     await task_scheduler_service.execute(db=db, pk=pk)
     return response_base.success()

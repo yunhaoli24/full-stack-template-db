@@ -21,13 +21,13 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有数据范围', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='获取所有数据范围', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_all_data_scope(db: CurrentSession) -> ResponseSchemaModel[list[GetDataScopeDetail]]:
     data = await data_scope_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取数据范围详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='获取数据范围详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_data_scope(
     db: CurrentSession,
     pk: Annotated[int, Path(description='数据范围 ID')],
@@ -36,7 +36,7 @@ async def get_data_scope(
     return response_base.success(data=data)
 
 
-@router.get('/{pk}/rules', summary='获取数据范围所有规则', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/rules', summary='获取数据范围所有规则', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_data_scope_rules(
     db: CurrentSession,
     pk: Annotated[int, Path(description='数据范围 ID')],
@@ -52,7 +52,7 @@ async def get_data_scope_rules(
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_data_scopes_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='范围名称')] = None,
@@ -69,7 +69,7 @@ async def get_data_scopes_paginated(
         Depends(RequestPermission('data:scope:add')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def create_data_scope(db: CurrentSessionTransaction, obj: CreateDataScopeParam) -> ResponseModel:
     await data_scope_service.create(db=db, obj=obj)
     return response_base.success()
@@ -82,7 +82,7 @@ async def create_data_scope(db: CurrentSessionTransaction, obj: CreateDataScopeP
         Depends(RequestPermission('data:scope:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_data_scope(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='数据范围 ID')],
@@ -101,7 +101,7 @@ async def update_data_scope(
         Depends(RequestPermission('data:scope:rule:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_data_scope_rules(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='数据范围 ID')],
@@ -120,7 +120,7 @@ async def update_data_scope_rules(
         Depends(RequestPermission('data:scope:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_data_scopes(db: CurrentSessionTransaction, obj: DeleteDataScopeParam) -> ResponseModel:
     count = await data_scope_service.delete(db=db, obj=obj)
     if count > 0:

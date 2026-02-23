@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from celery import states
+from celery import states  # type: ignore[attr-defined]
 from sqlalchemy.types import PickleType
 
 from backend.common.model import MappedBase, TimeZone

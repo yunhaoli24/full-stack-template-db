@@ -20,13 +20,13 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/models', summary='获取数据规则可用模型', dependencies=[DependsJwtAuth])
+@router.get('/models', summary='获取数据规则可用模型', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_data_rule_models() -> ResponseSchemaModel[list[str]]:
     models = await data_rule_service.get_models()
     return response_base.success(data=models)
 
 
-@router.get('/models/{model}/columns', summary='获取数据规则可用模型列', dependencies=[DependsJwtAuth])
+@router.get('/models/{model}/columns', summary='获取数据规则可用模型列', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_data_rule_model_columns(
     model: Annotated[str, Path(description='模型名称')],
 ) -> ResponseSchemaModel[list[GetDataRuleColumnDetail]]:
@@ -34,13 +34,13 @@ async def get_data_rule_model_columns(
     return response_base.success(data=models)
 
 
-@router.get('/all', summary='获取所有数据规则', dependencies=[DependsJwtAuth])
+@router.get('/all', summary='获取所有数据规则', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_all_data_rules(db: CurrentSession) -> ResponseSchemaModel[list[GetDataRuleDetail]]:
     data = await data_rule_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取数据规则详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='获取数据规则详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_data_rule(
     db: CurrentSession,
     pk: Annotated[int, Path(description='数据规则 ID')],
@@ -56,7 +56,7 @@ async def get_data_rule(
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_data_rules_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description='规则名称')] = None,
@@ -72,7 +72,7 @@ async def get_data_rules_paginated(
         Depends(RequestPermission('data:rule:add')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def create_data_rule(db: CurrentSessionTransaction, obj: CreateDataRuleParam) -> ResponseModel:
     await data_rule_service.create(db=db, obj=obj)
     return response_base.success()
@@ -85,7 +85,7 @@ async def create_data_rule(db: CurrentSessionTransaction, obj: CreateDataRulePar
         Depends(RequestPermission('data:rule:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_data_rule(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='数据规则 ID')],
@@ -104,7 +104,7 @@ async def update_data_rule(
         Depends(RequestPermission('data:rule:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_data_rules(db: CurrentSessionTransaction, obj: DeleteDataRuleParam) -> ResponseModel:
     count = await data_rule_service.delete(db=db, obj=obj)
     if count > 0:

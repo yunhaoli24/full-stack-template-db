@@ -2,7 +2,7 @@ import asyncio
 
 from typing import Any
 
-from celery import Task
+from celery import Task  # type: ignore[attr-defined]
 from sqlalchemy.exc import SQLAlchemyError
 
 from backend.common.socketio.actions import task_notification

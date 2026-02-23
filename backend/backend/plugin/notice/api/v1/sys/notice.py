@@ -19,7 +19,7 @@ from backend.plugin.notice.service.notice_service import notice_service
 router = APIRouter()
 
 
-@router.get('/{pk}', summary='获取通知公告详情', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='获取通知公告详情', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_notice(
     db: CurrentSession, pk: Annotated[int, Path(description='通知公告 ID')]
 ) -> ResponseSchemaModel[GetNoticeDetail]:
@@ -34,7 +34,7 @@ async def get_notice(
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_notices_paginated(
     db: CurrentSession,
     title: Annotated[str | None, Query(description='标题')] = None,
@@ -52,7 +52,7 @@ async def get_notices_paginated(
         Depends(RequestPermission('sys:notice:add')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def create_notice(db: CurrentSessionTransaction, obj: CreateNoticeParam) -> ResponseModel:
     await notice_service.create(db=db, obj=obj)
     return response_base.success()
@@ -65,7 +65,7 @@ async def create_notice(db: CurrentSessionTransaction, obj: CreateNoticeParam) -
         Depends(RequestPermission('sys:notice:edit')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def update_notice(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description='通知公告 ID')], obj: UpdateNoticeParam
 ) -> ResponseModel:
@@ -82,7 +82,7 @@ async def update_notice(
         Depends(RequestPermission('sys:notice:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_notices(db: CurrentSessionTransaction, obj: DeleteNoticeParam) -> ResponseModel:
     count = await notice_service.delete(db=db, obj=obj)
     if count > 0:

@@ -19,7 +19,7 @@ router = APIRouter()
     '/captcha',
     summary='获取登录验证码',
     dependencies=[Depends(create_rate_limiter(limit=5, seconds=10))],
-)
+)  # type: ignore[misc]
 async def get_captcha(db: CurrentSession) -> ResponseSchemaModel[GetCaptchaDetail]:
     await load_login_config(db)
     img, code = await run_in_threadpool(img_captcha, img_byte='base64')

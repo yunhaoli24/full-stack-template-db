@@ -62,7 +62,7 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
 
 
 def register_exception(app: FastAPI) -> None:  # noqa: C901
-    @app.exception_handler(HTTPException)
+    @app.exception_handler(HTTPException)  # type: ignore[misc]
     async def http_exception_handler(request: Request, exc: HTTPException):
         """
         全局 HTTP 异常处理
@@ -88,7 +88,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             headers=exc.headers,
         )
 
-    @app.exception_handler(RequestValidationError)
+    @app.exception_handler(RequestValidationError)  # type: ignore[misc]
     async def fastapi_validation_exception_handler(request: Request, exc: RequestValidationError):
         """
         FastAPI 数据验证异常处理
@@ -99,7 +99,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         """
         return await _validation_exception_handler(exc)
 
-    @app.exception_handler(ValidationError)
+    @app.exception_handler(ValidationError)  # type: ignore[misc]
     async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
         """
         Pydantic 数据验证异常处理
@@ -110,7 +110,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         """
         return await _validation_exception_handler(exc)
 
-    @app.exception_handler(AssertionError)
+    @app.exception_handler(AssertionError)  # type: ignore[misc]
     async def assertion_error_handler(request: Request, exc: AssertionError):
         """
         断言错误处理
@@ -135,7 +135,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             content=content,
         )
 
-    @app.exception_handler(BaseExceptionError)
+    @app.exception_handler(BaseExceptionError)  # type: ignore[misc]
     async def custom_exception_handler(request: Request, exc: BaseExceptionError):
         """
         全局自定义异常处理
@@ -157,7 +157,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             background=exc.background,
         )
 
-    @app.exception_handler(Exception)
+    @app.exception_handler(Exception)  # type: ignore[misc]
     async def all_unknown_exception_handler(request: Request, exc: Exception):
         """
         全局未知异常处理
@@ -183,7 +183,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
     if settings.MIDDLEWARE_CORS:
 
-        @app.exception_handler(StandardResponseCode.HTTP_500)
+        @app.exception_handler(StandardResponseCode.HTTP_500)  # type: ignore[misc]
         async def cors_custom_code_500_exception_handler(request: Request, exc: BaseExceptionError | Exception):
             """
             跨域自定义 500 异常处理

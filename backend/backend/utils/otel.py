@@ -69,7 +69,7 @@ def _init_logging(resource: Resource) -> None:
         otel_logging_handler,
         level=settings.LOG_STD_LEVEL,
         format=settings.LOG_FORMAT,
-        filter=lambda record: request_id_filter(record),
+        filter=lambda record: request_id_filter(record),  # type: ignore[arg-type]
     )
 
 

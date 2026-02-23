@@ -21,7 +21,7 @@ router = APIRouter()
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_opera_logs_paginated(
     db: CurrentSession,
     username: Annotated[str | None, Query(description='用户名')] = None,
@@ -40,7 +40,7 @@ async def get_opera_logs_paginated(
         Depends(RequestPermission('log:opera:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_opera_logs(db: CurrentSessionTransaction, obj: DeleteOperaLogParam) -> ResponseModel:
     count = await opera_log_service.delete(db=db, obj=obj)
     if count > 0:
@@ -55,7 +55,7 @@ async def delete_opera_logs(db: CurrentSessionTransaction, obj: DeleteOperaLogPa
         Depends(RequestPermission('log:opera:clear')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_all_opera_logs(db: CurrentSessionTransaction) -> ResponseModel:
     await opera_log_service.delete_all(db=db)
     return response_base.success()

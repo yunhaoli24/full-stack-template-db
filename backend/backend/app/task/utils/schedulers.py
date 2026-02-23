@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from multiprocessing.util import Finalize
 from typing import TYPE_CHECKING, Any
 
-from celery import current_app, schedules
+from celery import current_app, schedules  # type: ignore[attr-defined]
 from celery.beat import ScheduleEntry, Scheduler
 from celery.signals import beat_init
 from celery.utils.log import get_logger
@@ -368,6 +368,7 @@ class DatabaseScheduler(Scheduler):
     def update_from_dict(self, beat_dict: dict) -> None:
         """重写父函数"""
         s = {}
+        name: str | None = None
 
         try:
             for name, entry_fields in beat_dict.items():
@@ -436,7 +437,7 @@ class DatabaseScheduler(Scheduler):
         return self._schedule  # type: ignore[return-value]
 
 
-@beat_init.connect
+@beat_init.connect  # type: ignore[misc]
 def acquire_distributed_beat_lock(sender=None, **kwargs) -> None:  # noqa: ANN001
     """
     尝试在启动时获取锁

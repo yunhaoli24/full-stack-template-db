@@ -14,7 +14,7 @@ from backend.common.security.rbac import DependsRBAC
 router = APIRouter()
 
 
-@router.get('/registered', summary='获取已注册的任务', dependencies=[DependsJwtAuth])
+@router.get('/registered', summary='获取已注册的任务', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_task_registered() -> ResponseSchemaModel[list[TaskRegisteredDetail]]:
     inspector = celery_app.control.inspect(timeout=0.5)
     registered = await run_in_threadpool(inspector.registered)
@@ -40,7 +40,7 @@ async def get_task_registered() -> ResponseSchemaModel[list[TaskRegisteredDetail
         Depends(RequestPermission('sys:task:revoke')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def revoke_task(task_id: Annotated[str, Path(description='任务 UUID')]) -> ResponseModel:
     workers = await run_in_threadpool(celery_app.control.ping, timeout=0.5)
     if not workers:

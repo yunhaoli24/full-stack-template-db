@@ -14,7 +14,7 @@ from backend.database.redis import redis_client
 router = APIRouter()
 
 
-@router.get('', summary='获取在线用户', dependencies=[DependsJwtAuth])
+@router.get('', summary='获取在线用户', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_sessions(
     username: Annotated[str | None, Query(description='用户名')] = None,
 ) -> ResponseSchemaModel[list[GetTokenDetail]]:
@@ -74,7 +74,7 @@ async def get_sessions(
     '/{pk}',
     summary='强制下线',
     dependencies=[DependsSuperUser],
-)
+)  # type: ignore[misc]
 async def delete_session(
     pk: Annotated[int, Path(description='用户 ID')],
     session_uuid: Annotated[str, Query(description='会话 UUID')],

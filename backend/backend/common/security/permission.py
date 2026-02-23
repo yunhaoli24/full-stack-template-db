@@ -7,7 +7,6 @@ from sqlalchemy_crud_plus.types import Model
 
 from backend.common.context import ctx
 from backend.common.enums import RoleDataRuleExpressionType, RoleDataRuleOperatorType
-from backend.common.exception import errors
 from backend.core.conf import settings
 from backend.utils.import_parse import get_all_models
 
@@ -38,8 +37,6 @@ class RequestPermission:
         :return:
         """
         if settings.RBAC_ROLE_MENU_MODE:
-            if not isinstance(self.value, str):
-                raise errors.ServerError
             # 附加权限标识到请求状态
             ctx.permission = self.value
 
@@ -98,16 +95,16 @@ def filter_data_permission(  # noqa: C901
         if table is None:
             continue
         rule_column = data_rule.column
-        if rule_column not in table.columns.keys():
+        if rule_column not in table.columns.keys():  # type: ignore[attr-defined]
             continue
         if rule_column in settings.DATA_PERMISSION_COLUMN_EXCLUDE:
             continue
 
         # 构建过滤条件
         column_obj = (
-            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column]
+            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column]  # type: ignore[attr-defined]
         )
-        column_type = table.columns[rule_column].type.python_type
+        column_type = table.columns[rule_column].type.python_type  # type: ignore[attr-defined]
 
         def cast_value(value: Any) -> Any:
             """类型转换"""
@@ -137,6 +134,8 @@ def filter_data_permission(  # noqa: C901
             case RoleDataRuleExpressionType.not_in:
                 values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
                 condition = column_obj.not_in(values)
+            case _:  # type: ignore[reportUnknownVariableType]
+                condition = None
 
         # 根据运算符添加到对应列表
         if condition is not None:
@@ -145,6 +144,8 @@ def filter_data_permission(  # noqa: C901
                     where_and_list.append(condition)
                 case RoleDataRuleOperatorType.OR:
                     where_or_list.append(condition)
+                case _:  # type: ignore[reportUnknownVariableType]
+                    pass
 
     # 组合所有条件
     where_list = []

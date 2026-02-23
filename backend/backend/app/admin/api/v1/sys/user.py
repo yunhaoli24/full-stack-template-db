@@ -22,13 +22,13 @@ from backend.database.db import CurrentSession, CurrentSessionTransaction
 router = APIRouter()
 
 
-@router.get('/me', summary='获取当前用户信息', dependencies=[DependsJwtAuth])
+@router.get('/me', summary='获取当前用户信息', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_current_user(request: Request) -> ResponseSchemaModel[GetCurrentUserInfoWithRelationDetail]:
     data = request.user.model_dump()
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取用户信息', dependencies=[DependsJwtAuth])
+@router.get('/{pk}', summary='获取用户信息', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_userinfo(
     db: CurrentSession,
     pk: Annotated[int, Path(description='用户 ID')],
@@ -37,7 +37,7 @@ async def get_userinfo(
     return response_base.success(data=data)
 
 
-@router.get('/{pk}/roles', summary='获取用户所有角色', dependencies=[DependsJwtAuth])
+@router.get('/{pk}/roles', summary='获取用户所有角色', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def get_user_roles(
     db: CurrentSession, pk: Annotated[int, Path(description='用户 ID')]
 ) -> ResponseSchemaModel[list[GetRoleDetail]]:
@@ -52,7 +52,7 @@ async def get_user_roles(
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # type: ignore[misc]
 async def get_users_paginated(
     db: CurrentSession,
     dept: Annotated[int | None, Query(description='部门 ID')] = None,
@@ -64,7 +64,7 @@ async def get_users_paginated(
     return response_base.success(data=page_data)
 
 
-@router.post('', summary='创建用户', dependencies=[DependsSuperUser])
+@router.post('', summary='创建用户', dependencies=[DependsSuperUser])  # type: ignore[misc]
 async def create_user(
     db: CurrentSessionTransaction, obj: AddUserParam
 ) -> ResponseSchemaModel[GetUserInfoWithRelationDetail]:
@@ -73,7 +73,7 @@ async def create_user(
     return response_base.success(data=data)
 
 
-@router.put('/{pk}', summary='更新用户信息', dependencies=[DependsSuperUser])
+@router.put('/{pk}', summary='更新用户信息', dependencies=[DependsSuperUser])  # type: ignore[misc]
 async def update_user(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='用户 ID')],
@@ -85,7 +85,7 @@ async def update_user(
     return response_base.fail()
 
 
-@router.put('/{pk}/permissions', summary='更新用户权限', dependencies=[DependsSuperUser])
+@router.put('/{pk}/permissions', summary='更新用户权限', dependencies=[DependsSuperUser])  # type: ignore[misc]
 async def update_user_permission(
     db: CurrentSessionTransaction,
     request: Request,
@@ -98,7 +98,7 @@ async def update_user_permission(
     return response_base.fail()
 
 
-@router.put('/me/password', summary='更新当前用户密码', dependencies=[DependsJwtAuth])
+@router.put('/me/password', summary='更新当前用户密码', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def update_user_password(
     db: CurrentSessionTransaction, request: Request, obj: ResetPasswordParam
 ) -> ResponseModel:
@@ -108,7 +108,7 @@ async def update_user_password(
     return response_base.fail()
 
 
-@router.put('/{pk}/password', summary='重置用户密码', dependencies=[DependsSuperUser])
+@router.put('/{pk}/password', summary='重置用户密码', dependencies=[DependsSuperUser])  # type: ignore[misc]
 async def reset_user_password(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description='用户 ID')],
@@ -120,7 +120,7 @@ async def reset_user_password(
     return response_base.fail()
 
 
-@router.put('/me/nickname', summary='更新当前用户昵称', dependencies=[DependsJwtAuth])
+@router.put('/me/nickname', summary='更新当前用户昵称', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def update_user_nickname(
     db: CurrentSessionTransaction,
     request: Request,
@@ -132,7 +132,7 @@ async def update_user_nickname(
     return response_base.fail()
 
 
-@router.put('/me/avatar', summary='更新当前用户头像', dependencies=[DependsJwtAuth])
+@router.put('/me/avatar', summary='更新当前用户头像', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def update_user_avatar(
     db: CurrentSessionTransaction,
     request: Request,
@@ -144,7 +144,7 @@ async def update_user_avatar(
     return response_base.fail()
 
 
-@router.put('/me/email', summary='更新当前用户邮箱', dependencies=[DependsJwtAuth])
+@router.put('/me/email', summary='更新当前用户邮箱', dependencies=[DependsJwtAuth])  # type: ignore[misc]
 async def update_user_email(
     db: CurrentSessionTransaction,
     request: Request,
@@ -164,7 +164,7 @@ async def update_user_email(
         Depends(RequestPermission('sys:user:del')),
         DependsRBAC,
     ],
-)
+)  # type: ignore[misc]
 async def delete_user(db: CurrentSessionTransaction, pk: Annotated[int, Path(description='用户 ID')]) -> ResponseModel:
     count = await user_service.delete(db=db, pk=pk)
     if count > 0:
