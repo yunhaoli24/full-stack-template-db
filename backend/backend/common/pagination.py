@@ -1,29 +1,31 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from math import ceil
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
+from collections.abc import Sequence
 
-from fastapi import Depends, Query
+from fastapi import Query, Depends
+from pydantic import Field, BaseModel
 from fastapi_pagination import pagination_ctx
-from fastapi_pagination.bases import AbstractPage, AbstractParams, RawParams
-from fastapi_pagination.ext.sqlalchemy import apaginate
+from fastapi_pagination.bases import RawParams, AbstractPage, AbstractParams
 from fastapi_pagination.links.bases import create_links
-from pydantic import BaseModel, Field
+from fastapi_pagination.ext.sqlalchemy import apaginate
+
 
 if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from typing_extensions import Self
+    from typing import Self
 
-T = TypeVar('T')
-SchemaT = TypeVar('SchemaT')
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+T = TypeVar("T")
+SchemaT = TypeVar("SchemaT")
 
 
 class _CustomPageParams(BaseModel, AbstractParams):
-    """自定义分页参数"""
+    """自定义分页参数."""
 
-    page: int = Query(1, ge=1, description='页码')
-    size: int = Query(20, gt=0, le=200, description='每页数量')
+    page: int = Query(1, ge=1, description="页码")
+    size: int = Query(20, gt=0, le=200, description="每页数量")
 
     def to_raw_params(self) -> RawParams:
         return RawParams(
@@ -33,28 +35,28 @@ class _CustomPageParams(BaseModel, AbstractParams):
 
 
 class _Links(BaseModel):
-    """分页链接"""
+    """分页链接."""
 
-    first: str = Field(description='首页链接')
-    last: str = Field(description='尾页链接')
-    self: str = Field(description='当前页链接')
-    next: str | None = Field(None, description='下一页链接')
-    prev: str | None = Field(None, description='上一页链接')
+    first: str = Field(description="首页链接")
+    last: str = Field(description="尾页链接")
+    self: str = Field(description="当前页链接")
+    next: str | None = Field(None, description="下一页链接")
+    prev: str | None = Field(None, description="上一页链接")
 
 
 class _PageDetails(BaseModel):
-    """分页详情"""
+    """分页详情."""
 
-    items: Sequence[Any] = Field([], description='当前页数据列表')
-    total: int = Field(description='数据总条数')
-    page: int = Field(description='当前页码')
-    size: int = Field(description='每页数量')
-    total_pages: int = Field(description='总页数')
-    links: _Links = Field(description='分页链接')
+    items: Sequence[Any] = Field([], description="当前页数据列表")
+    total: int = Field(description="数据总条数")
+    page: int = Field(description="当前页码")
+    size: int = Field(description="每页数量")
+    total_pages: int = Field(description="总页数")
+    links: _Links = Field(description="分页链接")
 
 
-class _CustomPage(_PageDetails, AbstractPage[T], Generic[T]):
-    """自定义分页类"""
+class _CustomPage[T](_PageDetails, AbstractPage[T]):
+    """自定义分页类."""
 
     __params_type__ = _CustomPageParams
 
@@ -67,18 +69,19 @@ class _CustomPage(_PageDetails, AbstractPage[T], Generic[T]):
         **kwargs: Any,
     ) -> Self:
         if not isinstance(params, _CustomPageParams):
-            raise TypeError(f'Unsupported params type: {type(params)!r}')
+            msg = f"Unsupported params type: {type(params)!r}"
+            raise TypeError(msg)
 
         page = params.page
         size = params.size
         total_pages = ceil(total / size)
         links = cast(
-            '_Links',
+            "_Links",
             create_links(
-                first={'page': 1, 'size': size},
-                last={'page': total_pages, 'size': size} if total > 0 else {'page': 1, 'size': size},
-                next={'page': page + 1, 'size': size} if (page + 1) <= total_pages else None,
-                prev={'page': page - 1, 'size': size} if (page - 1) >= 1 else None,
+                first={"page": 1, "size": size},
+                last={"page": total_pages, "size": size} if total > 0 else {"page": 1, "size": size},
+                next={"page": page + 1, "size": size} if (page + 1) <= total_pages else None,
+                prev={"page": page - 1, "size": size} if (page - 1) >= 1 else None,
             ),
         )
 
@@ -92,9 +95,8 @@ class _CustomPage(_PageDetails, AbstractPage[T], Generic[T]):
         )
 
 
-class PageData(_PageDetails, Generic[SchemaT]):
-    """
-    包含返回数据 schema 的统一返回模型，仅适用于分页接口
+class PageData[SchemaT](_PageDetails):
+    """包含返回数据 schema 的统一返回模型，仅适用于分页接口.
 
     E.g. ::
 
@@ -118,8 +120,7 @@ class PageData(_PageDetails, Generic[SchemaT]):
 
 
 async def paging_data(db: AsyncSession, select: Any, **kwargs: Any) -> dict[str, Any]:
-    """
-    基于 SQLAlchemy 创建分页数据
+    """基于 SQLAlchemy 创建分页数据.
 
     :param db: 数据库会话
     :param select: SQL 查询语句
@@ -127,8 +128,7 @@ async def paging_data(db: AsyncSession, select: Any, **kwargs: Any) -> dict[str,
     :return:
     """
     paginated_data: _CustomPage[Any] = await apaginate(db, select, **kwargs)
-    page_data = paginated_data.model_dump()
-    return page_data
+    return paginated_data.model_dump()
 
 
 # 分页依赖注入

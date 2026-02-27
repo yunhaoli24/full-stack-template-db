@@ -1,10 +1,10 @@
-from collections.abc import AsyncGenerator
 from typing import Any, cast
+from collections.abc import AsyncGenerator
 
 from openai import AsyncOpenAI
 
-from backend.common.exception.errors import GatewayError, RequestError
 from backend.core.conf import settings
+from backend.common.exception.errors import GatewayError, RequestError
 
 
 class ChatService:
@@ -20,36 +20,36 @@ class ChatService:
     @staticmethod
     def _apply_defaults(payload: dict[str, Any]) -> dict[str, Any]:
         payload = dict(payload)
-        if not payload.get('model'):
+        if not payload.get("model"):
             if settings.OPENAI_DEFAULT_MODEL:
-                payload['model'] = settings.OPENAI_DEFAULT_MODEL
+                payload["model"] = settings.OPENAI_DEFAULT_MODEL
             else:
-                raise RequestError(msg='OpenAI model is required')
-        payload['stream'] = payload.get('stream', True)
+                raise RequestError(msg="OpenAI model is required")
+        payload["stream"] = payload.get("stream", True)
         return payload
 
     @staticmethod
-    async def iter_stream(stream: Any) -> AsyncGenerator[str, None]:
+    async def iter_stream(stream: Any) -> AsyncGenerator[str]:
         async for chunk in stream:
-            yield f'data: {chunk.model_dump_json()}\n\n'
-        yield 'data: [DONE]\n\n'
+            yield f"data: {chunk.model_dump_json()}\n\n"
+        yield "data: [DONE]\n\n"
 
     async def create_stream(self, payload: dict[str, Any]) -> Any:
         client = self._get_openai_client()
         try:
-            stream = cast('Any', await client.chat.completions.create(**payload))
+            stream = cast("Any", await client.chat.completions.create(**payload))
         except Exception as exc:
-            raise GatewayError(msg='OpenAI request failed') from exc
+            raise GatewayError(msg="OpenAI request failed") from exc
         else:
             return stream
 
     async def create_completion(self, payload: dict[str, Any]) -> dict[str, Any]:
         client = self._get_openai_client()
         try:
-            completion = cast('Any', await client.chat.completions.create(**payload))
+            completion = cast("Any", await client.chat.completions.create(**payload))
         except Exception as exc:
-            raise GatewayError(msg='OpenAI request failed') from exc
-        return cast('dict[str, Any]', completion.model_dump())
+            raise GatewayError(msg="OpenAI request failed") from exc
+        return cast("dict[str, Any]", completion.model_dump())
 
     def normalize_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
         return self._apply_defaults(payload)

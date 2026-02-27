@@ -1,10 +1,10 @@
+from typing import Any, TypeVar
 from collections.abc import Sequence
-from typing import Any, Generic, TypeVar
 
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-ModelT = TypeVar('ModelT')
+ModelT = TypeVar("ModelT")
 
 class JoinConfig:
     model: Any
@@ -21,10 +21,9 @@ class JoinConfig:
         join_type: str = ...,
     ) -> None: ...
 
-class CRUDPlus(Generic[ModelT]):
+class CRUDPlus[ModelT]:
     model: type[ModelT]
     def __init__(self, model: type[ModelT]) -> None: ...
-
     async def select_model(self, session: AsyncSession, pk: Any, **kwargs: Any) -> Any: ...
     async def select_model_by_column(self, session: AsyncSession, *whereclause: Any, **kwargs: Any) -> Any: ...
     async def select_models(self, session: AsyncSession, *whereclause: Any, **kwargs: Any) -> Any: ...

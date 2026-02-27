@@ -1,42 +1,43 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import Path, Query, Depends, APIRouter
 
-from backend.common.pagination import DependsPagination, PageData
-from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
-from backend.common.security.jwt import DependsJwtAuth
-from backend.common.security.permission import RequestPermission
-from backend.common.security.rbac import DependsRBAC
 from backend.database.db import CurrentSession, CurrentSessionTransaction
+from backend.common.pagination import PageData, DependsPagination
+from backend.common.security.jwt import DependsJwtAuth
+from backend.common.security.rbac import DependsRBAC
+from backend.common.security.permission import RequestPermission
 from backend.plugin.dict.schema.dict_type import (
+    GetDictTypeDetail,
     CreateDictTypeParam,
     DeleteDictTypeParam,
-    GetDictTypeDetail,
     UpdateDictTypeParam,
 )
+from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 from backend.plugin.dict.service.dict_type_service import dict_type_service
+
 
 router = APIRouter()
 
 
-@router.get('/all', summary='获取所有字典数据', dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/all", summary="获取所有字典数据", dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_all_dict_types(db: CurrentSession) -> ResponseSchemaModel[list[GetDictTypeDetail]]:
     data = await dict_type_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取字典类型详情', dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取字典类型详情", dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_dict_type(
     db: CurrentSession,
-    pk: Annotated[int, Path(description='字典类型 ID')],
+    pk: Annotated[int, Path(description="字典类型 ID")],
 ) -> ResponseSchemaModel[GetDictTypeDetail]:
     data = await dict_type_service.get(db=db, pk=pk)
     return response_base.success(data=data)
 
 
 @router.get(
-    '',
-    summary='分页获取所有字典类型',
+    "",
+    summary="分页获取所有字典类型",
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
@@ -44,18 +45,18 @@ async def get_dict_type(
 )  # pyright: ignore
 async def get_dict_types_paginated(
     db: CurrentSession,
-    name: Annotated[str | None, Query(description='字典类型名称')] = None,
-    code: Annotated[str | None, Query(description='字典类型编码')] = None,
+    name: Annotated[str | None, Query(description="字典类型名称")] = None,
+    code: Annotated[str | None, Query(description="字典类型编码")] = None,
 ) -> ResponseSchemaModel[PageData[GetDictTypeDetail]]:
     page_data = await dict_type_service.get_list(db=db, name=name, code=code)
     return response_base.success(data=page_data)
 
 
 @router.post(
-    '',
-    summary='创建字典类型',
+    "",
+    summary="创建字典类型",
     dependencies=[
-        Depends(RequestPermission('dict:type:add')),
+        Depends(RequestPermission("dict:type:add")),
         DependsRBAC,
     ],
 )  # pyright: ignore
@@ -65,16 +66,16 @@ async def create_dict_type(db: CurrentSessionTransaction, obj: CreateDictTypePar
 
 
 @router.put(
-    '/{pk}',
-    summary='更新字典类型',
+    "/{pk}",
+    summary="更新字典类型",
     dependencies=[
-        Depends(RequestPermission('dict:type:edit')),
+        Depends(RequestPermission("dict:type:edit")),
         DependsRBAC,
     ],
 )  # pyright: ignore
 async def update_dict_type(
     db: CurrentSessionTransaction,
-    pk: Annotated[int, Path(description='字典类型 ID')],
+    pk: Annotated[int, Path(description="字典类型 ID")],
     obj: UpdateDictTypeParam,
 ) -> ResponseModel:
     count = await dict_type_service.update(db=db, pk=pk, obj=obj)
@@ -84,10 +85,10 @@ async def update_dict_type(
 
 
 @router.delete(
-    '',
-    summary='批量删除字典类型',
+    "",
+    summary="批量删除字典类型",
     dependencies=[
-        Depends(RequestPermission('dict:type:del')),
+        Depends(RequestPermission("dict:type:del")),
         DependsRBAC,
     ],
 )  # pyright: ignore

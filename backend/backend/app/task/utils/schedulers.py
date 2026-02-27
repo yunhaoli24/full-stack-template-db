@@ -1,31 +1,31 @@
 from __future__ import annotations
 
-import asyncio
 import json
 import math
-
+import asyncio
+from typing import TYPE_CHECKING, Any
 from datetime import datetime, timedelta
 from multiprocessing.util import Finalize
-from typing import TYPE_CHECKING, Any
 
-from celery import current_app, schedules  # pyright: ignore
-from celery.beat import ScheduleEntry, Scheduler
-from celery.signals import beat_init
-from celery.utils.log import get_logger
+from celery import schedules, current_app  # pyright: ignore
 from sqlalchemy import select
+from celery.beat import Scheduler, ScheduleEntry
+from celery.signals import beat_init
 from sqlalchemy.exc import DatabaseError, InterfaceError
+from celery.utils.log import get_logger
 
-from backend.app.task.enums import PeriodType, TaskSchedulerType
-from backend.app.task.model.scheduler import TaskScheduler
-from backend.app.task.schema.scheduler import CreateTaskSchedulerParam
-from backend.app.task.utils.tzcrontab import TzAwareCrontab, crontab_verify
-from backend.common.exception import errors
 from backend.core.conf import settings
 from backend.database.db import async_db_session
-from backend.database.redis import redis_client
 from backend.utils._await import run_await
-from backend.utils.serializers import select_as_dict
+from backend.app.task.enums import PeriodType, TaskSchedulerType
+from backend.database.redis import redis_client
 from backend.utils.timezone import timezone
+from backend.common.exception import errors
+from backend.utils.serializers import select_as_dict
+from backend.app.task.model.scheduler import TaskScheduler
+from backend.app.task.utils.tzcrontab import TzAwareCrontab, crontab_verify
+from backend.app.task.schema.scheduler import CreateTaskSchedulerParam
+
 
 if TYPE_CHECKING:
     from redis.asyncio.lock import Lock
@@ -36,13 +36,13 @@ DEFAULT_MAX_INTERVAL = 5  # seconds
 # 计划锁时长，避免重复创建
 DEFAULT_MAX_LOCK_TIMEOUT = DEFAULT_MAX_INTERVAL * 5  # seconds
 
-logger = get_logger('fba.schedulers')
+logger = get_logger("fba.schedulers")
 
 
 class ModelEntry(ScheduleEntry):
-    """任务调度实体"""
+    """任务调度实体."""
 
-    def __init__(self, model: TaskScheduler, app: Any = None) -> None:  # noqa:C901
+    def __init__(self, model: TaskScheduler, app: Any = None) -> None:
         super().__init__(
             app=app or current_app._get_current_object(),
             name=model.name,
@@ -56,7 +56,7 @@ class ModelEntry(ScheduleEntry):
             ):
                 self.schedule = schedules.schedule(timedelta(**{model.interval_period: model.interval_every}))
             elif model.type == TaskSchedulerType.CRONTAB and model.crontab is not None:
-                crontab_split = model.crontab.split(' ')
+                crontab_split = model.crontab.split(" ")
                 self.schedule = TzAwareCrontab(
                     minute=crontab_split[0],
                     hour=crontab_split[1],
@@ -65,32 +65,32 @@ class ModelEntry(ScheduleEntry):
                     month_of_year=crontab_split[4],
                 )
             else:
-                raise errors.NotFoundError(msg=f'{self.name} 计划为空！')
+                raise errors.NotFoundError(msg=f"{self.name} 计划为空！")
             # logger.debug('Schedule: {}'.format(self.schedule))
         except Exception as e:
-            logger.error(f'禁用计划为空的任务 {self.name}，详情：{e}')
+            logger.exception(f"禁用计划为空的任务 {self.name}，详情：{e}")
             asyncio.create_task(self._disable(model))
 
         try:
             self.args = json.loads(model.args) if model.args else None
             self.kwargs = json.loads(model.kwargs) if model.kwargs else None
         except ValueError as exc:
-            logger.error(f'禁用参数错误的任务：{self.name}；error: {exc!s}')
+            logger.exception(f"禁用参数错误的任务：{self.name}；error: {exc!s}")
             asyncio.create_task(self._disable(model))
 
         self.options = {}
-        for option in ['queue', 'exchange', 'routing_key']:
+        for option in ["queue", "exchange", "routing_key"]:
             value = getattr(model, option)
             if value is None:
                 continue
             self.options[option] = value
 
-        expires = getattr(model, 'expires_', None)
+        expires = getattr(model, "expires_", None)
         if expires:
             if isinstance(expires, int):
-                self.options['expires'] = expires
+                self.options["expires"] = expires
             elif isinstance(expires, datetime):
-                self.options['expires'] = timezone.from_datetime(expires)
+                self.options["expires"] = timezone.from_datetime(expires)
 
         if not model.last_run_time:
             model.last_run_time = timezone.now()
@@ -98,18 +98,18 @@ class ModelEntry(ScheduleEntry):
                 model.last_run_time = timezone.from_datetime(model.start_time) - timedelta(days=365)
 
         self.last_run_at = timezone.from_datetime(model.last_run_time)
-        self.options['periodic_task_name'] = model.name
+        self.options["periodic_task_name"] = model.name
         self.model = model
 
     async def _disable(self, model: TaskScheduler) -> None:
-        """禁用任务"""
+        """禁用任务."""
         model.no_changes = True
         self.model.enabled = self.enabled = model.enabled = False
         async with async_db_session.begin():
             model.enabled = False
 
     def is_due(self) -> tuple[bool, int | float]:
-        """任务到期状态"""
+        """任务到期状态."""
         if not self.model.enabled:
             # 重新启用时延迟 5 秒
             return schedules.schedstate(is_due=False, next=5)
@@ -127,7 +127,7 @@ class ModelEntry(ScheduleEntry):
             self.model.enabled = False
             self.model.total_run_count = 0
             self.model.no_changes = False
-            save_fields = ('enabled',)
+            save_fields = ("enabled",)
             run_await(self.save)(save_fields)
             return schedules.schedstate(is_due=False, next=1000000000)  # 高延迟，避免重新检查
 
@@ -142,8 +142,7 @@ class ModelEntry(ScheduleEntry):
     next = __next__
 
     async def save(self, fields: tuple[str, ...] = ()) -> None:
-        """
-        保存任务状态字段
+        """保存任务状态字段.
 
         :param fields: 要保存的其他字段
         :return:
@@ -153,16 +152,16 @@ class ModelEntry(ScheduleEntry):
             query = await db.execute(stmt)
             task = query.scalars().first()
             if task:
-                for field in ['last_run_time', 'total_run_count', 'no_changes']:
+                for field in ["last_run_time", "total_run_count", "no_changes"]:
                     setattr(task, field, getattr(self.model, field))
                 for field in fields:
                     setattr(task, field, getattr(self.model, field))
             else:
-                logger.warning(f'任务 {self.model.name} 不存在，跳过更新')
+                logger.warning(f"任务 {self.model.name} 不存在，跳过更新")
 
     @classmethod
     async def from_entry(cls, name: str, app: Any = None, **entry: Any) -> ModelEntry:
-        """保存或更新本地任务调度"""
+        """保存或更新本地任务调度."""
         async with async_db_session.begin() as db:
             stmt = select(TaskScheduler).where(TaskScheduler.name == name)
             query = await db.execute(stmt)
@@ -174,8 +173,7 @@ class ModelEntry(ScheduleEntry):
             else:
                 for key, value in temp.items():
                     setattr(task, key, value)
-            res = cls(task, app=app)
-            return res
+            return cls(task, app=app)
 
     @staticmethod
     async def to_model_schedule(name: str, task: str, schedule: schedules.schedule | TzAwareCrontab) -> TaskScheduler:
@@ -184,32 +182,32 @@ class ModelEntry(ScheduleEntry):
         async with async_db_session() as db:
             spec: dict[str, Any]
             if isinstance(schedule, schedules.crontab):
-                crontab = f'{schedule._orig_minute} {schedule._orig_hour} {schedule._orig_day_of_week} {schedule._orig_day_of_month} {schedule._orig_month_of_year}'  # noqa: E501
+                crontab = f"{schedule._orig_minute} {schedule._orig_hour} {schedule._orig_day_of_week} {schedule._orig_day_of_month} {schedule._orig_month_of_year}"  # noqa: E501
                 crontab_verify(crontab)
                 spec = {
-                    'name': name,
-                    'type': TaskSchedulerType.CRONTAB.value,
-                    'crontab': crontab,
+                    "name": name,
+                    "type": TaskSchedulerType.CRONTAB.value,
+                    "crontab": crontab,
                 }
                 stmt = select(TaskScheduler).filter_by(**spec)
                 query = await db.execute(stmt)
                 obj = query.scalars().first()
                 if not obj:
-                    create_param = CreateTaskSchedulerParam.model_validate({'task': task, **spec})
+                    create_param = CreateTaskSchedulerParam.model_validate({"task": task, **spec})
                     obj = TaskScheduler(**create_param.model_dump())
             else:
                 every = max(schedule.run_every.total_seconds(), 0)
                 spec = {
-                    'name': name,
-                    'type': TaskSchedulerType.INTERVAL.value,
-                    'interval_every': every,
-                    'interval_period': PeriodType.SECONDS.value,
+                    "name": name,
+                    "type": TaskSchedulerType.INTERVAL.value,
+                    "interval_every": every,
+                    "interval_period": PeriodType.SECONDS.value,
                 }
                 stmt = select(TaskScheduler).filter_by(**spec)
                 query = await db.execute(stmt)
                 obj = query.scalars().first()
                 if not obj:
-                    create_param = CreateTaskSchedulerParam.model_validate({'task': task, **spec})
+                    create_param = CreateTaskSchedulerParam.model_validate({"task": task, **spec})
                     obj = TaskScheduler(**create_param.model_dump())
 
             return obj
@@ -227,10 +225,10 @@ class ModelEntry(ScheduleEntry):
     ) -> dict[str, Any]:
         model_schedule = await cls.to_model_schedule(name, task, schedule)
         model_dict = select_as_dict(model_schedule)
-        for k in ['id', 'created_time', 'updated_time']:
+        for k in ["id", "created_time", "updated_time"]:
             try:
                 del model_dict[k]
-            except KeyError:  # noqa:PERF203
+            except KeyError:
                 continue
         model_dict.update(
             args=json.dumps(args, ensure_ascii=False) if args else None,
@@ -253,24 +251,24 @@ class ModelEntry(ScheduleEntry):
         one_off: bool = False,
     ) -> dict[str, Any]:
         data: dict[str, Any] = {
-            'queue': queue,
-            'exchange': exchange,
-            'routing_key': routing_key,
-            'start_time': start_time,
-            'expire_time': expires,
-            'expire_seconds': expire_seconds,
-            'one_off': one_off,
+            "queue": queue,
+            "exchange": exchange,
+            "routing_key": routing_key,
+            "start_time": start_time,
+            "expire_time": expires,
+            "expire_seconds": expire_seconds,
+            "one_off": one_off,
         }
         if expires:
             if isinstance(expires, int):
-                data['expire_seconds'] = expires
+                data["expire_seconds"] = expires
             elif isinstance(expires, timedelta):
-                data['expire_time'] = timezone.now() + expires
+                data["expire_time"] = timezone.now() + expires
         return data
 
 
 class DatabaseScheduler(Scheduler):
-    """数据库调度程序"""
+    """数据库调度程序."""
 
     Entry = ModelEntry
 
@@ -281,52 +279,52 @@ class DatabaseScheduler(Scheduler):
     _heap: list[ModelEntry] = []
 
     lock: Lock | None = None
-    lock_key = f'{settings.CELERY_REDIS_PREFIX}:beat_lock'
+    lock_key = f"{settings.CELERY_REDIS_PREFIX}:beat_lock"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.app = kwargs['app']
+        self.app = kwargs["app"]
         self._dirty: set[str] = set()
         super().__init__(*args, **kwargs)
         self._finalize = Finalize(self, self.sync, exitpriority=5)
-        self.max_interval = kwargs.get('max_interval') or self.app.conf.beat_max_loop_interval or DEFAULT_MAX_INTERVAL
+        self.max_interval = kwargs.get("max_interval") or self.app.conf.beat_max_loop_interval or DEFAULT_MAX_INTERVAL
 
     def install_default_entries(self, data: dict[str, Any]) -> None:
-        """重写父函数"""
+        """重写父函数."""
         entries: dict[str, Any] = {}
         if self.app.conf.result_expires:
             entries.setdefault(
-                'celery.backend_cleanup',
+                "celery.backend_cleanup",
                 {
-                    'task': 'celery.backend_cleanup',
-                    'schedule': schedules.crontab('0', '4', '*'),
-                    'options': {'expire_seconds': 12 * 3600},
+                    "task": "celery.backend_cleanup",
+                    "schedule": schedules.crontab("0", "4", "*"),
+                    "options": {"expire_seconds": 12 * 3600},
                 },
             )
         self.update_from_dict(entries)
 
     def schedules_equal(self, *args: Any, **kwargs: Any) -> bool:
-        """重写父函数"""
+        """重写父函数."""
         if self._heap_invalidated:
             self._heap_invalidated = False
             return False
         return super().schedules_equal(*args, **kwargs)
 
     def reserve(self, entry: ModelEntry) -> ModelEntry:
-        """重写父函数"""
+        """重写父函数."""
         new_entry = next(entry)
         # 需要按名称存储条目，因为条目可能会发生变化
         self._dirty.add(new_entry.name)
         return new_entry
 
     def setup_schedule(self) -> None:
-        """重写父函数"""
-        logger.info('setup_schedule')
+        """重写父函数."""
+        logger.info("setup_schedule")
         tasks = self.schedule
         self.install_default_entries(tasks)
         self.update_from_dict(self.app.conf.beat_schedule)
 
     def sync(self) -> None:
-        """重写父函数"""
+        """重写父函数."""
         tried: set[str] = set()
         failed: set[str] = set()
         try:
@@ -335,31 +333,31 @@ class DatabaseScheduler(Scheduler):
                 try:
                     tasks = self.schedule
                     run_await(tasks[name].save)()
-                    logger.debug(f'保存任务 {name} 最新状态到数据库')
+                    logger.debug(f"保存任务 {name} 最新状态到数据库")
                     tried.add(name)
                 except KeyError as e:
-                    logger.error(f'保存任务 {name} 最新状态失败：{e} ')
+                    logger.exception(f"保存任务 {name} 最新状态失败：{e} ")
                     failed.add(name)
         except DatabaseError:
-            logger.exception('同步时出现数据库错误')
+            logger.exception("同步时出现数据库错误")
         except InterfaceError as e:
-            logger.warning(f'DatabaseScheduler InterfaceError：{e!s}，等待下次调用时重试...')
+            logger.warning(f"DatabaseScheduler InterfaceError：{e!s}，等待下次调用时重试...")
         finally:
             # 请稍后重试（仅针对失败的）
             self._dirty |= failed
 
     def tick(self, **kwargs: Any) -> float:
-        """重写父函数"""
+        """重写父函数."""
         if self.lock:
-            logger.debug('beat: Extending lock...')
+            logger.debug("beat: Extending lock...")
             run_await(self.lock.extend)(DEFAULT_MAX_LOCK_TIMEOUT, replace_ttl=True)
 
         return super().tick(**kwargs)
 
     def close(self) -> None:
-        """重写父函数"""
+        """重写父函数."""
         if self.lock:
-            logger.info('beat: Releasing lock')
+            logger.info("beat: Releasing lock")
             if run_await(self.lock.owned)():
                 run_await(self.lock.release)()
             self.lock = None
@@ -367,7 +365,7 @@ class DatabaseScheduler(Scheduler):
         super().close()
 
     def update_from_dict(self, beat_dict: dict[str, dict[str, Any]]) -> None:
-        """重写父函数"""
+        """重写父函数."""
         s: dict[str, ModelEntry] = {}
         name: str | None = None
 
@@ -377,18 +375,18 @@ class DatabaseScheduler(Scheduler):
                 if entry.model.enabled:
                     s[name] = entry
         except Exception:
-            logger.error(f'添加任务 {name} 到数据库失败')
+            logger.exception(f"添加任务 {name} 到数据库失败")
             raise
 
         tasks = self.schedule
         tasks.update(s)
 
     def schedule_changed(self) -> bool | None:
-        """任务调度变更状态"""
+        """任务调度变更状态."""
         now = timezone.now()
-        last_update = run_await(redis_client.get)(f'{settings.CELERY_REDIS_PREFIX}:last_update')
+        last_update = run_await(redis_client.get)(f"{settings.CELERY_REDIS_PREFIX}:last_update")
         if not last_update:
-            run_await(redis_client.set)(f'{settings.CELERY_REDIS_PREFIX}:last_update', timezone.to_str(now))
+            run_await(redis_client.set)(f"{settings.CELERY_REDIS_PREFIX}:last_update", timezone.to_str(now))
             return False
 
         last, ts = self._last_update, timezone.from_str(last_update)
@@ -398,9 +396,9 @@ class DatabaseScheduler(Scheduler):
             self._last_update = now
 
     async def get_all_task_schedulers(self) -> dict[str, ModelEntry]:
-        """获取所有任务调度"""
+        """获取所有任务调度."""
         async with async_db_session() as db:
-            logger.debug('DatabaseScheduler: Fetching database schedule')
+            logger.debug("DatabaseScheduler: Fetching database schedule")
             stmt = select(TaskScheduler).where(TaskScheduler.enabled == True)  # noqa: E712
             query = await db.execute(stmt)
             schedulers = query.scalars().all()
@@ -411,18 +409,18 @@ class DatabaseScheduler(Scheduler):
 
     @property
     def schedule(self) -> dict[str, ModelEntry]:
-        """获取任务调度"""
+        """获取任务调度."""
         initial = update = False
         if self._initial_read:
-            logger.debug('DatabaseScheduler: initial read')
+            logger.debug("DatabaseScheduler: initial read")
             initial = update = True
             self._initial_read = False
         elif self.schedule_changed():
-            logger.info('DatabaseScheduler: Schedule changed.')
+            logger.info("DatabaseScheduler: Schedule changed.")
             update = True
 
         if update:
-            logger.debug('beat: Synchronizing schedule...')
+            logger.debug("beat: Synchronizing schedule...")
             self.sync()
             self._schedule = run_await(self.get_all_task_schedulers)()
             # 计划已更改，使 Scheduler.tick 中的堆无效
@@ -430,8 +428,8 @@ class DatabaseScheduler(Scheduler):
                 self._heap = []
                 self._heap_invalidated = True
             logger.debug(
-                'Current schedule:\n%s',
-                '\n'.join(repr(entry) for entry in self._schedule.values()),
+                "Current schedule:\n%s",
+                "\n".join(repr(entry) for entry in self._schedule.values()),
             )
 
         # logger.debug(self._schedule)
@@ -440,8 +438,7 @@ class DatabaseScheduler(Scheduler):
 
 @beat_init.connect  # pyright: ignore
 def acquire_distributed_beat_lock(sender: Any = None, **kwargs: Any) -> None:
-    """
-    尝试在启动时获取锁
+    """尝试在启动时获取锁.
 
     :param sender: 接收方应响应的发送方
     :return:
@@ -453,7 +450,7 @@ def acquire_distributed_beat_lock(sender: Any = None, **kwargs: Any) -> None:
     if not scheduler.lock_key:
         return
 
-    logger.debug('beat: Acquiring lock...')
+    logger.debug("beat: Acquiring lock...")
     lock = redis_client.lock(
         scheduler.lock_key,
         timeout=DEFAULT_MAX_LOCK_TIMEOUT,
@@ -461,5 +458,5 @@ def acquire_distributed_beat_lock(sender: Any = None, **kwargs: Any) -> None:
     )
 
     run_await(lock.acquire)()
-    logger.info('beat: Acquired lock')
+    logger.info("beat: Acquired lock")
     scheduler.lock = lock

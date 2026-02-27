@@ -1,8 +1,9 @@
-from typing import Any, Callable, TypeVar, overload
+from typing import Any, TypeVar, overload
+from collections.abc import Callable
 
 from . import schedules as schedules
 
-_F = TypeVar('_F', bound=Callable[..., Any])
+_F = TypeVar("_F", bound=Callable[..., Any])
 
 class _States:
     PENDING: str
@@ -16,7 +17,7 @@ class Task:
     max_retries: int
 
 @overload
-def shared_task(
+def shared_task[F: Callable[..., Any]](
     __func: _F,
     *args: Any,
     **kwargs: Any,

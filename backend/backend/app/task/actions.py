@@ -8,6 +8,6 @@ from backend.common.socketio.server import sio
 
 @sio.event  # pyright: ignore
 async def task_worker_status(sid: str, _data: dict[str, Any] | None) -> None:
-    """任务 Worker 状态事件"""
+    """任务 Worker 状态事件."""
     worker = await run_in_threadpool(celery_app.control.ping)
-    await sio.emit('task_worker_status', worker, sid)
+    await sio.emit("task_worker_status", worker, sid)

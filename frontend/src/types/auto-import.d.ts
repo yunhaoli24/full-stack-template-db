@@ -11,6 +11,7 @@ declare global {
   const EffectScope: typeof import('vue').EffectScope
   const PAGE_SIZES: typeof import('../constants/pagination').PAGE_SIZES
   const RADIUS: typeof import('../constants/themes').RADIUS
+  const RouteLocationRaw: typeof import('../constants/route-path').RouteLocationRaw
   const RouterPath: typeof import('../constants/route-path').RouterPath
   const THEMES: typeof import('../constants/themes').THEMES
   const THEMES_COLOR: (typeof import("../constants/themes"))["THEMES_COLOR"]
@@ -71,7 +72,7 @@ declare global {
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
   const useId: typeof import('vue').useId
-  const useLink: (typeof import("vue-router"))["useLink"]
+  const useLink: typeof import('vue-router').useLink
   const useModel: typeof import('vue').useModel
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter

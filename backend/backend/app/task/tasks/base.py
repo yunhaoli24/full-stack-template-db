@@ -1,28 +1,26 @@
 import asyncio
-
 from typing import Any
 
 from celery import Task  # pyright: ignore
 from sqlalchemy.exc import SQLAlchemyError
 
-from backend.common.socketio.actions import task_notification
 from backend.core.conf import settings
+from backend.common.socketio.actions import task_notification
 
 
 class TaskBase(Task):
-    """Celery 任务基类"""
+    """Celery 任务基类."""
 
     autoretry_for = (SQLAlchemyError,)
     max_retries = settings.CELERY_TASK_MAX_RETRIES
 
     async def before_start(self, task_id: str, args: tuple[Any, ...], kwargs: dict[str, Any]) -> None:
-        """
-        任务开始前执行钩子
+        """任务开始前执行钩子.
 
         :param task_id: 任务 ID
         :return:
         """
-        await task_notification(msg=f'任务 {task_id} 开始执行')
+        await task_notification(msg=f"任务 {task_id} 开始执行")
 
     async def on_success(
         self,
@@ -31,14 +29,13 @@ class TaskBase(Task):
         args: tuple[Any, ...],
         kwargs: dict[str, Any],
     ) -> None:
-        """
-        任务成功后执行钩子
+        """任务成功后执行钩子.
 
         :param retval: 任务返回值
         :param task_id: 任务 ID
         :return:
         """
-        await task_notification(msg=f'任务 {task_id} 执行成功')
+        await task_notification(msg=f"任务 {task_id} 执行成功")
 
     def on_failure(
         self,
@@ -48,12 +45,11 @@ class TaskBase(Task):
         kwargs: dict[str, Any],
         einfo: Any,
     ) -> None:
-        """
-        任务失败后执行钩子
+        """任务失败后执行钩子.
 
         :param exc: 异常对象
         :param task_id: 任务 ID
         :param einfo: 异常信息
         :return:
         """
-        asyncio.create_task(task_notification(msg=f'任务 {task_id} 执行失败'))
+        asyncio.create_task(task_notification(msg=f"任务 {task_id} 执行失败"))

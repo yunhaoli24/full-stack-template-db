@@ -1,25 +1,26 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import Path, Depends, APIRouter
 from starlette.concurrency import run_in_threadpool
 
 from backend.app.task import celery_app
-from backend.app.task.schema.control import TaskRegisteredDetail
 from backend.common.exception import errors
-from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 from backend.common.security.jwt import DependsJwtAuth
-from backend.common.security.permission import RequestPermission
 from backend.common.security.rbac import DependsRBAC
+from backend.app.task.schema.control import TaskRegisteredDetail
+from backend.common.security.permission import RequestPermission
+from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
+
 
 router = APIRouter()
 
 
-@router.get('/registered', summary='获取已注册的任务', dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/registered", summary="获取已注册的任务", dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_task_registered() -> ResponseSchemaModel[list[TaskRegisteredDetail]]:
     inspector = celery_app.control.inspect(timeout=0.5)
     registered = await run_in_threadpool(inspector.registered)
     if not registered:
-        raise errors.ServerError(msg='Celery Worker 暂不可用，请稍后重试')
+        raise errors.ServerError(msg="Celery Worker 暂不可用，请稍后重试")
     task_registered: list[TaskRegisteredDetail] = []
     celery_app_tasks = celery_app.tasks
     for tasks in registered.values():
@@ -34,16 +35,16 @@ async def get_task_registered() -> ResponseSchemaModel[list[TaskRegisteredDetail
 
 
 @router.delete(
-    '/{task_id}/cancel',
-    summary='撤销任务',
+    "/{task_id}/cancel",
+    summary="撤销任务",
     dependencies=[
-        Depends(RequestPermission('sys:task:revoke')),
+        Depends(RequestPermission("sys:task:revoke")),
         DependsRBAC,
     ],
 )  # pyright: ignore
-async def revoke_task(task_id: Annotated[str, Path(description='任务 UUID')]) -> ResponseModel:
+async def revoke_task(task_id: Annotated[str, Path(description="任务 UUID")]) -> ResponseModel:
     workers = await run_in_threadpool(celery_app.control.ping, timeout=0.5)
     if not workers:
-        raise errors.ServerError(msg='Celery Worker 暂不可用，请稍后重试')
+        raise errors.ServerError(msg="Celery Worker 暂不可用，请稍后重试")
     celery_app.control.revoke(task_id)
     return response_base.success()

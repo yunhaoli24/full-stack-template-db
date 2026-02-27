@@ -1,134 +1,135 @@
-import asyncio
-import subprocess
 import sys
-
-from collections.abc import Callable
+import asyncio
+import contextlib
+import subprocess
+from typing import Any, Literal, TypeVar, Annotated, cast
 from dataclasses import dataclass
-from typing import Annotated, Any, Literal, TypeVar, cast
+from collections.abc import Callable
 
 import anyio
 import cappa
 import granian
-
-from cappa.output import error_format
-from rich.panel import Panel
-from rich.prompt import Prompt
 from rich.text import Text
+from rich.panel import Panel
 from sqlalchemy import text
 from watchfiles import PythonFilter
+from rich.prompt import Prompt
+from cappa.output import error_format
 
 from backend import __version__
-from backend.common.enums import DataBaseType
-from backend.common.exception.errors import BaseExceptionError
 from backend.core.conf import settings
-from backend.core.path_conf import BASE_PATH
-from backend.database.db import async_db_session, create_tables, drop_tables
-from backend.database.redis import redis_client
-from backend.plugin.tools import get_plugin_sql, get_plugins
+from backend.database.db import drop_tables, create_tables, async_db_session
+from backend.common.enums import DataBaseType
+from backend.plugin.tools import get_plugins, get_plugin_sql
 from backend.utils.console import console
-from backend.utils.file_ops import install_git_plugin, install_zip_plugin, parse_sql_script
+from backend.core.path_conf import BASE_PATH
+from backend.database.redis import redis_client
+from backend.utils.file_ops import parse_sql_script, install_git_plugin, install_zip_plugin
+from backend.common.exception.errors import BaseExceptionError
+
 
 output_help = '\n更多信息，尝试 "[cyan]--help[/]"'
-CommandClassT = TypeVar('CommandClassT')
+CommandClassT = TypeVar("CommandClassT")
 
 
 def typed_cappa_command(*args: object, **kwargs: object) -> Callable[[type[CommandClassT]], type[CommandClassT]]:
     """Provide a typed wrapper for cappa.command class decorators."""
-    command = cast('Any', cappa.command)
-    return cast('Callable[[type[CommandClassT]], type[CommandClassT]]', command(*args, **kwargs))
+    command = cast("Any", cappa.command)
+    return cast("Callable[[type[CommandClassT]], type[CommandClassT]]", command(*args, **kwargs))
 
 
 class CustomReloadFilter(PythonFilter):
-    """自定义重载过滤器"""
+    """自定义重载过滤器."""
 
     def __init__(self) -> None:
-        super().__init__(extra_extensions=['.json', '.yaml', '.yml'])
+        super().__init__(extra_extensions=[".json", ".yaml", ".yml"])
 
 
 async def init() -> None:
     panel_content = Text()
-    panel_content.append('【数据库配置】', style='bold green')
-    panel_content.append('\n\n  • 类型: ')
-    panel_content.append(f'{settings.DATABASE_TYPE}', style='yellow')
-    panel_content.append('\n  • 数据库：')
-    panel_content.append(f'{settings.DATABASE_SCHEMA}', style='yellow')
-    panel_content.append('\n\n【Redis 配置】', style='bold green')
-    panel_content.append('\n\n  • 数据库：')
-    panel_content.append(f'{settings.REDIS_DATABASE}', style='yellow')
+    panel_content.append("【数据库配置】", style="bold green")
+    panel_content.append("\n\n  • 类型: ")
+    panel_content.append(f"{settings.DATABASE_TYPE}", style="yellow")
+    panel_content.append("\n  • 数据库：")
+    panel_content.append(f"{settings.DATABASE_SCHEMA}", style="yellow")
+    panel_content.append("\n\n【Redis 配置】", style="bold green")
+    panel_content.append("\n\n  • 数据库：")
+    panel_content.append(f"{settings.REDIS_DATABASE}", style="yellow")
     plugins = get_plugins()
-    panel_content.append('\n\n【已安装插件】', style='bold green')
-    panel_content.append('\n\n  • ')
+    panel_content.append("\n\n【已安装插件】", style="bold green")
+    panel_content.append("\n\n  • ")
     if plugins:
-        panel_content.append(f'{", ".join(plugins)}', style='yellow')
+        panel_content.append(f"{', '.join(plugins)}", style="yellow")
     else:
-        panel_content.append('无', style='dim')
+        panel_content.append("无", style="dim")
 
-    console.print(Panel(panel_content, title=f'fba v{__version__} 初始化', border_style='cyan', padding=(1, 2)))
+    console.print(Panel(panel_content, title=f"fba v{__version__} 初始化", border_style="cyan", padding=(1, 2)))
     ok = Prompt.ask(
-        '即将[red]重建数据库表[/red]并[red]执行所有 SQL 脚本[/red]，确认继续吗？', choices=['y', 'n'], default='n'
+        "即将[red]重建数据库表[/red]并[red]执行所有 SQL 脚本[/red]，确认继续吗？", choices=["y", "n"], default="n"
     )
 
-    if ok.lower() == 'y':
-        console.print('开始初始化...', style='white')
+    if ok.lower() == "y":
+        console.print("开始初始化...", style="white")
         try:
-            console.print('丢弃数据库表', style='white')
+            console.print("丢弃数据库表", style="white")
             await drop_tables()
-            console.print('丢弃 Redis 缓存', style='white')
+            console.print("丢弃 Redis 缓存", style="white")
             await redis_client.delete_prefix(settings.JWT_USER_REDIS_PREFIX)
             await redis_client.delete_prefix(settings.TOKEN_EXTRA_INFO_REDIS_PREFIX)
             await redis_client.delete_prefix(settings.TOKEN_REDIS_PREFIX)
             await redis_client.delete_prefix(settings.TOKEN_REFRESH_REDIS_PREFIX)
-            console.print('创建数据库表', style='white')
+            console.print("创建数据库表", style="white")
             await create_tables()
-            console.print('执行 SQL 脚本', style='white')
+            console.print("执行 SQL 脚本", style="white")
             sql_scripts = await get_sql_scripts()
             for sql_script in sql_scripts:
-                console.print(f'正在执行：{sql_script}', style='white')
+                console.print(f"正在执行：{sql_script}", style="white")
                 await execute_sql_scripts(sql_script, is_init=True)
-            console.print('初始化成功', style='green')
-            console.print('\n快试试 [bold cyan]fba run[/bold cyan] 启动服务吧~')
+            console.print("初始化成功", style="green")
+            console.print("\n快试试 [bold cyan]fba run[/bold cyan] 启动服务吧~")
         except Exception as e:
-            raise cappa.Exit(f'初始化失败：{e}', code=1)
+            msg = f"初始化失败：{e}"
+            raise cappa.Exit(msg, code=1)
     else:
-        console.print('已取消初始化', style='yellow')
+        console.print("已取消初始化", style="yellow")
 
 
 def run(host: str, port: int, reload: bool, workers: int) -> None:  # noqa: FBT001
-    url = f'http://{host}:{port}'
+    url = f"http://{host}:{port}"
     docs_url = url + settings.FASTAPI_DOCS_URL
     redoc_url = url + settings.FASTAPI_REDOC_URL
-    openapi_url = url + (settings.FASTAPI_OPENAPI_URL or '')
+    openapi_url = url + (settings.FASTAPI_OPENAPI_URL or "")
 
     panel_content = Text()
-    panel_content.append('Python 版本：', style='bold cyan')
-    panel_content.append(f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}', style='white')
+    panel_content.append("Python 版本：", style="bold cyan")
+    panel_content.append(f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}", style="white")
 
-    panel_content.append('\nAPI 请求地址: ', style='bold cyan')
-    panel_content.append(f'{url}{settings.FASTAPI_API_V1_PATH}', style='blue')
+    panel_content.append("\nAPI 请求地址: ", style="bold cyan")
+    panel_content.append(f"{url}{settings.FASTAPI_API_V1_PATH}", style="blue")
 
-    panel_content.append('\n\n环境模式：', style='bold green')
-    env_style = 'yellow' if settings.ENVIRONMENT == 'dev' else 'green'
-    panel_content.append(f'{settings.ENVIRONMENT.upper()}', style=env_style)
+    panel_content.append("\n\n环境模式：", style="bold green")
+    env_style = "yellow" if settings.ENVIRONMENT == "dev" else "green"
+    panel_content.append(f"{settings.ENVIRONMENT.upper()}", style=env_style)
 
     plugins = get_plugins()
-    panel_content.append('\n已安装插件：', style='bold green')
+    panel_content.append("\n已安装插件：", style="bold green")
     if plugins:
-        panel_content.append(f'{", ".join(plugins)}', style='yellow')
+        panel_content.append(f"{', '.join(plugins)}", style="yellow")
     else:
-        panel_content.append('无', style='white')
+        panel_content.append("无", style="white")
 
-    if settings.ENVIRONMENT == 'dev':
-        panel_content.append(f'\n\n📖 Swagger 文档: {docs_url}', style='bold magenta')
-        panel_content.append(f'\n📚 Redoc   文档: {redoc_url}', style='bold magenta')
-        panel_content.append(f'\n📡 OpenAPI JSON: {openapi_url}', style='bold magenta')
+    if settings.ENVIRONMENT == "dev":
+        panel_content.append(f"\n\n📖 Swagger 文档: {docs_url}", style="bold magenta")
+        panel_content.append(f"\n📚 Redoc   文档: {redoc_url}", style="bold magenta")
+        panel_content.append(f"\n📡 OpenAPI JSON: {openapi_url}", style="bold magenta")
 
-    panel_content.append('\n🌐 架构官方文档: ', style='bold magenta')
-    panel_content.append('https://fastapi-practices.github.io/fastapi_best_architecture_docs/')
+    panel_content.append("\n🌐 架构官方文档: ", style="bold magenta")
+    panel_content.append("https://fastapi-practices.github.io/fastapi_best_architecture_docs/")
 
-    console.print(Panel(panel_content, title=f'fba v{__version__}', border_style='purple', padding=(1, 2)))
+    console.print(Panel(panel_content, title=f"fba v{__version__}", border_style="purple", padding=(1, 2)))
     granian.Granian(
-        target='backend.main:app',
-        interface=cast('Any', 'asgi'),
+        target="backend.main:app",
+        interface=cast("Any", "asgi"),
         address=host,
         port=port,
         reload=reload,
@@ -137,32 +138,31 @@ def run(host: str, port: int, reload: bool, workers: int) -> None:  # noqa: FBT0
     ).serve()
 
 
-def run_celery_worker(log_level: Literal['info', 'debug']) -> None:
-    try:
-        subprocess.run(['celery', '-A', 'backend.app.task.celery', 'worker', '-l', f'{log_level}', '-P', 'gevent'])
-    except KeyboardInterrupt:
-        pass
+def run_celery_worker(log_level: Literal["info", "debug"]) -> None:
+    with contextlib.suppress(KeyboardInterrupt):
+        subprocess.run(
+            ["celery", "-A", "backend.app.task.celery", "worker", "-l", f"{log_level}", "-P", "gevent"], check=False
+        )
 
 
-def run_celery_beat(log_level: Literal['info', 'debug']) -> None:
-    try:
-        subprocess.run(['celery', '-A', 'backend.app.task.celery', 'beat', '-l', f'{log_level}'])
-    except KeyboardInterrupt:
-        pass
+def run_celery_beat(log_level: Literal["info", "debug"]) -> None:
+    with contextlib.suppress(KeyboardInterrupt):
+        subprocess.run(["celery", "-A", "backend.app.task.celery", "beat", "-l", f"{log_level}"], check=False)
 
 
 def run_celery_flower(port: int, basic_auth: str) -> None:
-    try:
-        subprocess.run([
-            'celery',
-            '-A',
-            'backend.app.task.celery',
-            'flower',
-            f'--port={port}',
-            f'--basic-auth={basic_auth}',
-        ])
-    except KeyboardInterrupt:
-        pass
+    with contextlib.suppress(KeyboardInterrupt):
+        subprocess.run(
+            [
+                "celery",
+                "-A",
+                "backend.app.task.celery",
+                "flower",
+                f"--port={port}",
+                f"--basic-auth={basic_auth}",
+            ],
+            check=False,
+        )
 
 
 async def install_plugin(
@@ -172,12 +172,14 @@ async def install_plugin(
     db_type: DataBaseType,
 ) -> None:
     if not path and not repo_url:
-        raise cappa.Exit('path 或 repo_url 必须指定其中一项', code=1)
+        msg = "path 或 repo_url 必须指定其中一项"
+        raise cappa.Exit(msg, code=1)
     if path and repo_url:
-        raise cappa.Exit('path 和 repo_url 不能同时指定', code=1)
+        msg = "path 和 repo_url 不能同时指定"
+        raise cappa.Exit(msg, code=1)
 
     plugin_name = None
-    console.print('开始安装插件...', style='bold cyan')
+    console.print("开始安装插件...", style="bold cyan")
 
     try:
         if path:
@@ -186,13 +188,14 @@ async def install_plugin(
             plugin_name = await install_git_plugin(repo_url=repo_url)
 
         if plugin_name is None:
-            raise cappa.Exit('插件安装失败', code=1)
+            msg = "插件安装失败"
+            raise cappa.Exit(msg, code=1)
 
-        console.print(f'插件 {plugin_name} 安装成功', style='bold green')
+        console.print(f"插件 {plugin_name} 安装成功", style="bold green")
 
         sql_file = await get_plugin_sql(plugin_name, db_type)
         if sql_file and not no_sql:
-            console.print('开始自动执行插件 SQL 脚本...', style='bold cyan')
+            console.print("开始自动执行插件 SQL 脚本...", style="bold cyan")
             await execute_sql_scripts(sql_file)
 
     except Exception as e:
@@ -201,8 +204,8 @@ async def install_plugin(
 
 async def get_sql_scripts() -> list[str]:
     sql_scripts: list[str] = []
-    db_dir = BASE_PATH / 'sql' / 'postgresql'
-    main_sql_file = db_dir / 'init_test_data.sql'
+    db_dir = BASE_PATH / "sql" / "postgresql"
+    main_sql_file = db_dir / "init_test_data.sql"
 
     main_sql_path = anyio.Path(main_sql_file)
     if await main_sql_path.exists():
@@ -224,123 +227,124 @@ async def execute_sql_scripts(sql_scripts: str, *, is_init: bool = False) -> Non
             for stmt in stmts:
                 await db.execute(text(stmt))
         except Exception as e:
-            raise cappa.Exit(f'SQL 脚本执行失败：{e}', code=1)
+            msg = f"SQL 脚本执行失败：{e}"
+            raise cappa.Exit(msg, code=1)
 
     if not is_init:
-        console.print('SQL 脚本已执行完成', style='bold green')
+        console.print("SQL 脚本已执行完成", style="bold green")
 
 
-@typed_cappa_command(help='初始化 fba 项目', default_long=True)
+@typed_cappa_command(help="初始化 fba 项目", default_long=True)
 @dataclass
 class Init:
     async def __call__(self) -> None:
         await init()
 
 
-@typed_cappa_command(help='运行 API 服务', default_long=True)
+@typed_cappa_command(help="运行 API 服务", default_long=True)
 @dataclass
 class Run:
     host: Annotated[
         str,
         cappa.Arg(
-            default='127.0.0.1',
-            help='提供服务的主机 IP 地址，对于本地开发，请使用 `127.0.0.1`。'
-            '要启用公共访问，例如在局域网中，请使用 `0.0.0.0`',
+            default="127.0.0.1",
+            help="提供服务的主机 IP 地址，对于本地开发，请使用 `127.0.0.1`。"
+            "要启用公共访问，例如在局域网中，请使用 `0.0.0.0`",
         ),
     ]
     port: Annotated[
         int,
-        cappa.Arg(default=8080, help='提供服务的主机端口号'),
+        cappa.Arg(default=8080, help="提供服务的主机端口号"),
     ]
     reload: Annotated[
         bool,
-        cappa.Arg(default=True, help='禁用在（代码）文件更改时自动重新加载服务器'),
+        cappa.Arg(default=True, help="禁用在（代码）文件更改时自动重新加载服务器"),
     ]
     workers: Annotated[
         int,
-        cappa.Arg(default=1, help='使用多个工作进程，必须与 `--reload` 同时使用'),
+        cappa.Arg(default=1, help="使用多个工作进程，必须与 `--reload` 同时使用"),
     ]
 
     def __call__(self) -> None:
         run(host=self.host, port=self.port, reload=self.reload, workers=self.workers)
 
 
-@typed_cappa_command(help='从当前主机启动 Celery worker 服务', default_long=True)
+@typed_cappa_command(help="从当前主机启动 Celery worker 服务", default_long=True)
 @dataclass
 class Worker:
     log_level: Annotated[
-        Literal['info', 'debug'],
-        cappa.Arg(short='-l', default='info', help='日志输出级别'),
+        Literal["info", "debug"],
+        cappa.Arg(short="-l", default="info", help="日志输出级别"),
     ]
 
     def __call__(self) -> None:
         run_celery_worker(log_level=self.log_level)
 
 
-@typed_cappa_command(help='从当前主机启动 Celery beat 服务', default_long=True)
+@typed_cappa_command(help="从当前主机启动 Celery beat 服务", default_long=True)
 @dataclass
 class Beat:
     log_level: Annotated[
-        Literal['info', 'debug'],
-        cappa.Arg(short='-l', default='info', help='日志输出级别'),
+        Literal["info", "debug"],
+        cappa.Arg(short="-l", default="info", help="日志输出级别"),
     ]
 
     def __call__(self) -> None:
         run_celery_beat(log_level=self.log_level)
 
 
-@typed_cappa_command(help='从当前主机启动 Celery flower 服务', default_long=True)
+@typed_cappa_command(help="从当前主机启动 Celery flower 服务", default_long=True)
 @dataclass
 class Flower:
     port: Annotated[
         int,
-        cappa.Arg(default=8555, help='提供服务的主机端口号'),
+        cappa.Arg(default=8555, help="提供服务的主机端口号"),
     ]
     basic_auth: Annotated[
         str,
-        cappa.Arg(default='admin:123456', help='页面登录的用户名和密码'),
+        cappa.Arg(default="admin:123456", help="页面登录的用户名和密码"),
     ]
 
     def __call__(self) -> None:
         run_celery_flower(port=self.port, basic_auth=self.basic_auth)
 
 
-@typed_cappa_command(help='运行 Celery 服务')
+@typed_cappa_command(help="运行 Celery 服务")
 @dataclass
 class Celery:
     subcmd: cappa.Subcommands[Worker | Beat | Flower]
 
 
-@typed_cappa_command(help='新增插件', default_long=True)
+@typed_cappa_command(help="新增插件", default_long=True)
 @dataclass
 class Add:
     path: Annotated[
         str | None,
-        cappa.Arg(help='ZIP 插件的本地完整路径'),
+        cappa.Arg(help="ZIP 插件的本地完整路径"),
     ]
     repo_url: Annotated[
         str | None,
-        cappa.Arg(help='Git 插件的仓库地址'),
+        cappa.Arg(help="Git 插件的仓库地址"),
     ]
     no_sql: Annotated[
         bool,
-        cappa.Arg(default=False, help='禁用插件 SQL 脚本自动执行'),
+        cappa.Arg(default=False, help="禁用插件 SQL 脚本自动执行"),
     ]
     db_type: Annotated[
         DataBaseType,
-        cappa.Arg(default='postgresql', help='执行插件 SQL 脚本的数据库类型'),
+        cappa.Arg(default="postgresql", help="执行插件 SQL 脚本的数据库类型"),
     ]
 
     async def __call__(self) -> None:
         await install_plugin(self.path, self.repo_url, self.no_sql, self.db_type)
 
 
-@typed_cappa_command(help='一个高效的 fba 命令行界面', default_long=True)
+@typed_cappa_command(help="一个高效的 fba 命令行界面", default_long=True)
 @dataclass
 class FbaCli:
     sql: Annotated[
         str,
-        cappa.Arg(value_name='PATH', default='', show_default=False, help='在事务中执行 SQL 脚本'),
+        cappa.Arg(value_name="PATH", default="", show_default=False, help="在事务中执行 SQL 脚本"),
     ]
     subcmd: cappa.Subcommands[Init | Run | Celery | Add | None] = None
 
@@ -350,5 +354,5 @@ class FbaCli:
 
 
 def main() -> None:
-    output = cappa.Output(error_format=f'{error_format}\n{output_help}')
+    output = cappa.Output(error_format=f"{error_format}\n{output_help}")
     asyncio.run(cappa.invoke_async(FbaCli, version=__version__, output=output))

@@ -2,9 +2,7 @@ from celery.backends.database.session import SessionManager as CelerySessionMana
 
 
 class SessionManager(CelerySessionManager):
-    """
-    重写 celery SessionManager
-    """
+    """重写 celery SessionManager."""
 
     def __init__(self) -> None:
         super().__init__()

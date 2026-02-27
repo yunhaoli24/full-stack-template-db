@@ -1,55 +1,52 @@
 import dataclasses
-
 from enum import Enum
 
 
 class CustomCodeBase(Enum):
-    """自定义状态码基类"""
+    """自定义状态码基类."""
 
     @property
     def code(self) -> int:
-        """获取状态码"""
+        """获取状态码."""
         return self.value[0]
 
     @property
     def msg(self) -> str:
-        """获取状态码信息"""
+        """获取状态码信息."""
         message = self.value[1]
-        if isinstance(message, str) and message.startswith('response.'):
+        if isinstance(message, str) and message.startswith("response."):
             msg_map = {
-                'response.success': '请求成功',
-                'response.error': '请求失败',
+                "response.success": "请求成功",
+                "response.error": "请求失败",
             }
             return msg_map.get(message, message)
         return str(message)
 
 
 class CustomResponseCode(CustomCodeBase):
-    """自定义响应状态码"""
+    """自定义响应状态码."""
 
-    HTTP_200 = (200, 'response.success')
-    HTTP_400 = (400, 'response.error')
-    HTTP_500 = (500, '服务器内部错误')
+    HTTP_200 = (200, "response.success")
+    HTTP_400 = (400, "response.error")
+    HTTP_500 = (500, "服务器内部错误")
 
 
 class CustomErrorCode(CustomCodeBase):
-    """自定义错误状态码"""
+    """自定义错误状态码."""
 
-    CAPTCHA_ERROR = (40001, '验证码错误')
+    CAPTCHA_ERROR = (40001, "验证码错误")
 
 
 @dataclasses.dataclass
 class CustomResponse:
-    """
-    提供开放式响应状态码，而不是枚举，如果你想自定义响应信息，这可能很有用
-    """
+    """提供开放式响应状态码，而不是枚举，如果你想自定义响应信息，这可能很有用."""
 
     code: int
     msg: str
 
 
 class StandardResponseCode:
-    """标准响应状态码"""
+    """标准响应状态码."""
 
     """
     HTTP codes

@@ -1,5 +1,5 @@
-from datetime import datetime
 from typing import Any
+from datetime import datetime
 
 class ScheduleEntry:
     app: Any
@@ -12,7 +12,7 @@ class ScheduleEntry:
     last_run_at: datetime
 
     def __init__(self, app: Any = ..., name: str = ..., task: str = ...) -> None: ...
-    def __next__(self) -> 'ScheduleEntry': ...
+    def __next__(self) -> ScheduleEntry: ...
 
 class Scheduler:
     app: Any

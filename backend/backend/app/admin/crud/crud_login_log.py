@@ -1,19 +1,18 @@
 from typing import Any, cast
 
 from sqlalchemy import delete as sa_delete
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.admin.model import LoginLog
 from backend.app.admin.schema.login_log import CreateLoginLogParam
 
 
 class CRUDLoginLog(CRUDPlus[LoginLog]):
-    """登录日志数据库操作类"""
+    """登录日志数据库操作类."""
 
     async def get_select(self, username: str | None, status: int | None, ip: str | None) -> Any:
-        """
-        获取登录日志列表查询表达式
+        """获取登录日志列表查询表达式.
 
         :param username: 用户名
         :param status: 登录状态
@@ -23,17 +22,16 @@ class CRUDLoginLog(CRUDPlus[LoginLog]):
         filters = {}
 
         if username is not None:
-            filters['username__like'] = f'%{username}%'
+            filters["username__like"] = f"%{username}%"
         if status is not None:
-            filters['status'] = status  # type: ignore[assignment]
+            filters["status"] = status  # type: ignore[assignment]
         if ip is not None:
-            filters['ip__like'] = f'%{ip}%'
+            filters["ip__like"] = f"%{ip}%"
 
-        return await cast('Any', self).select_order('created_time', 'desc', **filters)
+        return await cast("Any", self).select_order("created_time", "desc", **filters)
 
     async def create(self, db: AsyncSession, obj: CreateLoginLogParam) -> None:
-        """
-        创建登录日志
+        """创建登录日志.
 
         :param db: 数据库会话
         :param obj: 创建登录日志参数
@@ -42,8 +40,7 @@ class CRUDLoginLog(CRUDPlus[LoginLog]):
         await self.create_model(db, obj, commit=True)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
-        """
-        批量删除登录日志
+        """批量删除登录日志.
 
         :param db: 数据库会话
         :param pks: 登录日志 ID 列表
@@ -53,8 +50,7 @@ class CRUDLoginLog(CRUDPlus[LoginLog]):
 
     @staticmethod
     async def delete_all(db: AsyncSession) -> None:
-        """
-        删除所有日志
+        """删除所有日志.
 
         :param db: 数据库会话
         :return:

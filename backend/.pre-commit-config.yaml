@@ -11,7 +11,7 @@ repos:
       - id: check-toml
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.14.6
+    rev: v0.15.4
     hooks:
       - id: ruff-check
         args:
@@ -26,7 +26,7 @@ repos:
         name: mypy
         entry: uv run mypy
         language: system
-        types_or: [python, pyi]
+        types_or: [python]
 
   - repo: local
     hooks:
@@ -34,12 +34,12 @@ repos:
         name: pyright
         entry: uv run pyright
         language: system
-        types_or: [python, pyi]
+        types_or: [python]
         args:
           - --threads=4
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.12
+    rev: 0.10.6
     hooks:
       - id: uv-lock
       - id: uv-export

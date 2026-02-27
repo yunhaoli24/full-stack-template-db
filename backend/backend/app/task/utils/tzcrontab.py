@@ -1,23 +1,23 @@
-from datetime import datetime
 from typing import Any
+from datetime import datetime
 
 from celery import schedules  # pyright: ignore
 from celery.schedules import ParseException, crontab
 
-from backend.common.exception import errors
 from backend.utils.timezone import timezone
+from backend.common.exception import errors
 
 
 class TzAwareCrontab(schedules.crontab):
-    """时区感知 Crontab"""
+    """时区感知 Crontab."""
 
     def __init__(
         self,
-        minute: str = '*',
-        hour: str = '*',
-        day_of_week: str = '*',
-        day_of_month: str = '*',
-        month_of_year: str = '*',
+        minute: str = "*",
+        hour: str = "*",
+        day_of_week: str = "*",
+        day_of_month: str = "*",
+        month_of_year: str = "*",
         app: Any = None,
     ) -> None:
         super().__init__(
@@ -31,8 +31,7 @@ class TzAwareCrontab(schedules.crontab):
         )
 
     def is_due(self, last_run_at: datetime) -> tuple[bool, int | float]:
-        """
-        任务到期状态
+        """任务到期状态.
 
         :param last_run_at: 最后运行时间
         :return:
@@ -60,15 +59,14 @@ class TzAwareCrontab(schedules.crontab):
 
 
 def crontab_verify(crontab_str: str) -> None:
-    """
-    验证 Celery crontab 表达式
+    """验证 Celery crontab 表达式.
 
     :param crontab_str: 计划表达式
     :return:
     """
-    crontab_split = crontab_str.split(' ')
+    crontab_split = crontab_str.split(" ")
     if len(crontab_split) != 5:
-        raise errors.RequestError(msg='Crontab 表达式非法')
+        raise errors.RequestError(msg="Crontab 表达式非法")
     try:
         minute, hour, day_of_week, day_of_month, month_of_year = crontab_split
         crontab(
@@ -79,4 +77,4 @@ def crontab_verify(crontab_str: str) -> None:
             month_of_year=month_of_year,
         )
     except ParseException:
-        raise errors.RequestError(msg='Crontab 表达式非法')
+        raise errors.RequestError(msg="Crontab 表达式非法")

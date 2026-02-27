@@ -1,17 +1,16 @@
 from typing import Any, cast
 
 from fastapi import Request
-from sqlalchemy import ColumnElement, Table, and_, or_, true
+from sqlalchemy import Table, ColumnElement, or_, and_, true
 
-from backend.common.context import ctx
-from backend.common.enums import RoleDataRuleExpressionType, RoleDataRuleOperatorType
 from backend.core.conf import settings
+from backend.common.enums import RoleDataRuleOperatorType, RoleDataRuleExpressionType
+from backend.common.context import ctx
 from backend.utils.import_parse import get_all_models
 
 
 class RequestPermission:
-    """
-    请求权限验证器，用于角色菜单 RBAC 权限控制
+    """请求权限验证器，用于角色菜单 RBAC 权限控制.
 
     注意：
         使用此请求权限时，需要将 `Depends(RequestPermission('xxx'))` 在 `DependsRBAC` 之前设置，
@@ -19,8 +18,7 @@ class RequestPermission:
     """
 
     def __init__(self, value: str) -> None:
-        """
-        初始化请求权限验证器
+        """初始化请求权限验证器.
 
         :param value: 权限标识
         :return:
@@ -28,8 +26,7 @@ class RequestPermission:
         self.value = value
 
     async def __call__(self, request: Request) -> None:
-        """
-        验证请求权限
+        """验证请求权限.
 
         :param request: FastAPI 请求对象
         :return:
@@ -40,15 +37,12 @@ class RequestPermission:
 
 
 def get_data_permission_models() -> dict[str, object]:
-    """获取所有可用于数据权限的模型"""
-    return {getattr(model, '__name__', str(model)): model for model in get_all_models()}
+    """获取所有可用于数据权限的模型."""
+    return {getattr(model, "__name__", str(model)): model for model in get_all_models()}
 
 
-def filter_data_permission(  # noqa: C901
-    request: Request, *models: Any
-) -> ColumnElement[bool]:
-    """
-    过滤数据权限，控制用户可见数据范围
+def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool]:
+    """过滤数据权限，控制用户可见数据范围.
 
     使用场景：
         - 控制用户能看到哪些数据
@@ -78,7 +72,7 @@ def filter_data_permission(  # noqa: C901
 
     # 获取目标模型
     model_map: dict[str, Any] = (
-        {getattr(model, '__name__', str(model)): model for model in models} if models else get_data_permission_models()
+        {getattr(model, "__name__", str(model)): model for model in models} if models else get_data_permission_models()
     )
 
     where_and_list: list[ColumnElement[bool]] = []
@@ -89,24 +83,24 @@ def filter_data_permission(  # noqa: C901
         if target_model is None:
             continue
 
-        table = target_model if isinstance(target_model, Table) else getattr(target_model, '__table__', None)
+        table = target_model if isinstance(target_model, Table) else getattr(target_model, "__table__", None)
         if table is None:
             continue
         rule_column = data_rule.column
-        if rule_column not in table.columns.keys():  # pyright: ignore
+        if rule_column not in table.columns:  # pyright: ignore
             continue
         if rule_column in settings.DATA_PERMISSION_COLUMN_EXCLUDE:
             continue
 
         # 构建过滤条件
         column_obj: Any = cast(
-            'Any',
+            "Any",
             getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column],  # pyright: ignore
         )
-        column_type: Any = cast('Any', table.columns[rule_column].type.python_type)  # pyright: ignore
+        column_type: Any = cast("Any", table.columns[rule_column].type.python_type)  # pyright: ignore
 
         def cast_value(value: Any) -> Any:
-            """类型转换"""
+            """类型转换."""
             try:
                 return column_type(value) if column_type is not str else value
             except (ValueError, TypeError):
@@ -116,23 +110,23 @@ def filter_data_permission(  # noqa: C901
         value = cast_value(data_rule.value)
         match data_rule.expression:
             case RoleDataRuleExpressionType.eq:
-                condition = cast('ColumnElement[bool]', column_obj == value)
+                condition = cast("ColumnElement[bool]", column_obj == value)
             case RoleDataRuleExpressionType.ne:
-                condition = cast('ColumnElement[bool]', column_obj != value)
+                condition = cast("ColumnElement[bool]", column_obj != value)
             case RoleDataRuleExpressionType.gt:
-                condition = cast('ColumnElement[bool]', column_obj > value)
+                condition = cast("ColumnElement[bool]", column_obj > value)
             case RoleDataRuleExpressionType.ge:
-                condition = cast('ColumnElement[bool]', column_obj >= value)
+                condition = cast("ColumnElement[bool]", column_obj >= value)
             case RoleDataRuleExpressionType.lt:
-                condition = cast('ColumnElement[bool]', column_obj < value)
+                condition = cast("ColumnElement[bool]", column_obj < value)
             case RoleDataRuleExpressionType.le:
-                condition = cast('ColumnElement[bool]', column_obj <= value)
+                condition = cast("ColumnElement[bool]", column_obj <= value)
             case RoleDataRuleExpressionType.in_:
-                values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
-                condition = cast('ColumnElement[bool]', column_obj.in_(values))
+                values = [cast_value(v.strip()) for v in data_rule.value.split(",")]
+                condition = cast("ColumnElement[bool]", column_obj.in_(values))
             case RoleDataRuleExpressionType.not_in:
-                values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
-                condition = cast('ColumnElement[bool]', column_obj.not_in(values))
+                values = [cast_value(v.strip()) for v in data_rule.value.split(",")]
+                condition = cast("ColumnElement[bool]", column_obj.not_in(values))
             case _:  # pyright: ignore
                 condition = None
 
@@ -168,7 +162,7 @@ def filter_data_permission(  # noqa: C901
 
 
 class DataPermissionFilter:
-    """指定模型的数据权限过滤器"""
+    """指定模型的数据权限过滤器."""
 
     def __init__(self, *models: Any) -> None:
         self.models = models

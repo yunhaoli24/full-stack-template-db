@@ -1,26 +1,26 @@
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
+from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn.protocols.http.h11_impl import STATUS_PHRASES
 
+from backend.core.conf import settings
 from backend.common.context import ctx
+from backend.utils.trace_id import get_request_trace_id
+from backend.utils.serializers import MsgSpecJSONResponse
 from backend.common.exception.errors import BaseExceptionError
 from backend.common.response.response_code import CustomResponseCode, StandardResponseCode
 from backend.common.response.response_schema import response_base
-from backend.core.conf import settings
-from backend.utils.serializers import MsgSpecJSONResponse
-from backend.utils.trace_id import get_request_trace_id
+
 
 ResponseContent = dict[str, Any]
 
 
 def _get_exception_code(status_code: int) -> int:
-    """
-    获取返回状态码（可用状态码基于 RFC 定义）
+    """获取返回状态码（可用状态码基于 RFC 定义）.
 
     `python 状态码标准支持 <https://github.com/python/cpython/blob/6e3cc72afeaee2532b4327776501eb8234ac787b/Lib/http/__init__.py#L7>`__
 
@@ -38,50 +38,48 @@ def _get_exception_code(status_code: int) -> int:
 
 
 async def _validation_exception_handler(exc: RequestValidationError | ValidationError):
-    """
-    数据验证异常处理
+    """数据验证异常处理.
 
     :param exc: 验证异常
     :return:
     """
     errors = list(exc.errors())
     error = errors[0]
-    if error.get('type') == 'json_invalid':
-        message = 'json解析失败'
+    if error.get("type") == "json_invalid":
+        message = "json解析失败"
     else:
-        error_input = error.get('input')
-        field = str(error.get('loc')[-1])
-        error_msg = error.get('msg')
-        message = f'{field} {error_msg}，输入：{error_input}' if settings.ENVIRONMENT == 'dev' else error_msg
-    msg = f'请求参数非法: {message}'
-    data = {'errors': errors} if settings.ENVIRONMENT == 'dev' else None
+        error_input = error.get("input")
+        field = str(error.get("loc")[-1])
+        error_msg = error.get("msg")
+        message = f"{field} {error_msg}，输入：{error_input}" if settings.ENVIRONMENT == "dev" else error_msg
+    msg = f"请求参数非法: {message}"
+    data = {"errors": errors} if settings.ENVIRONMENT == "dev" else None
     content: ResponseContent = {
-        'code': StandardResponseCode.HTTP_422,
-        'msg': msg,
-        'data': data,
+        "code": StandardResponseCode.HTTP_422,
+        "msg": msg,
+        "data": data,
     }
     ctx.__request_validation_exception__ = content
     content.update(trace_id=get_request_trace_id())
     return MsgSpecJSONResponse(status_code=StandardResponseCode.HTTP_422, content=content)
 
 
-def register_exception(app: FastAPI) -> None:  # noqa: C901
+def register_exception(app: FastAPI) -> None:
     registered_handlers: list[object] = []
 
     @app.exception_handler(HTTPException)  # pyright: ignore
     async def http_exception_handler(request: Request, exc: HTTPException):
-        """
-        全局 HTTP 异常处理
+        """全局 HTTP 异常处理.
 
         :param request: FastAPI 请求对象
         :param exc: HTTP 异常
         :return:
         """
-        if settings.ENVIRONMENT == 'dev':
+        if settings.ENVIRONMENT == "dev":
             content: ResponseContent = {
-                'code': exc.status_code,
-                'msg': exc.detail,
-                'data': None,
+                "code": exc.status_code,
+                "msg": exc.detail,
+                "data": None,
             }
         else:
             res = response_base.fail(res=CustomResponseCode.HTTP_400)
@@ -98,8 +96,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
     @app.exception_handler(RequestValidationError)  # pyright: ignore
     async def fastapi_validation_exception_handler(request: Request, exc: RequestValidationError):
-        """
-        FastAPI 数据验证异常处理
+        """FastAPI 数据验证异常处理.
 
         :param request: FastAPI 请求对象
         :param exc: 验证异常
@@ -111,8 +108,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
     @app.exception_handler(ValidationError)  # pyright: ignore
     async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
-        """
-        Pydantic 数据验证异常处理
+        """Pydantic 数据验证异常处理.
 
         :param request: 请求对象
         :param exc: 验证异常
@@ -124,18 +120,17 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
     @app.exception_handler(AssertionError)  # pyright: ignore
     async def assertion_error_handler(request: Request, exc: AssertionError):
-        """
-        断言错误处理
+        """断言错误处理.
 
         :param request: FastAPI 请求对象
         :param exc: 断言错误
         :return:
         """
-        if settings.ENVIRONMENT == 'dev':
+        if settings.ENVIRONMENT == "dev":
             content: ResponseContent = {
-                'code': StandardResponseCode.HTTP_500,
-                'msg': str(''.join(exc.args) if exc.args else exc.__doc__),
-                'data': None,
+                "code": StandardResponseCode.HTTP_500,
+                "msg": str("".join(exc.args) if exc.args else exc.__doc__),
+                "data": None,
             }
         else:
             res = response_base.fail(res=CustomResponseCode.HTTP_500)
@@ -151,17 +146,16 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
     @app.exception_handler(BaseExceptionError)  # pyright: ignore
     async def custom_exception_handler(request: Request, exc: BaseExceptionError):
-        """
-        全局自定义异常处理
+        """全局自定义异常处理.
 
         :param request: FastAPI 请求对象
         :param exc: 自定义异常
         :return:
         """
         content: ResponseContent = {
-            'code': exc.code,
-            'msg': str(exc.msg),
-            'data': exc.data or None,
+            "code": exc.code,
+            "msg": str(exc.msg),
+            "data": exc.data or None,
         }
         ctx.__request_custom_exception__ = content
         content.update(trace_id=get_request_trace_id())
@@ -175,18 +169,17 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
     @app.exception_handler(Exception)  # pyright: ignore
     async def all_unknown_exception_handler(request: Request, exc: Exception):
-        """
-        全局未知异常处理
+        """全局未知异常处理.
 
         :param request: FastAPI 请求对象
         :param exc: 未知异常
         :return:
         """
-        if settings.ENVIRONMENT == 'dev':
+        if settings.ENVIRONMENT == "dev":
             content: ResponseContent = {
-                'code': StandardResponseCode.HTTP_500,
-                'msg': str(exc),
-                'data': None,
+                "code": StandardResponseCode.HTTP_500,
+                "msg": str(exc),
+                "data": None,
             }
         else:
             res = response_base.fail(res=CustomResponseCode.HTTP_500)
@@ -203,8 +196,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
 
         @app.exception_handler(StandardResponseCode.HTTP_500)  # pyright: ignore
         async def cors_custom_code_500_exception_handler(request: Request, exc: BaseExceptionError | Exception):
-            """
-            跨域自定义 500 异常处理
+            """跨域自定义 500 异常处理.
 
             :param request: FastAPI 请求对象
             :param exc: 自定义异常
@@ -212,43 +204,42 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             """
             if isinstance(exc, BaseExceptionError):
                 content: ResponseContent = {
-                    'code': exc.code,
-                    'msg': exc.msg,
-                    'data': exc.data,
+                    "code": exc.code,
+                    "msg": exc.msg,
+                    "data": exc.data,
+                }
+            elif settings.ENVIRONMENT == "dev":
+                content = {
+                    "code": StandardResponseCode.HTTP_500,
+                    "msg": str(exc),
+                    "data": None,
                 }
             else:
-                if settings.ENVIRONMENT == 'dev':
-                    content = {
-                        'code': StandardResponseCode.HTTP_500,
-                        'msg': str(exc),
-                        'data': None,
-                    }
-                else:
-                    res = response_base.fail(res=CustomResponseCode.HTTP_500)
-                    content = res.model_dump()
+                res = response_base.fail(res=CustomResponseCode.HTTP_500)
+                content = res.model_dump()
             content.update(trace_id=get_request_trace_id())
             response = MsgSpecJSONResponse(
                 status_code=exc.code if isinstance(exc, BaseExceptionError) else StandardResponseCode.HTTP_500,
                 content=content,
                 background=exc.background if isinstance(exc, BaseExceptionError) else None,
             )
-            origin = request.headers.get('origin')
+            origin = request.headers.get("origin")
             if origin:
                 cors = CORSMiddleware(
                     app=app,
                     allow_origins=settings.CORS_ALLOWED_ORIGINS,
                     allow_credentials=True,
-                    allow_methods=['*'],
-                    allow_headers=['*'],
+                    allow_methods=["*"],
+                    allow_headers=["*"],
                     expose_headers=settings.CORS_EXPOSE_HEADERS,
                 )
                 response.headers.update(cors.simple_headers)
-                has_cookie = 'cookie' in request.headers
+                has_cookie = "cookie" in request.headers
                 if cors.allow_all_origins and has_cookie:
-                    response.headers['Access-Control-Allow-Origin'] = origin
+                    response.headers["Access-Control-Allow-Origin"] = origin
                 elif not cors.allow_all_origins and cors.is_allowed_origin(origin=origin):
-                    response.headers['Access-Control-Allow-Origin'] = origin
-                    response.headers.add_vary_header('Origin')
+                    response.headers["Access-Control-Allow-Origin"] = origin
+                    response.headers.add_vary_header("Origin")
             return response
 
         registered_handlers.append(cors_custom_code_500_exception_handler)

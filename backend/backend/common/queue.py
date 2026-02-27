@@ -1,12 +1,11 @@
 import asyncio
-
-from asyncio import Queue
+import contextlib
 from typing import Any
+from asyncio import Queue
 
 
 async def batch_dequeue(queue: Queue[Any], max_items: int, timeout: float) -> list[Any]:
-    """
-    从异步队列中获取多个项目
+    """从异步队列中获取多个项目.
 
     :param queue: 用于获取项目的 `asyncio.Queue` 队列
     :param max_items: 从队列中获取的最大项目数量
@@ -20,9 +19,7 @@ async def batch_dequeue(queue: Queue[Any], max_items: int, timeout: float) -> li
             item = await queue.get()
             items.append(item)
 
-    try:
+    with contextlib.suppress(TimeoutError):
         await asyncio.wait_for(collector(), timeout=timeout)
-    except asyncio.TimeoutError:
-        pass
 
     return items

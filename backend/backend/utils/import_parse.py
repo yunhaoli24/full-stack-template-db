@@ -1,20 +1,18 @@
-import importlib
 import inspect
 import os.path
-
-from functools import lru_cache
+import importlib
 from typing import Any
+from functools import lru_cache
 
 import sqlalchemy as sa
 
-from backend.common.exception import errors
 from backend.common.log import log
+from backend.common.exception import errors
 
 
 @lru_cache(maxsize=512)
 def import_module_cached(module_path: str) -> Any:
-    """
-    缓存导入模块
+    """缓存导入模块.
 
     :param module_path: 模块路径
     :return:
@@ -23,24 +21,22 @@ def import_module_cached(module_path: str) -> Any:
 
 
 def dynamic_import_data_model(module_path: str) -> type[object]:
-    """
-    动态导入数据模型
+    """动态导入数据模型.
 
     :param module_path: 模块路径，格式为 'module_path.class_name'
     :return:
     """
     try:
-        module_path, class_name = module_path.rsplit('.', 1)
+        module_path, class_name = module_path.rsplit(".", 1)
         module = import_module_cached(module_path)
         return getattr(module, class_name)
     except Exception as e:
-        log.error(f'动态导入数据模型失败：{e}')
-        raise errors.ServerError(msg='数据模型列动态解析失败，请联系系统超级管理员')
+        log.error(f"动态导入数据模型失败：{e}")
+        raise errors.ServerError(msg="数据模型列动态解析失败，请联系系统超级管理员")
 
 
 def get_model_objects(module_path: str) -> list[object] | None:
-    """
-    获取模型对象
+    """获取模型对象.
 
     :param module_path: 模块路径
     :return:
@@ -62,17 +58,17 @@ def get_model_objects(module_path: str) -> list[object] | None:
 
 
 def get_app_models() -> list[object]:
-    """获取 app 所有模型类"""
+    """获取 app 所有模型类."""
     from backend.core.path_conf import BASE_PATH
 
-    app_path = BASE_PATH / 'app'
+    app_path = BASE_PATH / "app"
     list_dirs = os.listdir(app_path)
 
-    apps = [d for d in list_dirs if os.path.isdir(os.path.join(app_path, d)) and d != '__pycache__']
+    apps = [d for d in list_dirs if os.path.isdir(os.path.join(app_path, d)) and d != "__pycache__"]
 
     objs: list[object] = []
     for app in apps:
-        module_path = f'backend.app.{app}.model'
+        module_path = f"backend.app.{app}.model"
         model_objs = get_model_objects(module_path)
         if model_objs:
             objs.extend(model_objs)
@@ -82,7 +78,7 @@ def get_app_models() -> list[object]:
 
 @lru_cache
 def get_all_models() -> list[object]:
-    """获取所有模型类"""
+    """获取所有模型类."""
     from backend.plugin.tools import get_plugin_models
 
     return get_app_models() + get_plugin_models()

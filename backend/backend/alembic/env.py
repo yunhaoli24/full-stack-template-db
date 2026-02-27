@@ -1,17 +1,17 @@
-import asyncio
 import os
-
-from logging.config import fileConfig
+import asyncio
 from typing import Any
+from logging.config import fileConfig
 
 from alembic import context  # pyright: ignore
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from backend.common.model import MappedBase
 from backend.core import path_conf
 from backend.database.db import SQLALCHEMY_DATABASE_URL
+from backend.common.model import MappedBase
+
 
 if not os.path.exists(path_conf.ALEMBIC_VERSION_DIR):
     os.makedirs(path_conf.ALEMBIC_VERSION_DIR)
@@ -31,8 +31,8 @@ target_metadata = MappedBase.metadata
 
 # other values from the config, defined by the needs of env.py,
 alembic_config.set_main_option(
-    'sqlalchemy.url',
-    SQLALCHEMY_DATABASE_URL.render_as_string(hide_password=False).replace('%', '%%'),
+    "sqlalchemy.url",
+    SQLALCHEMY_DATABASE_URL.render_as_string(hide_password=False).replace("%", "%%"),
 )
 
 
@@ -48,12 +48,12 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = alembic_config.get_main_option('sqlalchemy.url')
+    url = alembic_config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={'paramstyle': 'named'},
+        dialect_opts={"paramstyle": "named"},
         compare_type=True,
         compare_server_default=True,
         transaction_per_migration=True,
@@ -66,12 +66,11 @@ def run_migrations_offline() -> None:
 def do_run_migrations(connection: Connection) -> None:
     # 当迁移无变化时，不生成迁移记录
     def process_revision_directives(context: Any, revision: Any, directives: list[Any]) -> None:
-        cmd_opts = getattr(alembic_config, 'cmd_opts', None)
-        if bool(getattr(cmd_opts, 'autogenerate', False)):
+        cmd_opts = getattr(alembic_config, "cmd_opts", None)
+        if bool(getattr(cmd_opts, "autogenerate", False)):
             script = directives[0]
             if script.upgrade_ops.is_empty():
                 directives[:] = []
-                print('\nNo changes in model detected')
 
     context.configure(
         connection=connection,
@@ -91,10 +90,9 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
-
     connectable = async_engine_from_config(
         alembic_config.get_section(alembic_config.config_ini_section, {}),
-        prefix='sqlalchemy.',
+        prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
@@ -106,7 +104,6 @@ async def run_async_migrations() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-
     asyncio.run(run_async_migrations())
 
 

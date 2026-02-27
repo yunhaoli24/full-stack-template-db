@@ -14,7 +14,7 @@
     "paths": {
       "@/*": ["./src/*"],
     },
-    "types": ["unplugin-vue-router/client", "vite-plugin-vue-layouts/client"],
+    "types": ["vue-router/auto-routes", "vite-plugin-vue-layouts/client"],
     "allowImportingTsExtensions": true,
 
     /* Linting */

@@ -1,20 +1,19 @@
-from collections.abc import Sequence
 from typing import Any
+from collections.abc import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.plugin.s3.model import S3Storage
 from backend.common.exception import errors
 from backend.common.pagination import paging_data
 from backend.plugin.s3.crud.storage import s3_storage_dao
-from backend.plugin.s3.model import S3Storage
 from backend.plugin.s3.schema.storage import CreateS3StorageParam, DeleteS3StorageParam, UpdateS3StorageParam
 
 
 class S3StorageService:
     @staticmethod
     async def get(*, db: AsyncSession, pk: int) -> S3Storage:
-        """
-        获取 S3 存储
+        """获取 S3 存储.
 
         :param db: 数据库会话
         :param pk: S3 存储 ID
@@ -22,13 +21,12 @@ class S3StorageService:
         """
         s3_storage = await s3_storage_dao.get(db, pk)
         if not s3_storage:
-            raise errors.NotFoundError(msg='S3 存储不存在')
+            raise errors.NotFoundError(msg="S3 存储不存在")
         return s3_storage
 
     @staticmethod
     async def get_list(db: AsyncSession, name: str | None, region: str | None) -> dict[str, Any]:
-        """
-        获取 S3 存储列表
+        """获取 S3 存储列表.
 
         :param db: 数据库会话
         :param name: 存储名称
@@ -40,19 +38,16 @@ class S3StorageService:
 
     @staticmethod
     async def get_all(*, db: AsyncSession) -> Sequence[S3Storage]:
-        """
-        获取所有 S3 存储
+        """获取所有 S3 存储.
 
         :param db: 数据库会话
         :return:
         """
-        s3_storages = await s3_storage_dao.get_all(db)
-        return s3_storages
+        return await s3_storage_dao.get_all(db)
 
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateS3StorageParam) -> None:
-        """
-        创建 S3 存储
+        """创建 S3 存储.
 
         :param db: 数据库会话
         :param obj: 创建S3 存储参数
@@ -62,28 +57,24 @@ class S3StorageService:
 
     @staticmethod
     async def update(*, db: AsyncSession, pk: int, obj: UpdateS3StorageParam) -> int:
-        """
-        更新 S3 存储
+        """更新 S3 存储.
 
         :param db: 数据库会话
         :param pk: S3 存储 ID
         :param obj: 更新S3 存储参数
         :return:
         """
-        count = await s3_storage_dao.update(db, pk, obj)
-        return count
+        return await s3_storage_dao.update(db, pk, obj)
 
     @staticmethod
     async def delete(*, db: AsyncSession, obj: DeleteS3StorageParam) -> int:
-        """
-        删除 S3 存储
+        """删除 S3 存储.
 
         :param db: 数据库会话
         :param obj: S3 存储 ID 列表
         :return:
         """
-        count = await s3_storage_dao.delete(db, obj.pks)
-        return count
+        return await s3_storage_dao.delete(db, obj.pks)
 
 
 s3_storage_service: S3StorageService = S3StorageService()

@@ -1,22 +1,23 @@
-from datetime import datetime
 from typing import Any
+from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.admin.crud.crud_login_log import login_log_dao
-from backend.app.admin.schema.login_log import CreateLoginLogParam, DeleteLoginLogParam
-from backend.common.context import ctx
 from backend.common.log import log
+from backend.common.context import ctx
 from backend.common.pagination import paging_data
+from backend.app.admin.schema.login_log import CreateLoginLogParam, DeleteLoginLogParam
+from backend.app.admin.crud.crud_login_log import login_log_dao
 
 
 class LoginLogService:
-    """登录日志服务类"""
+    """登录日志服务类."""
 
     @staticmethod
-    async def get_list(*, db: AsyncSession, username: str | None, status: int | None, ip: str | None) -> dict[str, Any]:
-        """
-        获取登录日志列表
+    async def get_list(
+        *, db: AsyncSession, username: str | None, status: int | None, ip: str | None
+    ) -> dict[str, Any]:
+        """获取登录日志列表.
 
         :param db: 数据库会话
         :param username: 用户名
@@ -37,8 +38,7 @@ class LoginLogService:
         status: int,
         msg: str,
     ) -> None:
-        """
-        创建登录日志
+        """创建登录日志.
 
         :param db: 数据库会话
         :param user_uuid: 用户 UUID
@@ -66,23 +66,21 @@ class LoginLogService:
             )
             await login_log_dao.create(db, obj)
         except Exception as e:
-            log.error(f'登录日志创建失败: {e}')
+            log.error(f"登录日志创建失败: {e}")
 
     @staticmethod
     async def delete(*, db: AsyncSession, obj: DeleteLoginLogParam) -> int:
-        """
-        批量删除登录日志
+        """批量删除登录日志.
 
         :param db: 数据库会话
         :param obj: 日志 ID 列表
         :return:
         """
-        count = await login_log_dao.delete(db, obj.pks)
-        return count
+        return await login_log_dao.delete(db, obj.pks)
 
     @staticmethod
     async def delete_all(*, db: AsyncSession) -> None:
-        """清空所有登录日志"""
+        """清空所有登录日志."""
         await login_log_dao.delete_all(db)
 
 

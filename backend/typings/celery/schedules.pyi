@@ -1,5 +1,6 @@
+from typing import Any
 from datetime import datetime, timedelta
-from typing import Any, Callable
+from collections.abc import Callable
 
 class ParseException(Exception): ...
 
@@ -8,7 +9,7 @@ class schedule:
 
     def __init__(
         self,
-        run_every: int | float | timedelta = ...,
+        run_every: float | timedelta = ...,
         relative: bool = ...,
         nowfun: Callable[[], datetime] | None = ...,
         app: Any = ...,
@@ -35,5 +36,5 @@ class crontab(schedule):
     def remaining_estimate(self, last_run_at: datetime) -> timedelta: ...
     def now(self) -> datetime: ...
 
-def schedstate(*, is_due: bool, next: int | float) -> tuple[bool, int | float]: ...
+def schedstate(*, is_due: bool, next: float) -> tuple[bool, int | float]: ...
 def maybe_schedule(s: Any) -> Any: ...
