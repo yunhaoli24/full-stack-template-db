@@ -69,7 +69,7 @@ class ResponseBase:
         *,
         res: CustomResponseCode | CustomResponse,
         data: Any | None,
-    ) -> ResponseModel | ResponseSchemaModel[Any]:
+    ) -> ResponseSchemaModel[Any]:
         """
         请求返回通用方法
 
@@ -77,14 +77,14 @@ class ResponseBase:
         :param data: 返回数据
         :return:
         """
-        return ResponseModel(code=res.code, msg=res.msg, data=data)
+        return ResponseSchemaModel[Any](code=res.code, msg=res.msg, data=data)
 
     def success(
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_200,
         data: Any | None = None,
-    ) -> ResponseModel | ResponseSchemaModel[Any]:
+    ) -> ResponseSchemaModel[Any]:
         """
         成功响应
 
@@ -99,7 +99,7 @@ class ResponseBase:
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_400,
         data: Any = None,
-    ) -> ResponseModel | ResponseSchemaModel[Any]:
+    ) -> ResponseSchemaModel[Any]:
         """
         失败响应
 

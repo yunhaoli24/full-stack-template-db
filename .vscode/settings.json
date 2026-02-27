@@ -1,7 +1,15 @@
 {
-    "python.defaultInterpreterPath": "backend/.venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
     "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.stubPath": "backend/typings",
+    "python.analysis.extraPaths": [
+        "backend"
+    ],
+    "python.analysis.include": [
+        "backend/backend"
+    ],
     "python.analysis.exclude": [
+        "**/.*",
         "**/node_modules",
         "**/dist",
         "**/.venv",
@@ -9,9 +17,6 @@
         "**/__pycache__",
         "**/frontend",
     ],
-    "python.analysis.diagnosticSeverityOverrides": {
-        "typeCheckingMode": "strict",
-    },
     "python.analysis.diagnosticMode": "workspace",
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff"

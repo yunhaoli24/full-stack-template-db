@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy import ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +21,7 @@ class CRUDDept(CRUDPlus[Dept]):
         :param dept_id: 部门 ID
         :return:
         """
-        return await self.select_model_by_column(db, id=dept_id, del_flag=False)
+        return cast('Dept | None', await self.select_model_by_column(db, id=dept_id, del_flag=False))
 
     async def get_by_name(self, db: AsyncSession, name: str) -> Dept | None:
         """
@@ -31,7 +31,7 @@ class CRUDDept(CRUDPlus[Dept]):
         :param name: 部门名称
         :return:
         """
-        return await self.select_model_by_column(db, name=name, del_flag=False)
+        return cast('Dept | None', await self.select_model_by_column(db, name=name, del_flag=False))
 
     async def get_all(
         self,
@@ -64,7 +64,10 @@ class CRUDDept(CRUDPlus[Dept]):
         if status is not None:
             filters['status'] = status
 
-        return await self.select_models_order(db, 'sort', 'desc', data_filter, **filters)
+        return cast(
+            'Sequence[Dept]',
+            await cast('Any', self).select_models_order(db, 'sort', 'desc', data_filter, **filters),
+        )
 
     async def create(self, db: AsyncSession, obj: CreateDeptParam) -> None:
         """
@@ -120,7 +123,7 @@ class CRUDDept(CRUDPlus[Dept]):
         :param dept_id: 部门 ID
         :return:
         """
-        return await self.select_models(db, parent_id=dept_id, del_flag=False)
+        return cast('Sequence[Dept | None]', await self.select_models(db, parent_id=dept_id, del_flag=False))
 
 
 dept_dao: CRUDDept = CRUDDept(Dept)

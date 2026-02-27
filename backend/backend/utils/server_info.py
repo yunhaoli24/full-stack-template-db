@@ -39,7 +39,7 @@ class ServerInfo:
         hours, rem = divmod(rem, 3600)
         minutes, seconds = divmod(rem, 60)
 
-        parts = []
+        parts: list[str] = []
         if days:
             parts.append(f'{days} 天')
         if hours:
@@ -64,7 +64,7 @@ class ServerInfo:
     @staticmethod
     def get_cpu_info() -> dict[str, float | int]:
         """获取 CPU 信息"""
-        cpu_info = {
+        cpu_info: dict[str, float | int] = {
             'usage': round(psutil.cpu_percent(interval=0.1), 2),  # %
             'logical_num': psutil.cpu_count(logical=True) or 0,
             'physical_num': psutil.cpu_count(logical=False) or 0,
@@ -123,7 +123,7 @@ class ServerInfo:
     @staticmethod
     def get_disk_info() -> list[dict[str, str]]:
         """获取磁盘信息"""
-        disk_info = []
+        disk_info: list[dict[str, str]] = []
         for partition in psutil.disk_partitions(all=False):
             usage = psutil.disk_usage(partition.mountpoint)
             if usage:

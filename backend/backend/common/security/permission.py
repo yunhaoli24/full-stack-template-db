@@ -1,9 +1,7 @@
-from typing import Any
+from typing import Any, cast
 
 from fastapi import Request
-from sqlalchemy import Alias, ColumnElement, Table, and_, or_
-from sqlalchemy.orm.util import AliasedClass
-from sqlalchemy_crud_plus.types import Model
+from sqlalchemy import ColumnElement, Table, and_, or_, true
 
 from backend.common.context import ctx
 from backend.common.enums import RoleDataRuleExpressionType, RoleDataRuleOperatorType
@@ -47,7 +45,7 @@ def get_data_permission_models() -> dict[str, object]:
 
 
 def filter_data_permission(  # noqa: C901
-    request: Request, *models: type[Model] | AliasedClass | Alias | Table
+    request: Request, *models: Any
 ) -> ColumnElement[bool]:
     """
     过滤数据权限，控制用户可见数据范围
@@ -61,30 +59,30 @@ def filter_data_permission(  # noqa: C901
     """
     # 超级管理员不过滤
     if request.user.is_superuser:
-        return or_(1 == 1)
+        return true()
 
     # 角色未启用数据权限过滤
     for role in request.user.roles:
         if not role.is_filter_scopes:
-            return or_(1 == 1)
+            return true()
 
     # 获取数据规则
-    data_rules = set()
+    data_rules: set[Any] = set()
     for role in request.user.roles:
         for scope in role.scopes:
             if scope.status:
                 data_rules.update(scope.rules)
 
     if not data_rules:
-        return or_(1 == 1)
+        return true()
 
     # 获取目标模型
-    model_map = (
+    model_map: dict[str, Any] = (
         {getattr(model, '__name__', str(model)): model for model in models} if models else get_data_permission_models()
     )
 
-    where_and_list = []
-    where_or_list = []
+    where_and_list: list[ColumnElement[bool]] = []
+    where_or_list: list[ColumnElement[bool]] = []
 
     for data_rule in data_rules:
         target_model = model_map.get(data_rule.model)
@@ -101,10 +99,11 @@ def filter_data_permission(  # noqa: C901
             continue
 
         # 构建过滤条件
-        column_obj = (
-            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column]  # pyright: ignore
+        column_obj: Any = cast(
+            'Any',
+            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column],  # pyright: ignore
         )
-        column_type = table.columns[rule_column].type.python_type  # pyright: ignore
+        column_type: Any = cast('Any', table.columns[rule_column].type.python_type)  # pyright: ignore
 
         def cast_value(value: Any) -> Any:
             """类型转换"""
@@ -113,27 +112,27 @@ def filter_data_permission(  # noqa: C901
             except (ValueError, TypeError):
                 return value
 
-        condition = None
+        condition: ColumnElement[bool] | None = None
         value = cast_value(data_rule.value)
         match data_rule.expression:
             case RoleDataRuleExpressionType.eq:
-                condition = column_obj == value
+                condition = cast('ColumnElement[bool]', column_obj == value)
             case RoleDataRuleExpressionType.ne:
-                condition = column_obj != value
+                condition = cast('ColumnElement[bool]', column_obj != value)
             case RoleDataRuleExpressionType.gt:
-                condition = column_obj > value
+                condition = cast('ColumnElement[bool]', column_obj > value)
             case RoleDataRuleExpressionType.ge:
-                condition = column_obj >= value
+                condition = cast('ColumnElement[bool]', column_obj >= value)
             case RoleDataRuleExpressionType.lt:
-                condition = column_obj < value
+                condition = cast('ColumnElement[bool]', column_obj < value)
             case RoleDataRuleExpressionType.le:
-                condition = column_obj <= value
+                condition = cast('ColumnElement[bool]', column_obj <= value)
             case RoleDataRuleExpressionType.in_:
                 values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
-                condition = column_obj.in_(values)
+                condition = cast('ColumnElement[bool]', column_obj.in_(values))
             case RoleDataRuleExpressionType.not_in:
                 values = [cast_value(v.strip()) for v in data_rule.value.split(',')]
-                condition = column_obj.not_in(values)
+                condition = cast('ColumnElement[bool]', column_obj.not_in(values))
             case _:  # pyright: ignore
                 condition = None
 
@@ -148,13 +147,13 @@ def filter_data_permission(  # noqa: C901
                     pass
 
     # 组合所有条件
-    where_list = []
+    where_list: list[ColumnElement[bool]] = []
     if where_and_list:
         where_list.append(and_(*where_and_list))
     if where_or_list:
         where_list.append(or_(*where_or_list))
 
-    return or_(*where_list) if where_list else or_(1 == 1)
+    return or_(*where_list) if where_list else true()
 
 
 # 此函数是为了简化调用方式，但目前无法正常工作: https://github.com/fastapi/fastapi/discussions/14438
@@ -171,7 +170,7 @@ def filter_data_permission(  # noqa: C901
 class DataPermissionFilter:
     """指定模型的数据权限过滤器"""
 
-    def __init__(self, *models: type[Model] | AliasedClass | Alias | Table) -> None:
+    def __init__(self, *models: Any) -> None:
         self.models = models
 
     async def __call__(self, request: Request) -> ColumnElement[bool]:

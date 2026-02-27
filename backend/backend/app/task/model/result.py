@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Any, cast
 
 import sqlalchemy as sa
 
 from celery import states  # pyright: ignore
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import PickleType
 
 from backend.common.model import MappedBase, TimeZone
@@ -19,17 +21,17 @@ class Task(MappedBase):
     __tablename__ = cast('Any', 'task_result')
     __table_args__ = cast('Any', {'comment': '任务结果表'})
 
-    id = sa.Column(sa.Integer, sa.Sequence('task_id_sequence'), primary_key=True, autoincrement=True)
-    task_id = sa.Column(sa.String(155), unique=True)
-    status = sa.Column(sa.String(64), default=states.PENDING)
-    result = sa.Column(PickleType, nullable=True)
-    date_done = sa.Column(
+    id: Mapped[int] = mapped_column(sa.Integer, sa.Sequence('task_id_sequence'), primary_key=True, autoincrement=True)
+    task_id: Mapped[str] = mapped_column(sa.String(155), unique=True)
+    status: Mapped[str] = mapped_column(sa.String(64), default=states.PENDING)
+    result: Mapped[Any | None] = mapped_column(PickleType, default=None)
+    date_done: Mapped[datetime | None] = mapped_column(
         TimeZone,
-        default=timezone.now,
+        default_factory=timezone.now,
         onupdate=timezone.now,
         nullable=True,
     )
-    traceback = sa.Column(sa.Text, nullable=True)
+    traceback: Mapped[str | None] = mapped_column(sa.Text, default=None)
 
     def __init__(self, task_id: str) -> None:
         self.task_id = task_id
@@ -48,9 +50,12 @@ class Task(MappedBase):
 
     @classmethod
     def configure(cls, schema: str | None = None, name: str | None = None) -> None:
-        cls.__table__.schema = schema
-        cls.id.default.schema = schema
-        cls.__table__.name = name or cls.__tablename__
+        table = cast('Any', cls.__table__)
+        table.schema = schema
+        id_default = table.c.id.default
+        if isinstance(id_default, sa.Sequence):
+            id_default.schema = schema
+        table.name = name or cls.__tablename__
 
 
 class TaskExtended(Task):
@@ -59,12 +64,12 @@ class TaskExtended(Task):
     __tablename__ = cast('Any', 'task_result')
     __table_args__ = cast('Any', {'extend_existing': True, 'comment': '任务结果表'})
 
-    name = sa.Column(sa.String(155), nullable=True)
-    args = sa.Column(sa.LargeBinary, nullable=True)
-    kwargs = sa.Column(sa.LargeBinary, nullable=True)
-    worker = sa.Column(sa.String(155), nullable=True)
-    retries = sa.Column(sa.Integer, nullable=True)
-    queue = sa.Column(sa.String(155), nullable=True)
+    name: Mapped[str | None] = mapped_column(sa.String(155), default=None)
+    args: Mapped[bytes | None] = mapped_column(sa.LargeBinary, default=None)
+    kwargs: Mapped[bytes | None] = mapped_column(sa.LargeBinary, default=None)
+    worker: Mapped[str | None] = mapped_column(sa.String(155), default=None)
+    retries: Mapped[int | None] = mapped_column(sa.Integer, default=None)
+    queue: Mapped[str | None] = mapped_column(sa.String(155), default=None)
 
     def to_dict(self) -> dict[str, Any]:
         task_dict = super().to_dict()
@@ -85,10 +90,12 @@ class TaskSet(MappedBase):
     __tablename__ = cast('Any', 'task_set_result')
     __table_args__ = cast('Any', {'comment': '任务集结果表'})
 
-    id = sa.Column(sa.Integer, sa.Sequence('taskset_id_sequence'), autoincrement=True, primary_key=True)
-    taskset_id = sa.Column(sa.String(155), unique=True)
-    result = sa.Column(PickleType, nullable=True)
-    date_done = sa.Column(TimeZone, default=timezone.now, nullable=True)
+    id: Mapped[int] = mapped_column(
+        sa.Integer, sa.Sequence('taskset_id_sequence'), autoincrement=True, primary_key=True
+    )
+    taskset_id: Mapped[str] = mapped_column(sa.String(155), unique=True)
+    result: Mapped[Any | None] = mapped_column(PickleType, default=None)
+    date_done: Mapped[datetime | None] = mapped_column(TimeZone, default_factory=timezone.now, nullable=True)
 
     def __init__(self, taskset_id: str, result: Any) -> None:
         self.taskset_id = taskset_id
@@ -106,9 +113,12 @@ class TaskSet(MappedBase):
 
     @classmethod
     def configure(cls, schema: str | None = None, name: str | None = None) -> None:
-        cls.__table__.schema = schema
-        cls.id.default.schema = schema
-        cls.__table__.name = name or cls.__tablename__
+        table = cast('Any', cls.__table__)
+        table.schema = schema
+        id_default = table.c.id.default
+        if isinstance(id_default, sa.Sequence):
+            id_default.schema = schema
+        table.name = name or cls.__tablename__
 
 
 TaskResult = TaskExtended

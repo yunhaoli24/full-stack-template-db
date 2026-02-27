@@ -1,10 +1,10 @@
 import json
 import uuid
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Response
-from fastapi_oauth20 import FastAPIOAuth20, LinuxDoOAuth20
+from fastapi_oauth20 import FastAPIOAuth20, LinuxDoOAuth20  # pyright: ignore[reportMissingModuleSource]
 from starlette.responses import RedirectResponse
 
 from backend.common.response.response_schema import ResponseSchemaModel, response_base
@@ -47,7 +47,7 @@ async def linux_do_oauth2_callback(  # noqa: ANN201
     response: Response,
     background_tasks: BackgroundTasks,
     oauth2: Annotated[
-        FastAPIOAuth20,
+        tuple[dict[str, Any], str],
         Depends(FastAPIOAuth20(linux_do_client, redirect_uri=settings.OAUTH2_LINUX_DO_REDIRECT_URI)),
     ],
 ):

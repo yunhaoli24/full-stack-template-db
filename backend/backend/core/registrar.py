@@ -3,12 +3,13 @@ import os
 from asyncio import create_task
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any, cast
 
+import prometheus_client
 import socketio
 
 from fastapi import Depends, FastAPI
 from fastapi_pagination import add_pagination
-from prometheus_client import make_asgi_app
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
@@ -135,7 +136,7 @@ def register_middleware(app: FastAPI) -> None:
     app.add_middleware(AccessMiddleware)
 
     # ContextVar
-    plugins = [OtelTraceIdPlugin()] if settings.GRAFANA_METRICS else [RequestIdPlugin(validate=True)]
+    plugins: list[Any] = [OtelTraceIdPlugin()] if settings.GRAFANA_METRICS else [RequestIdPlugin(validate=True)]
     app.add_middleware(
         ContextMiddleware,
         plugins=plugins,
@@ -202,7 +203,7 @@ def register_socket_app(app: FastAPI) -> None:
         # 切勿删除此配置：https://github.com/pyropy/fastapi-socketio/issues/51
         socketio_path='/ws/socket.io',
     )
-    app.mount('/ws', socket_app)
+    app.mount('/ws', cast('Any', socket_app))
 
 
 def register_metrics(app: FastAPI) -> None:
@@ -212,7 +213,8 @@ def register_metrics(app: FastAPI) -> None:
     :param app: FastAPI 应用实例
     :return:
     """
-    metrics_app = make_asgi_app()
+    prometheus = cast('Any', prometheus_client)
+    metrics_app = prometheus.make_asgi_app()
     app.mount('/metrics', metrics_app)
 
     init_otel(app)

@@ -7,7 +7,7 @@ from backend.app.admin.crud.crud_menu import menu_dao
 from backend.app.admin.crud.crud_user import user_dao
 from backend.app.admin.model import User
 from backend.app.admin.schema.token import GetLoginToken, GetNewToken
-from backend.app.admin.schema.user import AuthLoginParam
+from backend.app.admin.schema.user import AuthLoginParam, GetUserInfoDetail
 from backend.app.admin.service.login_log_service import login_log_service
 from backend.app.admin.service.user_password_history_service import password_security_service
 from backend.app.admin.utils.password_security import password_verify
@@ -53,15 +53,14 @@ class AuthService:
             await password_security_service.handle_login_failure(db, user.id)
             raise errors.AuthorizationError(msg='用户名或密码有误')
 
-        days_remaining = await password_security_service.check_password_expiry_status(
-            db, user.last_password_changed_time
-        )
+        last_changed_time = user.last_password_changed_time or user.join_time
+        days_remaining = await password_security_service.check_password_expiry_status(db, last_changed_time)
 
         await password_security_service.handle_login_success(user.id)
 
         return user, days_remaining
 
-    async def swagger_login(self, *, db: AsyncSession, obj: HTTPBasicCredentials) -> tuple[str, User]:
+    async def swagger_login(self, *, db: AsyncSession, obj: HTTPBasicCredentials) -> tuple[str, GetUserInfoDetail]:
         """
         Swagger 文档登录
 
@@ -77,7 +76,7 @@ class AuthService:
             # extra info
             swagger=True,
         )
-        return access_token_data.access_token, user
+        return access_token_data.access_token, GetUserInfoDetail.model_validate(user)
 
     async def login(
         self,
@@ -119,7 +118,7 @@ class AuthService:
                 # extra info
                 username=user.username,
                 nickname=user.nickname,
-                last_login_time=timezone.to_str(user.last_login_time),
+                last_login_time=timezone.to_str(user.last_login_time or timezone.now()),
                 ip=ctx.ip,
                 os=ctx.os,
                 browser=ctx.browser,
@@ -170,7 +169,7 @@ class AuthService:
                 access_token_expire_time=access_token_data.access_token_expire_time,
                 session_uuid=access_token_data.session_uuid,
                 password_expire_days_remaining=days_remaining,
-                user=user,
+                user=GetUserInfoDetail.model_validate(user),
             )
             return data
 
@@ -228,7 +227,7 @@ class AuthService:
             # extra info
             username=user.username,
             nickname=user.nickname,
-            last_login_time=timezone.to_str(user.last_login_time),
+            last_login_time=timezone.to_str(user.last_login_time or timezone.now()),
             ip=ctx.ip,
             os=ctx.os,
             browser=ctx.browser,

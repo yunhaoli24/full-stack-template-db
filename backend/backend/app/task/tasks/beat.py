@@ -1,9 +1,13 @@
+from typing import Any
+
 from celery.schedules import schedule
 
 from backend.app.task.utils.tzcrontab import TzAwareCrontab
 
+BeatScheduleEntry = dict[str, Any]
+
 # 参考：https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html
-LOCAL_BEAT_SCHEDULE = {
+LOCAL_BEAT_SCHEDULE: dict[str, BeatScheduleEntry] = {
     '测试同步任务': {
         'task': 'task_demo',
         'schedule': schedule(30),

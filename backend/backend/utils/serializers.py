@@ -1,15 +1,14 @@
 from collections import defaultdict, namedtuple
 from collections.abc import Sequence
 from decimal import Decimal
-from typing import Any, TypeAlias
+from typing import Any, TypeAlias, cast
 
 from fastapi.encoders import decimal_encoder
 from msgspec import json
-from sqlalchemy import Row, RowMapping
 from sqlalchemy.orm import ColumnProperty, SynonymProperty, class_mapper
 from starlette.responses import JSONResponse
 
-RowData: TypeAlias = Row[Any] | RowMapping | Any
+RowData: TypeAlias = Any
 
 
 class MsgSpecJSONResponse(JSONResponse):
@@ -28,7 +27,7 @@ def select_columns_serialize(row: RowData) -> dict[str, Any]:
     :param row: SQLAlchemy 查询结果行
     :return:
     """
-    result = {}
+    result: dict[str, Any] = {}
     for column in row.__table__.columns.keys():
         value = getattr(row, column)
         if isinstance(value, Decimal):
@@ -55,8 +54,9 @@ def select_as_dict(row: RowData, *, use_alias: bool = False) -> dict[str, Any]:
     :param use_alias: 是否使用别名作为列名
     :return:
     """
+    result: dict[str, Any]
     if not use_alias:
-        result = row.__dict__
+        result = cast('dict[str, Any]', row.__dict__)
         if '_sa_instance_state' in result:
             del result['_sa_instance_state']
     else:
@@ -71,7 +71,7 @@ def select_as_dict(row: RowData, *, use_alias: bool = False) -> dict[str, Any]:
 
 
 def select_join_serialize(  # noqa: C901
-    row: RowData | Sequence[RowData],
+    row: Any | Sequence[Any],
     relationships: list[str] | None = None,
     *,
     return_as_dict: bool = False,
@@ -141,7 +141,7 @@ def select_join_serialize(  # noqa: C901
 
     def get_model_columns(model_obj: Any) -> list[str]:
         """获取模型列名"""
-        mapper = class_mapper(type(model_obj))
+        mapper = class_mapper(cast('Any', type(model_obj)))
         return [
             prop.key
             for prop in mapper.iterate_properties
@@ -150,8 +150,8 @@ def select_join_serialize(  # noqa: C901
 
     def get_unique_objects(objs: list[Any], key_attr: str = 'id') -> list[Any]:
         """根据键属性去重对象列表"""
-        seen = set()
-        unique = []
+        seen: set[Any] = set()
+        unique: list[Any] = []
         for item in objs:
             item_id = getattr(item, key_attr, None)
             if item_id is not None and item_id not in seen:
@@ -162,7 +162,12 @@ def select_join_serialize(  # noqa: C901
     if not row:
         return None
 
-    rows_list = [row] if not isinstance(row, list) else row
+    rows_list: list[Any] = []
+    if isinstance(row, list):
+        rows_from_list: list[Any] = list(row)  # pyright: ignore[reportUnknownArgumentType]
+        rows_list.extend(rows_from_list)
+    else:
+        rows_list.append(row)
     if not rows_list:
         return None
 
@@ -180,8 +185,8 @@ def select_join_serialize(  # noqa: C901
     has_relationships = bool(relation_graph)
 
     # 预处理所有模型类型和列信息
-    model_info = {}
-    cls_idxs = {}
+    model_info: dict[str, list[str]] = {}
+    cls_idxs: dict[str, int] = {}
 
     for preprocess_row in rows_list:
         preprocess_row_items = preprocess_row if hasattr(preprocess_row, '__getitem__') else (preprocess_row,)
@@ -255,7 +260,7 @@ def select_join_serialize(  # noqa: C901
                 obj_data = {col: getattr(flat_objs[0], col, None) for col in cls_columns}
                 # 确保 namedtuple 所需的所有字段都存在
                 if not return_as_dict and class_name in namedtuple_cache:
-                    nt_fields = getattr(namedtuple_cache[class_name], '_fields', [])
+                    nt_fields = cast('list[str]', getattr(namedtuple_cache[class_name], '_fields', []))
                     for field in nt_fields:
                         if field not in obj_data:
                             obj_data[field] = None
@@ -266,12 +271,12 @@ def select_join_serialize(  # noqa: C901
                         {col: getattr(flat_obj, col, None) for col in cls_columns} for flat_obj in flat_objs
                     ]
                 else:
-                    nested_result_list = []
+                    nested_result_list: list[Any] = []
                     for nested_obj in flat_objs:
                         obj_data = {col: getattr(nested_obj, col, None) for col in cls_columns}
                         # 确保 namedtuple 所需的所有字段都存在
                         if class_name in namedtuple_cache:
-                            nt_fields = getattr(namedtuple_cache[class_name], '_fields', [])
+                            nt_fields = cast('list[str]', getattr(namedtuple_cache[class_name], '_fields', []))
                             for field in nt_fields:
                                 if field not in obj_data:
                                     obj_data[field] = None
@@ -316,7 +321,7 @@ def select_join_serialize(  # noqa: C901
             if not recursive_objs:
                 return []
 
-            recursive_result = []
+            recursive_result: list[Any] = []
             for nested_obj in recursive_objs:
                 # 基础数据
                 obj_data = {col: getattr(nested_obj, col, None) for col in model_info[current_cls_name]}
@@ -338,7 +343,7 @@ def select_join_serialize(  # noqa: C901
                         obj_data[child_key] = child_list
 
                 if not return_as_dict and current_cls_name in namedtuple_cache:
-                    nt_fields = getattr(namedtuple_cache[current_cls_name], '_fields', [])
+                    nt_fields = cast('list[str]', getattr(namedtuple_cache[current_cls_name], '_fields', []))
                     for field in nt_fields:
                         if field not in obj_data:
                             obj_data[field] = None

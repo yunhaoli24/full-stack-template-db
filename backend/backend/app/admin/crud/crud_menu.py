@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +20,7 @@ class CRUDMenu(CRUDPlus[Menu]):
         :param menu_id: 菜单 ID
         :return:
         """
-        return await self.select_model(db, menu_id)
+        return cast('Menu | None', await self.select_model(db, menu_id))
 
     async def get_by_title(self, db: AsyncSession, title: str) -> Menu | None:
         """
@@ -29,7 +30,7 @@ class CRUDMenu(CRUDPlus[Menu]):
         :param title: 菜单标题
         :return:
         """
-        return await self.select_model_by_column(db, title=title, type__ne=2)
+        return cast('Menu | None', await self.select_model_by_column(db, title=title, type__ne=2))
 
     async def get_all(self, db: AsyncSession, title: str | None, status: int | None) -> Sequence[Menu]:
         """
@@ -47,7 +48,7 @@ class CRUDMenu(CRUDPlus[Menu]):
         if status is not None:
             filters['status'] = status  # type: ignore[assignment]
 
-        return await self.select_models_order(db, 'sort', **filters)
+        return cast('Sequence[Menu]', await cast('Any', self).select_models_order(db, 'sort', **filters))
 
     async def get_sidebar(self, db: AsyncSession, menu_ids: list[int] | None) -> Sequence[Menu]:
         """
@@ -62,7 +63,7 @@ class CRUDMenu(CRUDPlus[Menu]):
         if menu_ids:
             filters['id__in'] = menu_ids
 
-        return await self.select_models_order(db, 'sort', 'asc', **filters)
+        return cast('Sequence[Menu]', await cast('Any', self).select_models_order(db, 'sort', 'asc', **filters))
 
     async def create(self, db: AsyncSession, obj: CreateMenuParam) -> None:
         """
@@ -106,7 +107,7 @@ class CRUDMenu(CRUDPlus[Menu]):
         :param menu_id: 菜单 ID
         :return:
         """
-        return await self.select_models(db, parent_id=menu_id)
+        return cast('Sequence[Menu | None]', await self.select_models(db, parent_id=menu_id))
 
 
 menu_dao: CRUDMenu = CRUDMenu(Menu)

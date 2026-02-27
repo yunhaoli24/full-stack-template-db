@@ -8,7 +8,7 @@ from backend.common.model import Base, UniversalText, id_key
 class DictType(Base):
     """字典类型表"""
 
-    __tablename__ = 'sys_dict_type'
+    __tablename__ = 'sys_dict_type'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(32), comment='字典类型名称')

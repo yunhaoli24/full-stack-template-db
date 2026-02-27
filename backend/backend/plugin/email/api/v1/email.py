@@ -1,6 +1,6 @@
 import random
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Body
 
@@ -27,6 +27,6 @@ async def send_email_captcha(
         code,
         ex=settings.EMAIL_CAPTCHA_EXPIRE_SECONDS,
     )
-    content = {'code': code, 'expired': int(settings.EMAIL_CAPTCHA_EXPIRE_SECONDS / 60)}
+    content: dict[str, Any] = {'code': code, 'expired': int(settings.EMAIL_CAPTCHA_EXPIRE_SECONDS / 60)}
     await send_email(db, recipients, 'FBA 验证码', content, 'captcha.html')
     return response_base.success()

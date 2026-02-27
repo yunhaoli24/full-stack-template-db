@@ -21,6 +21,14 @@ from backend.utils.re_verify import is_git_url
 from backend.utils.timezone import timezone
 
 
+def _require_filename(file: UploadFile) -> str:
+    """Validate upload filename and return a non-empty value."""
+    filename = file.filename
+    if not filename:
+        raise errors.RequestError(msg='文件名不能为空')
+    return filename
+
+
 def build_filename(file: UploadFile) -> str:
     """
     构建文件名
@@ -29,7 +37,7 @@ def build_filename(file: UploadFile) -> str:
     :return:
     """
     timestamp = int(timezone.now().timestamp())
-    filename = file.filename
+    filename = _require_filename(file)
     file_ext = filename.split('.')[-1].lower()
     new_filename = f'{filename.replace(f".{file_ext}", f"_{timestamp}")}.{file_ext}'
     return new_filename
@@ -42,20 +50,24 @@ def upload_file_verify(file: UploadFile) -> None:
     :param file: FastAPI 上传文件对象
     :return:
     """
-    filename = file.filename
+    filename = _require_filename(file)
     file_ext = filename.split('.')[-1].lower()
     if not file_ext:
         raise errors.RequestError(msg='未知的文件类型')
 
+    file_size = file.size
+    if file_size is None:
+        raise errors.RequestError(msg='无法识别文件大小')
+
     if file_ext == FileType.image:
         if file_ext not in settings.UPLOAD_IMAGE_EXT_INCLUDE:
             raise errors.RequestError(msg='此图片格式暂不支持')
-        if file.size > settings.UPLOAD_IMAGE_SIZE_MAX:
+        if file_size > settings.UPLOAD_IMAGE_SIZE_MAX:
             raise errors.RequestError(msg='图片超出最大限制，请重新选择')
     elif file_ext == FileType.video:
         if file_ext not in settings.UPLOAD_VIDEO_EXT_INCLUDE:
             raise errors.RequestError(msg='此视频格式暂不支持')
-        if file.size > settings.UPLOAD_VIDEO_SIZE_MAX:
+        if file_size > settings.UPLOAD_VIDEO_SIZE_MAX:
             raise errors.RequestError(msg='视频超出最大限制，请重新选择')
 
 
@@ -99,9 +111,9 @@ async def install_zip_plugin(file: UploadFile | str) -> str:
     with zipfile.ZipFile(file_bytes) as zf:
         # 校验压缩包
         plugin_namelist = zf.namelist()
-        plugin_dir_name = plugin_namelist[0].split('/')[0]
         if not plugin_namelist:
             raise errors.RequestError(msg='插件压缩包内容非法')
+        plugin_dir_name = plugin_namelist[0].split('/')[0]
         if (
             len(plugin_namelist) <= 3
             or f'{plugin_dir_name}/plugin.toml' not in plugin_namelist
@@ -114,7 +126,7 @@ async def install_zip_plugin(file: UploadFile | str) -> str:
             r'^([a-zA-Z0-9_]+)',
             file.split(os.sep)[-1].split('.')[0].strip()
             if isinstance(file, str)
-            else file.filename.split('.')[0].strip(),
+            else _require_filename(file).split('.')[0].strip(),
         )
         if not plugin_name_match:
             raise errors.RequestError(msg='插件名称格式不正确')
@@ -125,7 +137,7 @@ async def install_zip_plugin(file: UploadFile | str) -> str:
         await full_plugin_path.mkdir(parents=True, exist_ok=True)
 
         # 解压（安装）
-        members = []
+        members: list[zipfile.ZipInfo] = []
         for member in zf.infolist():
             if member.filename.startswith(plugin_dir_name):
                 new_filename = member.filename.replace(plugin_dir_name, '')

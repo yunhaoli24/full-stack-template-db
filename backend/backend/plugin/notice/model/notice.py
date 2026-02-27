@@ -8,7 +8,7 @@ from backend.common.model import Base, UniversalText, id_key
 class Notice(Base):
     """系统通知公告表"""
 
-    __tablename__ = 'sys_notice'
+    __tablename__ = 'sys_notice'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     title: Mapped[str] = mapped_column(sa.String(64), comment='标题')

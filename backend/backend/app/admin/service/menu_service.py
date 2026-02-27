@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -58,7 +58,8 @@ class MenuService:
             menu_data = await menu_dao.get_sidebar(db, None)
         else:
             menu_ids: set[int] = set()
-            for role in request.user.roles or []:
+            roles = cast('list[Any]', request.user.roles or [])
+            for role in roles:
                 menu_ids.update(menu.id for menu in role.menus)
             menu_data = await menu_dao.get_sidebar(db, list(menu_ids)) if menu_ids else None
 

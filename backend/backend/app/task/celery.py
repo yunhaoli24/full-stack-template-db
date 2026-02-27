@@ -12,7 +12,7 @@ from backend.core.path_conf import BASE_PATH
 
 
 def find_task_packages() -> list[str]:
-    packages = []
+    packages: list[str] = []
     task_dir = BASE_PATH / 'app' / 'task' / 'tasks'
     for root, _dirs, files in os.walk(task_dir):
         if 'tasks.py' in files:

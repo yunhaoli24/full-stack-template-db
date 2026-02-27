@@ -1,10 +1,11 @@
 import re
 
+from collections.abc import Mapping
 from typing import Any
 
-from fastapi import Request, Response
+from fastapi import Response
 from fastapi.security.utils import get_authorization_scheme_param
-from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError
+from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser
 from starlette.requests import HTTPConnection
 
 from backend.app.admin.schema.user import GetUserInfoWithRelationDetail
@@ -21,9 +22,9 @@ class _AuthenticationError(AuthenticationError):
     def __init__(
         self,
         *,
-        code: int | None = None,
-        msg: str | None = None,
-        headers: dict[str, Any] | None = None,
+        code: int = 500,
+        msg: str = 'Internal Server Error',
+        headers: Mapping[str, str] | None = None,
     ) -> None:
         """
         初始化认证错误
@@ -38,11 +39,33 @@ class _AuthenticationError(AuthenticationError):
         self.headers = headers
 
 
+class JwtAuthUser(BaseUser):
+    """Starlette 兼容用户对象，透传业务用户属性。"""
+
+    def __init__(self, user: GetUserInfoWithRelationDetail) -> None:
+        self._user = user
+
+    @property
+    def is_authenticated(self) -> bool:
+        return True
+
+    @property
+    def display_name(self) -> str:
+        return self._user.username
+
+    @property
+    def identity(self) -> str:
+        return str(self._user.id)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._user, name)
+
+
 class JwtAuthMiddleware(AuthenticationBackend):
     """JWT 认证中间件"""
 
     @staticmethod
-    def auth_exception_handler(conn: HTTPConnection, exc: _AuthenticationError) -> Response:
+    def auth_exception_handler(conn: HTTPConnection, exc: AuthenticationError) -> Response:
         """
         覆盖内部认证错误处理
 
@@ -50,20 +73,25 @@ class JwtAuthMiddleware(AuthenticationBackend):
         :param exc: 认证错误对象
         :return:
         """
-        return MsgSpecJSONResponse(content={'code': exc.code, 'msg': exc.msg, 'data': None}, status_code=exc.code)
+        auth_exc = exc if isinstance(exc, _AuthenticationError) else _AuthenticationError(code=401, msg=str(exc))
+        return MsgSpecJSONResponse(
+            content={'code': auth_exc.code, 'msg': auth_exc.msg, 'data': None},
+            status_code=auth_exc.code,
+            headers=dict(auth_exc.headers) if auth_exc.headers else None,
+        )
 
-    async def authenticate(self, request: Request) -> tuple[AuthCredentials, GetUserInfoWithRelationDetail] | None:
+    async def authenticate(self, conn: HTTPConnection) -> tuple[AuthCredentials, BaseUser] | None:
         """
         认证请求
 
-        :param request: FastAPI 请求对象
+        :param conn: HTTP 连接对象
         :return:
         """
-        token = request.headers.get('Authorization')
+        token = conn.headers.get('Authorization')
         if not token:
             return None
 
-        path = request.url.path
+        path = conn.url.path
         if path in settings.TOKEN_REQUEST_PATH_EXCLUDE:
             return None
         for pattern in settings.TOKEN_REQUEST_PATH_EXCLUDE_PATTERN:
@@ -84,4 +112,4 @@ class JwtAuthMiddleware(AuthenticationBackend):
 
         # 请注意，此返回使用非标准模式，所以在认证通过时，将丢失某些标准特性
         # 标准返回模式请查看：https://www.starlette.io/authentication/
-        return AuthCredentials(['authenticated']), user
+        return AuthCredentials(['authenticated']), JwtAuthUser(user)

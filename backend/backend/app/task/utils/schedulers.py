@@ -182,20 +182,8 @@ class ModelEntry(ScheduleEntry):
         schedule = schedules.maybe_schedule(schedule)
 
         async with async_db_session() as db:
-            if isinstance(schedule, schedules.schedule):
-                every = max(schedule.run_every.total_seconds(), 0)
-                spec = {
-                    'name': name,
-                    'type': TaskSchedulerType.INTERVAL.value,
-                    'interval_every': every,
-                    'interval_period': PeriodType.SECONDS.value,
-                }
-                stmt = select(TaskScheduler).filter_by(**spec)
-                query = await db.execute(stmt)
-                obj = query.scalars().first()
-                if not obj:
-                    obj = TaskScheduler(**CreateTaskSchedulerParam(task=task, **spec).model_dump())
-            elif isinstance(schedule, schedules.crontab):
+            spec: dict[str, Any]
+            if isinstance(schedule, schedules.crontab):
                 crontab = f'{schedule._orig_minute} {schedule._orig_hour} {schedule._orig_day_of_week} {schedule._orig_day_of_month} {schedule._orig_month_of_year}'  # noqa: E501
                 crontab_verify(crontab)
                 spec = {
@@ -207,9 +195,22 @@ class ModelEntry(ScheduleEntry):
                 query = await db.execute(stmt)
                 obj = query.scalars().first()
                 if not obj:
-                    obj = TaskScheduler(**CreateTaskSchedulerParam(task=task, **spec).model_dump())
+                    create_param = CreateTaskSchedulerParam.model_validate({'task': task, **spec})
+                    obj = TaskScheduler(**create_param.model_dump())
             else:
-                raise errors.NotFoundError(msg=f'暂不支持的计划类型：{schedule}')
+                every = max(schedule.run_every.total_seconds(), 0)
+                spec = {
+                    'name': name,
+                    'type': TaskSchedulerType.INTERVAL.value,
+                    'interval_every': every,
+                    'interval_period': PeriodType.SECONDS.value,
+                }
+                stmt = select(TaskScheduler).filter_by(**spec)
+                query = await db.execute(stmt)
+                obj = query.scalars().first()
+                if not obj:
+                    create_param = CreateTaskSchedulerParam.model_validate({'task': task, **spec})
+                    obj = TaskScheduler(**create_param.model_dump())
 
             return obj
 
@@ -251,7 +252,7 @@ class ModelEntry(ScheduleEntry):
         *,
         one_off: bool = False,
     ) -> dict[str, Any]:
-        data = {
+        data: dict[str, Any] = {
             'queue': queue,
             'exchange': exchange,
             'routing_key': routing_key,
@@ -326,8 +327,8 @@ class DatabaseScheduler(Scheduler):
 
     def sync(self) -> None:
         """重写父函数"""
-        tried = set()
-        failed = set()
+        tried: set[str] = set()
+        failed: set[str] = set()
         try:
             while self._dirty:
                 name = self._dirty.pop()
@@ -367,7 +368,7 @@ class DatabaseScheduler(Scheduler):
 
     def update_from_dict(self, beat_dict: dict[str, dict[str, Any]]) -> None:
         """重写父函数"""
-        s = {}
+        s: dict[str, ModelEntry] = {}
         name: str | None = None
 
         try:

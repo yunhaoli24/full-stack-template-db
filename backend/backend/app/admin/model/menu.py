@@ -8,7 +8,7 @@ from backend.common.model import Base, UniversalText, id_key
 class Menu(Base):
     """菜单表"""
 
-    __tablename__ = 'sys_menu'
+    __tablename__ = 'sys_menu'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     title: Mapped[str] = mapped_column(sa.String(64), comment='菜单标题')

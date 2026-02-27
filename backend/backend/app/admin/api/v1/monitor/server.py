@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get('', summary='server 监控', dependencies=[DependsJwtAuth])  # pyright: ignore
 async def get_server_info() -> ResponseModel:
-    data = {
+    data: dict[str, object] = {
         # 扔到线程池，避免阻塞
         'cpu': await run_in_threadpool(server_info.get_cpu_info),
         'mem': await run_in_threadpool(server_info.get_mem_info),

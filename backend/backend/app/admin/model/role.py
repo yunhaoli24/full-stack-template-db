@@ -8,7 +8,7 @@ from backend.common.model import Base, UniversalText, id_key
 class Role(Base):
     """角色表"""
 
-    __tablename__ = 'sys_role'
+    __tablename__ = 'sys_role'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(32), unique=True, comment='角色名称')

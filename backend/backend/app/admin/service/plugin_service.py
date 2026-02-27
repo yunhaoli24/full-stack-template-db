@@ -4,7 +4,7 @@ import os
 import shutil
 import zipfile
 
-from typing import Any
+from typing import Any, cast
 
 import anyio
 
@@ -27,9 +27,9 @@ class PluginService:
     async def get_all() -> list[dict[str, Any]]:
         """获取所有插件"""
 
-        keys = [key async for key in redis_client.scan_iter(f'{settings.PLUGIN_REDIS_PREFIX}:*')]
+        keys = [key async for key in cast('Any', redis_client).scan_iter(f'{settings.PLUGIN_REDIS_PREFIX}:*')]
 
-        result = [json.loads(info) for info in await redis_client.mget(*keys)]
+        result = [json.loads(info) for info in await cast('Any', redis_client).mget(*keys)]
 
         return result
 

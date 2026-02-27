@@ -8,7 +8,7 @@ from backend.common.model import Base, UniversalText, id_key
 class S3Storage(Base):
     """S3 存储"""
 
-    __tablename__ = 's3_storage'
+    __tablename__ = 's3_storage'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(64), default='', comment='存储名称')

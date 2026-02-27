@@ -1,6 +1,6 @@
 import json
 
-from typing import Any
+from typing import Any, cast
 
 from fast_captcha import text_captcha
 from fastapi import BackgroundTasks, Response
@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.admin.crud.crud_user import user_dao
 from backend.app.admin.schema.token import GetLoginToken
-from backend.app.admin.schema.user import AddOAuth2UserParam
+from backend.app.admin.schema.user import AddOAuth2UserParam, GetUserInfoDetail
 from backend.app.admin.service.login_log_service import login_log_service
 from backend.common.context import ctx
 from backend.common.enums import LoginLogStatusType
@@ -67,23 +67,24 @@ class OAuth2Service:
 
             # 创建系统用户
             if not sys_user:
+                safe_username = username or f'{source.value.lower()}_{sid}'
                 while username and await user_dao.get_by_username(db, username):
                     username = f'{username}_{text_captcha(5)}'
-                new_sys_user = AddOAuth2UserParam(
-                    username=username,
-                    password=None,
-                    nickname=nickname,
-                    email=email,
-                    avatar=avatar,
-                )
+                new_sys_user = AddOAuth2UserParam.model_validate({
+                    'username': username or safe_username,
+                    'password': None,
+                    'nickname': nickname,
+                    'email': email,
+                    'avatar': avatar,
+                })
                 await user_dao.add_by_oauth2(db, new_sys_user)
                 await db.flush()
-                sys_user = await user_dao.get_by_username(db, username) if username else None
+                sys_user = await user_dao.get_by_username(db, username or safe_username)
 
             # 绑定社交账号
             if not sys_user:
                 raise errors.AuthorizationError(msg='用户不存在')
-            new_user_social = CreateUserSocialParam(sid=sid, source=source.value, user_id=sys_user.id)
+            new_user_social = CreateUserSocialParam(sid=sid, source=source, user_id=sys_user.id)
             await user_social_dao.create(db, new_user_social)
 
         # 创建 token
@@ -129,7 +130,8 @@ class OAuth2Service:
             access_token=access_token_data.access_token,
             access_token_expire_time=access_token_data.access_token_expire_time,
             session_uuid=access_token_data.session_uuid,
-            user=sys_user,
+            password_expire_days_remaining=None,
+            user=GetUserInfoDetail.model_validate(sys_user),
         )
         return data
 
@@ -184,7 +186,7 @@ class OAuth2Service:
         if not state_data:
             raise errors.ForbiddenError(msg='OAuth2 状态信息无效或缺失')
 
-        state_info = json.loads(state_data)
+        state_info = json.loads(cast('str', state_data))
         await redis_client.delete(f'{settings.OAUTH2_STATE_REDIS_PREFIX}:{state}')
 
         # 绑定流程

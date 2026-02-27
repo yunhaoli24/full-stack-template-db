@@ -8,7 +8,7 @@ from backend.common.model import Base, id_key
 class DataRule(Base):
     """数据规则表"""
 
-    __tablename__ = 'sys_data_rule'
+    __tablename__ = 'sys_data_rule'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(512), unique=True, comment='名称')

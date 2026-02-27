@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -288,7 +288,8 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     """获取全局配置单例"""
-    return Settings()
+    settings_cls = cast('Any', Settings)
+    return cast('Settings', settings_cls())
 
 
 # 创建全局配置实例

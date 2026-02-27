@@ -1,5 +1,7 @@
 import re
 
+from typing import Any, cast
+
 from fastapi import Depends, Request
 
 from backend.common.context import ctx
@@ -37,8 +39,8 @@ async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:  
         return
 
     # 检测用户角色
-    user_roles = request.user.roles
-    if not user_roles or all(status == 0 for status in user_roles):
+    user_roles = cast('list[Any] | None', request.user.roles)
+    if not user_roles or all(role.status == 0 for role in user_roles):
         raise errors.AuthorizationError(msg='用户未分配角色，请联系系统管理员')
 
     # 检测用户所属角色菜单
@@ -63,14 +65,14 @@ async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:  
             return
 
         # 菜单去重
-        unique_menus = {}
+        unique_menus: dict[int, Any] = {}
         for role in user_roles:
             for menu in role.menus:
                 unique_menus[menu.id] = menu
 
         # 已分配菜单权限校验
-        allow_perms = []
-        for menu in list(unique_menus.values()):
+        allow_perms: list[str] = []
+        for menu in unique_menus.values():
             if menu.perms and menu.status == StatusType.enable:
                 allow_perms.extend(menu.perms.split(','))
         if path_auth_perm not in allow_perms:

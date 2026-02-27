@@ -70,6 +70,13 @@ def crontab_verify(crontab_str: str) -> None:
     if len(crontab_split) != 5:
         raise errors.RequestError(msg='Crontab 表达式非法')
     try:
-        crontab(*crontab_split)
+        minute, hour, day_of_week, day_of_month, month_of_year = crontab_split
+        crontab(
+            minute=minute,
+            hour=hour,
+            day_of_week=day_of_week,
+            day_of_month=day_of_month,
+            month_of_year=month_of_year,
+        )
     except ParseException:
         raise errors.RequestError(msg='Crontab 表达式非法')

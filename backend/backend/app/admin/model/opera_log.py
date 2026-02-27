@@ -11,7 +11,7 @@ from backend.utils.timezone import timezone
 class OperaLog(DataClassBase):
     """操作日志表"""
 
-    __tablename__ = 'sys_opera_log'
+    __tablename__ = 'sys_opera_log'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     trace_id: Mapped[str] = mapped_column(sa.String(32), comment='请求跟踪 ID')

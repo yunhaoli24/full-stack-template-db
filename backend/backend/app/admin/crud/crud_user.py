@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, cast
 
 import bcrypt
 
-from sqlalchemy import Select, delete, insert, select
+from sqlalchemy import delete, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus, JoinConfig
 
@@ -41,7 +41,7 @@ class CRUDUser(CRUDPlus[User]):
         :param user_id: 用户 ID
         :return:
         """
-        return await self.select_model(db, user_id)
+        return cast('User | None', await self.select_model(db, user_id))
 
     async def get_by_username(self, db: AsyncSession, username: str) -> User | None:
         """
@@ -51,7 +51,7 @@ class CRUDUser(CRUDPlus[User]):
         :param username: 用户名
         :return:
         """
-        return await self.select_model_by_column(db, username=username)
+        return cast('User | None', await self.select_model_by_column(db, username=username))
 
     async def get_by_nickname(self, db: AsyncSession, nickname: str) -> User | None:
         """
@@ -61,7 +61,7 @@ class CRUDUser(CRUDPlus[User]):
         :param nickname: 用户昵称
         :return:
         """
-        return await self.select_model_by_column(db, nickname=nickname)
+        return cast('User | None', await self.select_model_by_column(db, nickname=nickname))
 
     async def check_email(self, db: AsyncSession, email: str) -> User | None:
         """
@@ -71,9 +71,9 @@ class CRUDUser(CRUDPlus[User]):
         :param email: 电子邮箱
         :return:
         """
-        return await self.select_model_by_column(db, email=email)
+        return cast('User | None', await self.select_model_by_column(db, email=email))
 
-    async def get_select(self, dept: int | None, username: str | None, phone: str | None, status: int | None) -> Select:
+    async def get_select(self, dept: int | None, username: str | None, phone: str | None, status: int | None) -> Any:
         """
         获取用户列表查询表达式
 
@@ -94,7 +94,7 @@ class CRUDUser(CRUDPlus[User]):
         if status is not None:
             filters['status'] = status
 
-        return await self.select_order(
+        return await cast('Any', self).select_order(
             'id',
             'desc',
             join_conditions=[
@@ -147,6 +147,9 @@ class CRUDUser(CRUDPlus[User]):
         role_stmt = select(Role)
         result = await db.execute(role_stmt)
         role = result.scalars().first()  # 默认绑定第一个角色
+
+        if role is None:
+            raise ValueError('系统缺少可用角色，无法创建 OAuth2 用户')
 
         user_role_stmt = insert(user_role).values(AddUserRoleParam(user_id=new_user.id, role_id=role.id).model_dump())
         await db.execute(user_role_stmt)
@@ -327,7 +330,7 @@ class CRUDUser(CRUDPlus[User]):
         if username:
             filters['username'] = username
 
-        result = await self.select_models(
+        result = await cast('Any', self).select_models(
             db,
             join_conditions=[
                 JoinConfig(model=Dept, join_on=Dept.id == self.model.dept_id, fill_result=True),

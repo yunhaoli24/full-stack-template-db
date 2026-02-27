@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
@@ -12,6 +14,8 @@ from backend.common.response.response_schema import response_base
 from backend.core.conf import settings
 from backend.utils.serializers import MsgSpecJSONResponse
 from backend.utils.trace_id import get_request_trace_id
+
+ResponseContent = dict[str, Any]
 
 
 def _get_exception_code(status_code: int) -> int:
@@ -51,7 +55,7 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
         message = f'{field} {error_msg}，输入：{error_input}' if settings.ENVIRONMENT == 'dev' else error_msg
     msg = f'请求参数非法: {message}'
     data = {'errors': errors} if settings.ENVIRONMENT == 'dev' else None
-    content = {
+    content: ResponseContent = {
         'code': StandardResponseCode.HTTP_422,
         'msg': msg,
         'data': data,
@@ -74,7 +78,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         :return:
         """
         if settings.ENVIRONMENT == 'dev':
-            content = {
+            content: ResponseContent = {
                 'code': exc.status_code,
                 'msg': exc.detail,
                 'data': None,
@@ -128,7 +132,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         :return:
         """
         if settings.ENVIRONMENT == 'dev':
-            content = {
+            content: ResponseContent = {
                 'code': StandardResponseCode.HTTP_500,
                 'msg': str(''.join(exc.args) if exc.args else exc.__doc__),
                 'data': None,
@@ -154,7 +158,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         :param exc: 自定义异常
         :return:
         """
-        content = {
+        content: ResponseContent = {
             'code': exc.code,
             'msg': str(exc.msg),
             'data': exc.data or None,
@@ -179,7 +183,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
         :return:
         """
         if settings.ENVIRONMENT == 'dev':
-            content = {
+            content: ResponseContent = {
                 'code': StandardResponseCode.HTTP_500,
                 'msg': str(exc),
                 'data': None,
@@ -207,7 +211,7 @@ def register_exception(app: FastAPI) -> None:  # noqa: C901
             :return:
             """
             if isinstance(exc, BaseExceptionError):
-                content = {
+                content: ResponseContent = {
                     'code': exc.code,
                     'msg': exc.msg,
                     'data': exc.data,

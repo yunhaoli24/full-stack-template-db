@@ -6,12 +6,14 @@ import sys
 
 from typing import Any
 
-from loguru import logger
+from loguru import logger as _logger
 
 from backend.core.conf import settings
 from backend.core.path_conf import LOG_DIR
 from backend.utils.timezone import timezone
 from backend.utils.trace_id import get_request_trace_id
+
+logger: Any = _logger
 
 
 class InterceptHandler(logging.Handler):
@@ -137,7 +139,7 @@ def set_custom_logfile() -> None:
 
     # 日志文件通用配置
     # https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add
-    log_config = {
+    log_config: dict[str, Any] = {
         'format': default_formatter,
         'enqueue': True,
         'rotation': '00:00',

@@ -11,7 +11,7 @@ from backend.utils.timezone import timezone
 class UserPasswordHistory(DataClassBase):
     """用户密码历史记录表"""
 
-    __tablename__ = 'sys_user_password_history'
+    __tablename__ = 'sys_user_password_history'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     user_id: Mapped[int] = mapped_column(sa.BigInteger, index=True, comment='用户 ID')

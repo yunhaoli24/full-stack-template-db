@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from math import ceil
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from fastapi import Depends, Query
 from fastapi_pagination import pagination_ctx
@@ -12,7 +12,6 @@ from fastapi_pagination.links.bases import create_links
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from sqlalchemy import Select
     from sqlalchemy.ext.asyncio import AsyncSession
     from typing_extensions import Self
 
@@ -62,19 +61,26 @@ class _CustomPage(_PageDetails, AbstractPage[T], Generic[T]):
     @classmethod
     def create(
         cls,
-        items: list[T],
-        params: _CustomPageParams,
+        items: Sequence[T],
+        params: AbstractParams,
         total: int = 0,
+        **kwargs: Any,
     ) -> Self:
+        if not isinstance(params, _CustomPageParams):
+            raise TypeError(f'Unsupported params type: {type(params)!r}')
+
         page = params.page
         size = params.size
         total_pages = ceil(total / size)
-        links = create_links(
-            first={'page': 1, 'size': size},
-            last={'page': total_pages, 'size': size} if total > 0 else {'page': 1, 'size': size},
-            next={'page': page + 1, 'size': size} if (page + 1) <= total_pages else None,
-            prev={'page': page - 1, 'size': size} if (page - 1) >= 1 else None,
-        ).model_dump()
+        links = cast(
+            '_Links',
+            create_links(
+                first={'page': 1, 'size': size},
+                last={'page': total_pages, 'size': size} if total > 0 else {'page': 1, 'size': size},
+                next={'page': page + 1, 'size': size} if (page + 1) <= total_pages else None,
+                prev={'page': page - 1, 'size': size} if (page - 1) >= 1 else None,
+            ),
+        )
 
         return cls(
             items=items,
@@ -111,7 +117,7 @@ class PageData(_PageDetails, Generic[SchemaT]):
     items: Sequence[SchemaT]
 
 
-async def paging_data(db: AsyncSession, select: Select, **kwargs: Any) -> dict[str, Any]:
+async def paging_data(db: AsyncSession, select: Any, **kwargs: Any) -> dict[str, Any]:
     """
     基于 SQLAlchemy 创建分页数据
 

@@ -1,4 +1,5 @@
-from sqlalchemy import Select
+from typing import Any, cast
+
 from sqlalchemy import delete as sa_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
@@ -10,7 +11,7 @@ from backend.app.admin.schema.login_log import CreateLoginLogParam
 class CRUDLoginLog(CRUDPlus[LoginLog]):
     """登录日志数据库操作类"""
 
-    async def get_select(self, username: str | None, status: int | None, ip: str | None) -> Select:
+    async def get_select(self, username: str | None, status: int | None, ip: str | None) -> Any:
         """
         获取登录日志列表查询表达式
 
@@ -28,7 +29,7 @@ class CRUDLoginLog(CRUDPlus[LoginLog]):
         if ip is not None:
             filters['ip__like'] = f'%{ip}%'
 
-        return await self.select_order('created_time', 'desc', **filters)
+        return await cast('Any', self).select_order('created_time', 'desc', **filters)
 
     async def create(self, db: AsyncSession, obj: CreateLoginLogParam) -> None:
         """

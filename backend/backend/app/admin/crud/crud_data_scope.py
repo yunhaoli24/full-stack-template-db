@@ -1,7 +1,7 @@
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
-from sqlalchemy import Select, delete, insert
+from sqlalchemy import delete, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus, JoinConfig
 
@@ -26,7 +26,7 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         :param pk: 范围 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('DataScope | None', await self.select_model(db, pk))
 
     async def get_by_name(self, db: AsyncSession, name: str) -> DataScope | None:
         """
@@ -36,7 +36,7 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         :param name: 范围名称
         :return:
         """
-        return await self.select_model_by_column(db, name=name)
+        return cast('DataScope | None', await self.select_model_by_column(db, name=name))
 
     async def get_join(self, db: AsyncSession, pk: int) -> Any:
         """
@@ -64,9 +64,9 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[DataScope]', await self.select_models(db))
 
-    async def get_select(self, name: str | None, status: int | None) -> Select:
+    async def get_select(self, name: str | None, status: int | None) -> Any:
         """
         获取数据范围列表查询表达式
 
@@ -81,7 +81,7 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         if status is not None:
             filters['status'] = status  # type: ignore[assignment]
 
-        return await self.select_order('id', **filters)
+        return await cast('Any', self).select_order('id', **filters)
 
     async def create(self, db: AsyncSession, obj: CreateDataScopeParam) -> None:
         """
@@ -114,14 +114,14 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         :param rule_ids: 数据规则 ID 列表
         :return:
         """
-        data_scope_rule_stmt = delete(data_scope_rule).where(data_scope_rule.c.data_scope_id == pk)
-        await db.execute(data_scope_rule_stmt)
+        delete_stmt = delete(data_scope_rule).where(data_scope_rule.c.data_scope_id == pk)
+        await db.execute(delete_stmt)
 
         data_scope_rule_data = [
             CreateDataScopeRuleParam(data_scope_id=pk, data_rule_id=rule_id).model_dump() for rule_id in rule_ids.rules
         ]
-        data_scope_rule_stmt = insert(data_scope_rule)
-        await db.execute(data_scope_rule_stmt, data_scope_rule_data)
+        insert_stmt = insert(data_scope_rule)
+        await db.execute(insert_stmt, data_scope_rule_data)
 
         return len(rule_ids.rules)
 

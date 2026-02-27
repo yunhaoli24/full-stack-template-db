@@ -1,6 +1,6 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -17,9 +17,9 @@ class CRUDS3Storage(CRUDPlus[S3Storage]):
         :param pk: S3 存储 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('S3Storage | None', await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None, region: str | None) -> Select:
+    async def get_select(self, name: str | None, region: str | None) -> Any:
         """
         获取 S3 存储列表查询表达式
 
@@ -34,7 +34,7 @@ class CRUDS3Storage(CRUDPlus[S3Storage]):
         if region is not None:
             filters['region'] = region
 
-        return await self.select_order('id', 'desc', **filters)
+        return await cast('Any', self).select_order('id', 'desc', **filters)
 
     async def get_all(self, db: AsyncSession) -> Sequence[S3Storage]:
         """
@@ -43,7 +43,7 @@ class CRUDS3Storage(CRUDPlus[S3Storage]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[S3Storage]', await self.select_models(db))
 
     async def create(self, db: AsyncSession, obj: CreateS3StorageParam) -> None:
         """

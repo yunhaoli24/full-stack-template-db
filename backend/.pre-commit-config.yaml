@@ -26,6 +26,7 @@ repos:
         name: mypy
         entry: uv run mypy
         language: system
+        types_or: [python, pyi]
 
   - repo: local
     hooks:

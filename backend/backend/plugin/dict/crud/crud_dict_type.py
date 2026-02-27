@@ -1,6 +1,6 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -20,7 +20,7 @@ class CRUDDictType(CRUDPlus[DictType]):
         :param pk: 字典类型 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('DictType | None', await self.select_model(db, pk))
 
     async def get_all(self, db: AsyncSession) -> Sequence[DictType]:
         """
@@ -29,9 +29,9 @@ class CRUDDictType(CRUDPlus[DictType]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[DictType]', await self.select_models(db))
 
-    async def get_select(self, name: str | None, code: str | None) -> Select:
+    async def get_select(self, name: str | None, code: str | None) -> Any:
         """
         获取字典类型列表查询表达式
 
@@ -46,7 +46,7 @@ class CRUDDictType(CRUDPlus[DictType]):
         if code is not None:
             filters['code__like'] = f'%{code}%'
 
-        return await self.select_order('id', 'desc', **filters)
+        return await cast('Any', self).select_order('id', 'desc', **filters)
 
     async def get_by_code(self, db: AsyncSession, code: str) -> DictType | None:
         """
@@ -56,7 +56,7 @@ class CRUDDictType(CRUDPlus[DictType]):
         :param code: 字典编码
         :return:
         """
-        return await self.select_model_by_column(db, code=code)
+        return cast('DictType | None', await self.select_model_by_column(db, code=code))
 
     async def create(self, db: AsyncSession, obj: CreateDictTypeParam) -> None:
         """

@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy import Table
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,12 +54,12 @@ class DataRuleService:
         available_models = get_data_permission_models()
         if model not in available_models:
             raise errors.NotFoundError(msg='数据规则可用模型不存在')
-        model_ins = available_models[model]
+        model_ins: Any = available_models[model]
 
-        table = model_ins if isinstance(model_ins, Table) else model_ins.__table__  # type: ignore[attr-defined]
+        table: Any = model_ins if isinstance(model_ins, Table) else model_ins.__table__
         model_columns = [
             GetDataRuleColumnDetail(key=column.key, comment=column.comment)
-            for column in table.columns  # pyright: ignore
+            for column in table.columns
             if column.key not in settings.DATA_PERMISSION_COLUMN_EXCLUDE
         ]
         return model_columns
@@ -73,7 +73,9 @@ class DataRuleService:
         :param name: 规则名称
         :return:
         """
-        data_rule_select = await data_rule_dao.get_select(name=name)
+        dao = cast('Any', data_rule_dao)
+        get_select = dao.get_select
+        data_rule_select: Any = await get_select(name=name)
         return await paging_data(db, data_rule_select)
 
     @staticmethod

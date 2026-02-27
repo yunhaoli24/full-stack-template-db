@@ -1,7 +1,7 @@
 import json
 
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.concurrency import run_in_threadpool
@@ -56,7 +56,9 @@ class TaskSchedulerService:
         :param type: 任务调度类型
         :return:
         """
-        task_scheduler_select = await task_scheduler_dao.get_select(name=name, type=type)
+        dao = cast('Any', task_scheduler_dao)
+        get_select = dao.get_select
+        task_scheduler_select: Any = await get_select(name=name, type=type)
         return await paging_data(db, task_scheduler_select)
 
     @staticmethod
@@ -151,7 +153,8 @@ class TaskSchedulerService:
         except (TypeError, json.JSONDecodeError):
             raise errors.RequestError(msg='执行失败，任务参数非法')
         else:
-            celery_app.send_task(name=task_scheduler.task, args=args, kwargs=kwargs)
+            send_task = cast('Any', celery_app).send_task
+            send_task(name=task_scheduler.task, args=args, kwargs=kwargs)
 
 
 task_scheduler_service: TaskSchedulerService = TaskSchedulerService()

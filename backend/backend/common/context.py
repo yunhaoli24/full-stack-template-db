@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Protocol, cast
 
-from starlette_context.ctx import _Context, context
+from starlette_context.ctx import context
 
 
 class TypedContextProtocol(Protocol):
@@ -34,15 +34,17 @@ class TypedContextProtocol(Protocol):
     def __setattr__(self, name: str, value: Any) -> None: ...
 
 
-class TypedContext(_Context):
+class TypedContext:
     def exists(self) -> bool:
         return context.exists()
 
     def get(self, key: str, default: Any = None) -> Any:
-        return context.get(key, default)
+        context_proxy = cast('Any', context)
+        return context_proxy.get(key, default)
 
     def __getattr__(self, name: str) -> Any:
-        return context.get(name)
+        context_proxy = cast('Any', context)
+        return context_proxy.get(name)
 
     def __setattr__(self, name: str, value: Any) -> None:
         context[name] = value

@@ -1,6 +1,7 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select, and_
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -19,7 +20,7 @@ class CRUDDictData(CRUDPlus[DictData]):
         :param pk: 字典数据 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('DictData | None', await self.select_model(db, pk))
 
     async def get_by_type_code(self, db: AsyncSession, type_code: str) -> Sequence[DictData]:
         """
@@ -29,11 +30,14 @@ class CRUDDictData(CRUDPlus[DictData]):
         :param type_code: 字典类型编码
         :return:
         """
-        return await self.select_models_order(
-            db,
-            sort_columns='sort',
-            sort_orders='desc',
-            type_code=type_code,
+        return cast(
+            'Sequence[DictData]',
+            await self.select_models_order(
+                db,
+                sort_columns='sort',
+                sort_orders='desc',
+                type_code=type_code,
+            ),
         )
 
     async def get_all(self, db: AsyncSession) -> Sequence[DictData]:
@@ -43,7 +47,7 @@ class CRUDDictData(CRUDPlus[DictData]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[DictData]', await self.select_models(db))
 
     async def get_select(
         self,
@@ -52,7 +56,7 @@ class CRUDDictData(CRUDPlus[DictData]):
         value: str | None,
         status: int | None,
         type_id: int | None,
-    ) -> Select:
+    ) -> Any:
         """
         获取字典数据列表查询表达式
 
@@ -76,7 +80,7 @@ class CRUDDictData(CRUDPlus[DictData]):
         if type_id is not None:
             filters['type_id'] = type_id
 
-        return await self.select_order('id', 'desc', **filters)
+        return await cast('Any', self).select_order('id', 'desc', **filters)
 
     async def get_by_label_and_type_code(self, db: AsyncSession, label: str, type_code: str) -> DictData | None:
         """
@@ -87,7 +91,10 @@ class CRUDDictData(CRUDPlus[DictData]):
         :param type_code: 字典类型编码
         :return:
         """
-        return await self.select_model_by_column(db, and_(self.model.label == label, self.model.type_code == type_code))
+        return cast(
+            'DictData | None',
+            await self.select_model_by_column(db, and_(self.model.label == label, self.model.type_code == type_code)),
+        )
 
     async def create(self, db: AsyncSession, obj: CreateDictDataParam, type_code: str) -> None:
         """

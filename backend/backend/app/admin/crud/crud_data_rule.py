@@ -1,6 +1,6 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -19,9 +19,9 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         :param pk: 规则 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('DataRule | None', await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None) -> Select:
+    async def get_select(self, name: str | None) -> Any:
         """
         获取规则列表查询表达式
 
@@ -33,7 +33,7 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         if name is not None:
             filters['name__like'] = f'%{name}%'
 
-        return await self.select_order('id', **filters)
+        return await cast('Any', self).select_order('id', **filters)
 
     async def get_by_name(self, db: AsyncSession, name: str) -> DataRule | None:
         """
@@ -43,7 +43,7 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         :param name: 规则名称
         :return:
         """
-        return await self.select_model_by_column(db, name=name)
+        return cast('DataRule | None', await self.select_model_by_column(db, name=name))
 
     async def get_all(self, db: AsyncSession) -> Sequence[DataRule]:
         """
@@ -52,7 +52,7 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[DataRule]', await self.select_models(db))
 
     async def create(self, db: AsyncSession, obj: CreateDataRuleParam) -> None:
         """

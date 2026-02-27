@@ -1,6 +1,6 @@
 import json
 
-from typing import Annotated
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Path, Query
 
@@ -19,7 +19,7 @@ async def get_sessions(
     username: Annotated[str | None, Query(description='用户名')] = None,
 ) -> ResponseSchemaModel[list[GetTokenDetail]]:
     token_keys = await redis_client.get_prefix(f'{settings.TOKEN_REDIS_PREFIX}:*')
-    online_clients = await redis_client.smembers(settings.TOKEN_ONLINE_REDIS_PREFIX)
+    online_clients = cast('set[str]', await cast('Any', redis_client).smembers(settings.TOKEN_ONLINE_REDIS_PREFIX))
     data: list[GetTokenDetail] = []
 
     def append_token_detail() -> None:
@@ -38,7 +38,7 @@ async def get_sessions(
         )
 
     for key in token_keys:
-        token = await redis_client.get(key)
+        token = cast('str', await redis_client.get(key))
         token_payload = jwt_decode(token)
         user_id = token_payload.id
         session_uuid = token_payload.session_uuid
@@ -55,9 +55,9 @@ async def get_sessions(
             last_login_time='未知',
             expire_time=token_payload.expire_time,
         )
-        extra_info = await redis_client.get(f'{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}')
-        if extra_info:
-            extra_info = json.loads(extra_info)
+        extra_info_raw = await redis_client.get(f'{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}')
+        if extra_info_raw:
+            extra_info = json.loads(str(extra_info_raw))
             # 排除 swagger 登录生成的 token
             if extra_info.get('swagger') is None:
                 if username is not None:

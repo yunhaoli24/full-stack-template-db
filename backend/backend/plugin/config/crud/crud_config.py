@@ -1,6 +1,6 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -19,7 +19,7 @@ class CRUDConfig(CRUDPlus[Config]):
         :param pk: 参数配置 ID
         :return:
         """
-        return await self.select_model_by_column(db, id=pk)
+        return cast('Config | None', await self.select_model_by_column(db, id=pk))
 
     async def get_all(self, db: AsyncSession, type: str | None) -> Sequence[Config | None]:
         """
@@ -29,7 +29,7 @@ class CRUDConfig(CRUDPlus[Config]):
         :param type: 参数配置类型
         :return:
         """
-        return await self.select_models(db, type=type)
+        return cast('Sequence[Config | None]', await self.select_models(db, type=type))
 
     async def get_by_key(self, db: AsyncSession, key: str) -> Config | None:
         """
@@ -39,9 +39,9 @@ class CRUDConfig(CRUDPlus[Config]):
         :param key: 参数配置键名
         :return:
         """
-        return await self.select_model_by_column(db, key=key)
+        return cast('Config | None', await self.select_model_by_column(db, key=key))
 
-    async def get_select(self, name: str | None, type: str | None) -> Select:
+    async def get_select(self, name: str | None, type: str | None) -> Any:
         """
         获取参数配置列表查询表达式
 
@@ -56,7 +56,7 @@ class CRUDConfig(CRUDPlus[Config]):
         if type is not None:
             filters['type__like'] = f'%{type}%'
 
-        return await self.select_order('created_time', 'desc', **filters)
+        return await cast('Any', self).select_order('created_time', 'desc', **filters)
 
     async def create(self, db: AsyncSession, obj: CreateConfigParam) -> None:
         """
@@ -87,7 +87,7 @@ class CRUDConfig(CRUDPlus[Config]):
         :param objs: 批量更新参数配置参数
         :return:
         """
-        return await self.bulk_update_models(db, objs)
+        return await self.bulk_update_models(db, cast('Any', objs))
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """

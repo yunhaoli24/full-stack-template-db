@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import cast
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
@@ -19,7 +20,7 @@ class CRUDUserSocial(CRUDPlus[UserSocial]):
         :param source: 社交账号类型
         :return:
         """
-        return await self.select_model_by_column(db, user_id=user_id, source=source)
+        return cast('UserSocial | None', await self.select_model_by_column(db, user_id=user_id, source=source))
 
     async def get_by_sid(self, db: AsyncSession, sid: str, source: str) -> UserSocial | None:
         """
@@ -30,7 +31,7 @@ class CRUDUserSocial(CRUDPlus[UserSocial]):
         :param source: 社交账号类型
         :return:
         """
-        return await self.select_model_by_column(db, sid=sid, source=source)
+        return cast('UserSocial | None', await self.select_model_by_column(db, sid=sid, source=source))
 
     async def get_by_user_id(self, db: AsyncSession, user_id: int) -> Sequence[UserSocial]:
         """
@@ -40,7 +41,7 @@ class CRUDUserSocial(CRUDPlus[UserSocial]):
         :param user_id: 用户 ID
         :return:
         """
-        return await self.select_models(db, user_id=user_id)
+        return cast('Sequence[UserSocial]', await self.select_models(db, user_id=user_id))
 
     async def create(self, db: AsyncSession, obj: CreateUserSocialParam) -> None:
         """

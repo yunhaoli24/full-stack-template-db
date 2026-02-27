@@ -21,7 +21,7 @@ def ensure_unique_route_names(app: FastAPI) -> None:
     :param app: FastAPI 应用实例
     :return:
     """
-    temp_routes = set()
+    temp_routes: set[str] = set()
     for route in app.routes:
         if isinstance(route, APIRoute):
             if route.name in temp_routes:

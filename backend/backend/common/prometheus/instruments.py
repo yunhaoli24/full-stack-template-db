@@ -2,11 +2,8 @@ from prometheus_client import Counter, Gauge, Histogram
 
 from backend.core.conf import settings
 
-PROMETHEUS_INFO_GAUGE = (
-    Gauge(name='fba_app_info', documentation='fba 应用信息', labelnames=['app_name'])
-    .labels(app_name=settings.GRAFANA_APP_NAME)
-    .inc()
-)
+PROMETHEUS_INFO_GAUGE = Gauge(name='fba_app_info', documentation='fba 应用信息', labelnames=['app_name'])
+PROMETHEUS_INFO_GAUGE.labels(app_name=settings.GRAFANA_APP_NAME).inc()
 
 PROMETHEUS_REQUEST_IN_PROGRESS_GAUGE = Gauge(
     'fba_request_in_progress',

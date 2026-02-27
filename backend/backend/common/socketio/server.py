@@ -1,6 +1,6 @@
 import urllib.parse
 
-from typing import Any
+from typing import Any, cast
 
 import socketio
 
@@ -36,7 +36,7 @@ async def connect(_sid: str, _environ: dict[str, Any], auth: dict[str, Any] | No
 
     # 免授权直连
     if token == settings.WS_NO_AUTH_MARKER:
-        await redis_client.sadd(settings.TOKEN_ONLINE_REDIS_PREFIX, session_uuid)
+        await cast('Any', redis_client).sadd(settings.TOKEN_ONLINE_REDIS_PREFIX, session_uuid)
         return True
 
     try:
@@ -45,11 +45,11 @@ async def connect(_sid: str, _environ: dict[str, Any], auth: dict[str, Any] | No
         log.info(f'WebSocket 连接失败：{e!s}')
         return False
 
-    await redis_client.sadd(settings.TOKEN_ONLINE_REDIS_PREFIX, session_uuid)
+    await cast('Any', redis_client).sadd(settings.TOKEN_ONLINE_REDIS_PREFIX, session_uuid)
     return True
 
 
 @sio.event  # pyright: ignore
 async def disconnect(_sid: str) -> None:
     """Socket 断开连接事件"""
-    await redis_client.spop(settings.TOKEN_ONLINE_REDIS_PREFIX)
+    await cast('Any', redis_client).spop(settings.TOKEN_ONLINE_REDIS_PREFIX)

@@ -1,7 +1,7 @@
 import time
 
 from asyncio import Queue
-from typing import Any
+from typing import Any, cast
 
 from fastapi import Response
 from starlette.datastructures import UploadFile
@@ -41,7 +41,7 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
         :param call_next: 下一个中间件或路由处理函数
         :return:
         """
-        response = None
+        response: Response | None = None
         path = request.url.path
 
         if path in settings.OPERA_LOG_PATH_EXCLUDE or not path.startswith(f'{settings.FASTAPI_API_V1_PATH}'):
@@ -149,6 +149,8 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
             if error:
                 raise error from None
 
+        if response is None:
+            raise RuntimeError('response should not be None')
         return response
 
     async def get_request_args(self, request: Request) -> dict[str, Any] | None:
@@ -163,12 +165,12 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
         # 查询参数
         query_params = dict(request.query_params)
         if query_params:
-            args['query_params'] = await self.desensitization(query_params)
+            args['query_params'] = await self.desensitization(dict(query_params))
 
         # 路径参数
         path_params = request.path_params
         if path_params:
-            args['path_params'] = await self.desensitization(path_params)
+            args['path_params'] = await self.desensitization(dict(path_params))
 
         # Tip: .body() 必须在 .form() 之前获取
         # https://github.com/encode/starlette/discussions/1933
@@ -183,19 +185,21 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
             else:
                 json_data = await request.json()
                 if isinstance(json_data, dict):
-                    args['json'] = await self.desensitization(json_data)
+                    json_dict = cast('dict[str, Any]', json_data)
+                    args['json'] = await self.desensitization(json_dict)
                 else:
                     args['data'] = str(body_data)
 
         # 表单参数
         form_data = await request.form()
         if len(form_data) > 0:
+            form_payload: dict[str, Any] = {}
             for k, v in form_data.items():
-                form_data = {k: v.filename} if isinstance(v, UploadFile) else {k: v}
+                form_payload[k] = v.filename if isinstance(v, UploadFile) else str(v)
             if 'multipart/form-data' not in content_type:
-                args['x-www-form-urlencoded'] = await self.desensitization(form_data)
+                args['x-www-form-urlencoded'] = await self.desensitization(form_payload)
             else:
-                args['form-data'] = await self.desensitization(form_data)
+                args['form-data'] = await self.desensitization(form_payload)
 
         return args or None
 

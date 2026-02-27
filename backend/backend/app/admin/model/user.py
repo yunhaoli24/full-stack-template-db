@@ -12,7 +12,7 @@ from backend.utils.timezone import timezone
 class User(Base):
     """用户表"""
 
-    __tablename__ = 'sys_user'
+    __tablename__ = 'sys_user'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     uuid: Mapped[str] = mapped_column(sa.String(64), init=False, default_factory=uuid4_str, unique=True)

@@ -1,0 +1,3 @@
+class LoggingInstrumentor:
+    def instrument(self, set_logging_format: bool = ...) -> None: ...
+

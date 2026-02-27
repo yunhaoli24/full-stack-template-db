@@ -1,7 +1,7 @@
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
-from sqlalchemy import Select, delete, insert, select
+from sqlalchemy import delete, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus, JoinConfig
 
@@ -28,7 +28,7 @@ class CRUDRole(CRUDPlus[Role]):
         :param role_id: 角色 ID
         :return:
         """
-        return await self.select_model(db, role_id)
+        return cast('Role | None', await self.select_model(db, role_id))
 
     @staticmethod
     async def get_menus(db: AsyncSession, role_id: int) -> Sequence[Menu] | None:
@@ -71,9 +71,9 @@ class CRUDRole(CRUDPlus[Role]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[Role]', await self.select_models(db))
 
-    async def get_select(self, name: str | None, status: int | None) -> Select:
+    async def get_select(self, name: str | None, status: int | None) -> Any:
         """
         获取角色列表查询表达式
 
@@ -89,7 +89,7 @@ class CRUDRole(CRUDPlus[Role]):
         if status is not None:
             filters['status'] = status  # type: ignore[assignment]
 
-        return await self.select_order('id', **filters)
+        return await cast('Any', self).select_order('id', **filters)
 
     async def get_by_name(self, db: AsyncSession, name: str) -> Role | None:
         """
@@ -99,7 +99,7 @@ class CRUDRole(CRUDPlus[Role]):
         :param name: 角色名称
         :return:
         """
-        return await self.select_model_by_column(db, name=name)
+        return cast('Role | None', await self.select_model_by_column(db, name=name))
 
     async def create(self, db: AsyncSession, obj: CreateRoleParam) -> None:
         """
@@ -132,14 +132,14 @@ class CRUDRole(CRUDPlus[Role]):
         :param menu_ids: 菜单 ID 列表
         :return:
         """
-        role_menu_stmt = delete(role_menu).where(role_menu.c.role_id == role_id)
-        await db.execute(role_menu_stmt)
+        delete_role_menu_stmt = delete(role_menu).where(role_menu.c.role_id == role_id)
+        await db.execute(delete_role_menu_stmt)
 
         role_menu_data = [
             CreateRoleMenuParam(role_id=role_id, menu_id=menu_id).model_dump() for menu_id in menu_ids.menus
         ]
-        role_menu_stmt = insert(role_menu)
-        await db.execute(role_menu_stmt, role_menu_data)
+        insert_role_menu_stmt = insert(role_menu)
+        await db.execute(insert_role_menu_stmt, role_menu_data)
 
         return len(menu_ids.menus)
 
@@ -153,14 +153,14 @@ class CRUDRole(CRUDPlus[Role]):
         :param scope_ids: 权限范围 ID 列表
         :return:
         """
-        role_scope_stmt = delete(role_data_scope).where(role_data_scope.c.role_id == role_id)
-        await db.execute(role_scope_stmt)
+        delete_role_scope_stmt = delete(role_data_scope).where(role_data_scope.c.role_id == role_id)
+        await db.execute(delete_role_scope_stmt)
 
         role_scope_data = [
             CreateRoleScopeParam(role_id=role_id, data_scope_id=scope_id).model_dump() for scope_id in scope_ids.scopes
         ]
-        role_scope_stmt = insert(role_data_scope)
-        await db.execute(role_scope_stmt, role_scope_data)
+        insert_role_scope_stmt = insert(role_data_scope)
+        await db.execute(insert_role_scope_stmt, role_scope_data)
 
         return len(scope_ids.scopes)
 

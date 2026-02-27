@@ -1,6 +1,6 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -20,7 +20,7 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         :param pk: 任务调度 ID
         :return:
         """
-        return await task_scheduler_dao.select_model(db, pk)
+        return cast('TaskScheduler | None', await task_scheduler_dao.select_model(db, pk))
 
     async def get_all(self, db: AsyncSession) -> Sequence[TaskScheduler]:
         """
@@ -29,9 +29,9 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[TaskScheduler]', await self.select_models(db))
 
-    async def get_select(self, name: str | None, type: int | None) -> Select:
+    async def get_select(self, name: str | None, type: int | None) -> Any:
         """
         获取任务调度列表查询表达式
 
@@ -44,9 +44,9 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         if name is not None:
             filters['name__like'] = f'%{name}%'
         if type is not None:
-            filters['type'] = type  # type: ignore[assignment]  # type: ignore[assignment]
+            filters['type'] = type  # type: ignore[assignment]
 
-        return await self.select_order('id', **filters)
+        return await cast('Any', self).select_order('id', **filters)
 
     async def get_by_name(self, db: AsyncSession, name: str) -> TaskScheduler | None:
         """
@@ -56,7 +56,7 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         :param name: 任务调度名称
         :return:
         """
-        return await self.select_model_by_column(db, name=name)
+        return cast('TaskScheduler | None', await self.select_model_by_column(db, name=name))
 
     async def create(self, db: AsyncSession, obj: CreateTaskSchedulerParam) -> None:
         """

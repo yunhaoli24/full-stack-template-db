@@ -1,5 +1,5 @@
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import Any, cast
 
 from openai import AsyncOpenAI
 
@@ -37,17 +37,19 @@ class ChatService:
     async def create_stream(self, payload: dict[str, Any]) -> Any:
         client = self._get_openai_client()
         try:
-            return await client.chat.completions.create(**payload)
+            stream = cast('Any', await client.chat.completions.create(**payload))
         except Exception as exc:
             raise GatewayError(msg='OpenAI request failed') from exc
+        else:
+            return stream
 
     async def create_completion(self, payload: dict[str, Any]) -> dict[str, Any]:
         client = self._get_openai_client()
         try:
-            completion = await client.chat.completions.create(**payload)
+            completion = cast('Any', await client.chat.completions.create(**payload))
         except Exception as exc:
             raise GatewayError(msg='OpenAI request failed') from exc
-        return completion.model_dump()
+        return cast('dict[str, Any]', completion.model_dump())
 
     def normalize_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
         return self._apply_defaults(payload)

@@ -20,16 +20,16 @@ async def get_task_registered() -> ResponseSchemaModel[list[TaskRegisteredDetail
     registered = await run_in_threadpool(inspector.registered)
     if not registered:
         raise errors.ServerError(msg='Celery Worker 暂不可用，请稍后重试')
-    task_registered = []
+    task_registered: list[TaskRegisteredDetail] = []
     celery_app_tasks = celery_app.tasks
     for tasks in registered.values():
         for task in tasks:
             task_ins = celery_app_tasks.get(task)
             if task_ins:
                 task_doc = task_ins.__doc__
-                task_registered.append({'name': task_doc or task_ins, 'task': task_ins})
+                task_registered.append(TaskRegisteredDetail(name=task_doc or str(task_ins), task=str(task_ins)))
             else:
-                task_registered.append({'name': task, 'task': task})
+                task_registered.append(TaskRegisteredDetail(name=task, task=task))
     return response_base.success(data=task_registered)
 
 

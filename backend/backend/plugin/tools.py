@@ -6,7 +6,7 @@ import warnings
 
 from functools import lru_cache
 from importlib.metadata import PackageNotFoundError, distribution
-from typing import Any
+from typing import Any, cast
 
 import anyio
 import rtoml
@@ -40,7 +40,7 @@ class PluginInstallError(Exception):
 @lru_cache
 def get_plugins() -> list[str]:
     """获取插件列表"""
-    plugin_packages = []
+    plugin_packages: list[str] = []
 
     # 遍历插件目录
     for item in os.listdir(PLUGIN_DIR):
@@ -57,7 +57,7 @@ def get_plugins() -> list[str]:
 
 def get_plugin_models() -> list[object]:
     """获取插件所有模型类"""
-    objs = []
+    objs: list[object] = []
 
     for plugin in get_plugins():
         module_path = f'backend.plugin.{plugin}.model'
@@ -104,8 +104,8 @@ def load_plugin_config(plugin: str) -> dict[str, Any]:
 def parse_plugin_config() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """解析插件配置"""
 
-    extend_plugins = []
-    app_plugins = []
+    extend_plugins: list[dict[str, Any]] = []
+    app_plugins: list[dict[str, Any]] = []
 
     plugins = get_plugins()
 
@@ -234,8 +234,8 @@ def inject_app_router(plugin: dict[str, Any], target_router: APIRouter) -> None:
     module_path = f'backend.plugin.{plugin_name}.api.router'
     try:
         module = import_module_cached(module_path)
-        routers = plugin['app']['router']
-        if not routers or not isinstance(routers, list):
+        routers = cast('list[str] | None', plugin['app']['router'])
+        if not routers:
             raise PluginConfigError(f'应用级插件 {plugin_name} 配置文件存在错误，请检查')
 
         for router in routers:

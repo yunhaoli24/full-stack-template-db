@@ -1,7 +1,7 @@
 import operator
 
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from backend.common.enums import BuildTreeType
 from backend.utils.serializers import RowData, select_list_serialize
@@ -39,10 +39,13 @@ def traversal_to_tree(nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
         else:
             parent_node = node_dict.get(parent_id)
             if parent_node is not None:
-                if 'children' not in parent_node:
-                    parent_node['children'] = []
-                if node not in parent_node['children']:
-                    parent_node['children'].append(node)
+                children_obj = parent_node.get('children')
+                if not isinstance(children_obj, list):
+                    children_obj = []
+                    parent_node['children'] = children_obj
+                children = cast('list[dict[str, Any]]', children_obj)
+                if node not in children:
+                    children.append(node)
             else:
                 if node not in tree:
                     tree.append(node)
@@ -113,7 +116,7 @@ def get_vben5_tree_data(
     """
     meta_keys = {'title', 'icon', 'link', 'cache', 'display', 'status'}
 
-    vben5_nodes = [
+    vben5_nodes: list[dict[str, Any]] = [
         {
             **{k: v for k, v in node.items() if k not in meta_keys},
             'meta': {

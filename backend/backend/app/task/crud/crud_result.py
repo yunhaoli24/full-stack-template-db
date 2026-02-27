@@ -1,4 +1,5 @@
-from sqlalchemy import Select
+from typing import Any, cast
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -16,9 +17,9 @@ class CRUDTaskResult(CRUDPlus[TaskResult]):
         :param pk: 任务 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('TaskResult | None', await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None, task_id: str | None) -> Select:
+    async def get_select(self, name: str | None, task_id: str | None) -> Any:
         """
         获取任务结果列表查询表达式
 
@@ -33,7 +34,7 @@ class CRUDTaskResult(CRUDPlus[TaskResult]):
         if task_id is not None:
             filters['task_id'] = task_id
 
-        return await self.select_order('id', 'desc', **filters)
+        return await cast('Any', self).select_order('id', 'desc', **filters)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
         """

@@ -8,7 +8,7 @@ from backend.common.model import Base, id_key
 class DataScope(Base):
     """数据范围表"""
 
-    __tablename__ = 'sys_data_scope'
+    __tablename__ = 'sys_data_scope'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(64), unique=True, comment='名称')

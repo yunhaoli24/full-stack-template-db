@@ -1,6 +1,6 @@
 from collections.abc import Sequence
+from typing import Any, cast
 
-from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
@@ -19,9 +19,9 @@ class CRUDNotice(CRUDPlus[Notice]):
         :param pk: 通知公告 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast('Notice | None', await self.select_model(db, pk))
 
-    async def get_select(self, title: str | None, type: int | None, status: int | None) -> Select:
+    async def get_select(self, title: str | None, type: int | None, status: int | None) -> Any:
         """
         获取通知公告列表查询表达式
 
@@ -39,7 +39,7 @@ class CRUDNotice(CRUDPlus[Notice]):
         if status is not None:
             filters['status'] = status
 
-        return await self.select_order('created_time', 'desc', **filters)
+        return await cast('Any', self).select_order('created_time', 'desc', **filters)
 
     async def get_all(self, db: AsyncSession) -> Sequence[Notice]:
         """
@@ -48,7 +48,7 @@ class CRUDNotice(CRUDPlus[Notice]):
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast('Sequence[Notice]', await self.select_models(db))
 
     async def create(self, db: AsyncSession, obj: CreateNoticeParam) -> None:
         """

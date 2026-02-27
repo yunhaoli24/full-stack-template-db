@@ -1,0 +1,9 @@
+from os import PathLike
+
+class XdbSearcher:
+    @staticmethod
+    def loadContentFromFile(dbfile: str | PathLike[str]) -> bytes: ...
+
+    def __init__(self, *, contentBuff: bytes) -> None: ...
+    def search(self, ip: str) -> str: ...
+

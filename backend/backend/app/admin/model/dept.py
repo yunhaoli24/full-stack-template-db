@@ -8,7 +8,7 @@ from backend.common.model import Base, id_key
 class Dept(Base):
     """部门表"""
 
-    __tablename__ = 'sys_dept'
+    __tablename__ = 'sys_dept'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(64), comment='部门名称')

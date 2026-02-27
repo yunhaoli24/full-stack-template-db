@@ -4,7 +4,7 @@ import sys
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Annotated, Literal, TypeVar, cast
+from typing import Annotated, Any, Literal, TypeVar, cast
 
 import anyio
 import cappa
@@ -34,7 +34,8 @@ CommandClassT = TypeVar('CommandClassT')
 
 def typed_cappa_command(*args: object, **kwargs: object) -> Callable[[type[CommandClassT]], type[CommandClassT]]:
     """Provide a typed wrapper for cappa.command class decorators."""
-    return cast('Callable[[type[CommandClassT]], type[CommandClassT]]', cappa.command(*args, **kwargs))
+    command = cast('Any', cappa.command)
+    return cast('Callable[[type[CommandClassT]], type[CommandClassT]]', command(*args, **kwargs))
 
 
 class CustomReloadFilter(PythonFilter):
@@ -127,7 +128,7 @@ def run(host: str, port: int, reload: bool, workers: int) -> None:  # noqa: FBT0
     console.print(Panel(panel_content, title=f'fba v{__version__}', border_style='purple', padding=(1, 2)))
     granian.Granian(
         target='backend.main:app',
-        interface='asgi',
+        interface=cast('Any', 'asgi'),
         address=host,
         port=port,
         reload=reload,
@@ -199,7 +200,7 @@ async def install_plugin(
 
 
 async def get_sql_scripts() -> list[str]:
-    sql_scripts = []
+    sql_scripts: list[str] = []
     db_dir = BASE_PATH / 'sql' / 'postgresql'
     main_sql_file = db_dir / 'init_test_data.sql'
 

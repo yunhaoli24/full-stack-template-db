@@ -8,7 +8,7 @@ from backend.common.model import Base, id_key
 class UserSocial(Base):
     """用户社交表（OAuth2）"""
 
-    __tablename__ = 'sys_user_social'
+    __tablename__ = 'sys_user_social'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     sid: Mapped[str] = mapped_column(sa.String(256), comment='第三方用户 ID')

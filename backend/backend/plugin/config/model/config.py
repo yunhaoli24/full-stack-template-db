@@ -8,7 +8,7 @@ from backend.common.model import Base, UniversalText, id_key
 class Config(Base):
     """参数配置表"""
 
-    __tablename__ = 'sys_config'
+    __tablename__ = 'sys_config'  # pyright: ignore[reportAssignmentType]
 
     id: Mapped[id_key] = mapped_column(init=False)
     name: Mapped[str] = mapped_column(sa.String(32), comment='名称')

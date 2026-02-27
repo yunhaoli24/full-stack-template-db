@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from pydantic import ConfigDict, Field, field_serializer
 
@@ -38,4 +38,4 @@ class GetTaskResultDetail(TaskResultSchemaBase):
 
     @field_serializer('args', 'kwargs', when_used='unless-none')  # pyright: ignore
     def serialize_params(self, value: bytes | None) -> Any:
-        return celery_app.backend.decode(value)
+        return cast('Any', celery_app).backend.decode(value)
