@@ -1,3 +1,5 @@
+"""User."""
+
 from typing import Any, Self, Annotated
 from datetime import datetime
 
@@ -108,9 +110,9 @@ class GetCurrentUserInfoWithRelationDetail(GetUserInfoDetail):
     dept: str | None = Field(None, description="部门名称")
     roles: list[str] = Field(description="角色名称列表")
 
-    @model_validator(mode="before")  # pyright: ignore
+    @model_validator(mode="before")  # pyright: ignore[reportGeneralTypeIssues]
     @classmethod
-    def handel(cls, data: Any) -> Self:
+    def handel(cls, data: Any) -> Self:  # noqa: ANN401
         """处理部门和角色数据."""
         dept = data.get("dept")
         if dept:

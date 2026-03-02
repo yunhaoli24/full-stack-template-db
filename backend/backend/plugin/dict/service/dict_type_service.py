@@ -1,3 +1,5 @@
+"""Dict Type Service."""
+
 from typing import Any
 from collections.abc import Sequence
 

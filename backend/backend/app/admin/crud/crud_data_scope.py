@@ -1,7 +1,9 @@
+"""Crud Data Scope."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
-from sqlalchemy import delete, insert
+from sqlalchemy import Select, delete, insert
 from sqlalchemy_crud_plus import CRUDPlus, JoinConfig
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,7 +38,9 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         """
         return cast("DataScope | None", await self.select_model_by_column(db, name=name))
 
-    async def get_join(self, db: AsyncSession, pk: int) -> Any:
+    async def get_join(
+        self, db: AsyncSession, pk: int
+    ) -> dict[str, Any] | list[dict[str, Any]] | tuple[Any, ...] | list[tuple[Any, ...]] | None:
         """获取数据范围关联数据.
 
         :param db: 数据库会话
@@ -62,7 +66,7 @@ class CRUDDataScope(CRUDPlus[DataScope]):
         """
         return cast("Sequence[DataScope]", await self.select_models(db))
 
-    async def get_select(self, name: str | None, status: int | None) -> Any:
+    async def get_select(self, name: str | None, status: int | None) -> Select[Any]:
         """获取数据范围列表查询表达式.
 
         :param name: 范围名称

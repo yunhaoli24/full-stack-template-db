@@ -1,3 +1,5 @@
+"""Schedulers."""
+
 from __future__ import annotations
 
 import json
@@ -7,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 from datetime import datetime, timedelta
 from multiprocessing.util import Finalize
 
-from celery import schedules, current_app  # pyright: ignore
+from celery import schedules, current_app  # pyright: ignore[reportMissingModuleSource]
 from sqlalchemy import select
 from celery.beat import Scheduler, ScheduleEntry
 from celery.signals import beat_init
@@ -42,9 +44,10 @@ logger = get_logger("fba.schedulers")
 class ModelEntry(ScheduleEntry):
     """任务调度实体."""
 
-    def __init__(self, model: TaskScheduler, app: Any = None) -> None:
+    def __init__(self, model: TaskScheduler, app: Any = None) -> None:  # noqa: ANN401
+        """Initialize model entry."""
         super().__init__(
-            app=app or current_app._get_current_object(),
+            app=app or current_app._get_current_object(),  # noqa: SLF001
             name=model.name,
             task=model.task,
         )
@@ -65,18 +68,18 @@ class ModelEntry(ScheduleEntry):
                     month_of_year=crontab_split[4],
                 )
             else:
-                raise errors.NotFoundError(msg=f"{self.name} 计划为空！")
+                self._raise_not_found_error()
             # logger.debug('Schedule: {}'.format(self.schedule))
-        except Exception as e:
-            logger.exception(f"禁用计划为空的任务 {self.name}，详情：{e}")
-            asyncio.create_task(self._disable(model))
+        except Exception:
+            logger.exception("禁用计划为空的任务 %s", self.name)
+            asyncio.create_task(self._disable(model))  # noqa: RUF006
 
         try:
             self.args = json.loads(model.args) if model.args else None
             self.kwargs = json.loads(model.kwargs) if model.kwargs else None
-        except ValueError as exc:
-            logger.exception(f"禁用参数错误的任务：{self.name}；error: {exc!s}")
-            asyncio.create_task(self._disable(model))
+        except ValueError:
+            logger.exception("禁用参数错误的任务: %s", self.name)
+            asyncio.create_task(self._disable(model))  # noqa: RUF006
 
         self.options = {}
         for option in ["queue", "exchange", "routing_key"]:
@@ -101,6 +104,10 @@ class ModelEntry(ScheduleEntry):
         self.options["periodic_task_name"] = model.name
         self.model = model
 
+    def _raise_not_found_error(self) -> None:
+        """Raise not found error."""
+        raise errors.NotFoundError(msg=f"{self.name} 计划为空!")
+
     async def _disable(self, model: TaskScheduler) -> None:
         """禁用任务."""
         model.no_changes = True
@@ -112,7 +119,7 @@ class ModelEntry(ScheduleEntry):
         """任务到期状态."""
         if not self.model.enabled:
             # 重新启用时延迟 5 秒
-            return schedules.schedstate(is_due=False, next=5)
+            return schedules.schedstate(is_due=False, next_value=5)
 
         # 仅在 'start_time' 之后运行
         if self.model.start_time is not None:
@@ -120,7 +127,7 @@ class ModelEntry(ScheduleEntry):
             start_time = timezone.from_datetime(self.model.start_time)
             if now < start_time:
                 delay = math.ceil((start_time - now).total_seconds())
-                return schedules.schedstate(is_due=False, next=delay)
+                return schedules.schedstate(is_due=False, next_value=delay)
 
         # 一次性任务
         if self.model.one_off and self.model.enabled and self.model.total_run_count > 0:
@@ -129,11 +136,12 @@ class ModelEntry(ScheduleEntry):
             self.model.no_changes = False
             save_fields = ("enabled",)
             run_await(self.save)(save_fields)
-            return schedules.schedstate(is_due=False, next=1000000000)  # 高延迟，避免重新检查
+            return schedules.schedstate(is_due=False, next_value=1000000000)  # 高延迟，避免重新检查
 
         return self.schedule.is_due(self.last_run_at)
 
     def __next__(self):  # noqa: ANN204
+        """Get next entry."""
         self.model.last_run_time = timezone.now()
         self.model.total_run_count += 1
         self.model.no_changes = True
@@ -156,11 +164,10 @@ class ModelEntry(ScheduleEntry):
                     setattr(task, field, getattr(self.model, field))
                 for field in fields:
                     setattr(task, field, getattr(self.model, field))
-            else:
-                logger.warning(f"任务 {self.model.name} 不存在，跳过更新")
+                logger.warning("任务 %s 不存在, 跳过更新", self.model.name)
 
     @classmethod
-    async def from_entry(cls, name: str, app: Any = None, **entry: Any) -> ModelEntry:
+    async def from_entry(cls, name: str, app: Any = None, **entry: Any) -> ModelEntry:  # noqa: ANN401
         """保存或更新本地任务调度."""
         async with async_db_session.begin() as db:
             stmt = select(TaskScheduler).where(TaskScheduler.name == name)
@@ -177,12 +184,13 @@ class ModelEntry(ScheduleEntry):
 
     @staticmethod
     async def to_model_schedule(name: str, task: str, schedule: schedules.schedule | TzAwareCrontab) -> TaskScheduler:
+        """Convert to model schedule."""
         schedule = schedules.maybe_schedule(schedule)
 
         async with async_db_session() as db:
             spec: dict[str, Any]
             if isinstance(schedule, schedules.crontab):
-                crontab = f"{schedule._orig_minute} {schedule._orig_hour} {schedule._orig_day_of_week} {schedule._orig_day_of_month} {schedule._orig_month_of_year}"  # noqa: E501
+                crontab = f"{schedule._orig_minute} {schedule._orig_hour} {schedule._orig_day_of_week} {schedule._orig_day_of_month} {schedule._orig_month_of_year}"  # noqa: E501, SLF001
                 crontab_verify(crontab)
                 spec = {
                     "name": name,
@@ -221,7 +229,7 @@ class ModelEntry(ScheduleEntry):
         args: tuple[Any, ...] | None = None,
         kwargs: dict[str, Any] | None = None,
         options: dict[str, Any] | None = None,
-        **entry: Any,
+        **entry: Any,  # noqa: ANN401
     ) -> dict[str, Any]:
         model_schedule = await cls.to_model_schedule(name, task, schedule)
         model_dict = select_as_dict(model_schedule)
@@ -276,12 +284,13 @@ class DatabaseScheduler(Scheduler):
     _last_update = None
     _initial_read = True
     _heap_invalidated = False
-    _heap: list[ModelEntry] = []
+    _heap: list[ModelEntry] = []  # noqa: RUF012
 
     lock: Lock | None = None
     lock_key = f"{settings.CELERY_REDIS_PREFIX}:beat_lock"
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ANN401
+        """Initialize scheduler."""
         self.app = kwargs["app"]
         self._dirty: set[str] = set()
         super().__init__(*args, **kwargs)
@@ -290,6 +299,7 @@ class DatabaseScheduler(Scheduler):
 
     def install_default_entries(self, data: dict[str, Any]) -> None:
         """重写父函数."""
+        _ = data
         entries: dict[str, Any] = {}
         if self.app.conf.result_expires:
             entries.setdefault(
@@ -302,8 +312,8 @@ class DatabaseScheduler(Scheduler):
             )
         self.update_from_dict(entries)
 
-    def schedules_equal(self, *args: Any, **kwargs: Any) -> bool:
-        """重写父函数."""
+    def schedules_equal(self, *args: Any, **kwargs: Any) -> bool:  # noqa: ANN401
+        """Check if schedules are equal."""
         if self._heap_invalidated:
             self._heap_invalidated = False
             return False
@@ -333,26 +343,26 @@ class DatabaseScheduler(Scheduler):
                 try:
                     tasks = self.schedule
                     run_await(tasks[name].save)()
-                    logger.debug(f"保存任务 {name} 最新状态到数据库")
+                    logger.debug("保存任务 %s 最新状态到数据库", name)
                     tried.add(name)
-                except KeyError as e:
-                    logger.exception(f"保存任务 {name} 最新状态失败：{e} ")
+                except KeyError:
+                    logger.exception("保存任务 %s 最新状态失败", name)
                     failed.add(name)
         except DatabaseError:
             logger.exception("同步时出现数据库错误")
         except InterfaceError as e:
-            logger.warning(f"DatabaseScheduler InterfaceError：{e!s}，等待下次调用时重试...")
+            logger.warning("DatabaseScheduler InterfaceError: %s, 等待下次调用时重试...", e)
         finally:
             # 请稍后重试（仅针对失败的）
             self._dirty |= failed
 
-    def tick(self, **kwargs: Any) -> float:
+    def tick(self, **_kwargs: Any) -> float:  # noqa: ANN401
         """重写父函数."""
         if self.lock:
             logger.debug("beat: Extending lock...")
             run_await(self.lock.extend)(DEFAULT_MAX_LOCK_TIMEOUT, replace_ttl=True)
 
-        return super().tick(**kwargs)
+        return super().tick(**_kwargs)
 
     def close(self) -> None:
         """重写父函数."""
@@ -375,7 +385,7 @@ class DatabaseScheduler(Scheduler):
                 if entry.model.enabled:
                     s[name] = entry
         except Exception:
-            logger.exception(f"添加任务 {name} 到数据库失败")
+            logger.exception("添加任务 %s 到数据库失败", name)
             raise
 
         tasks = self.schedule
@@ -436,8 +446,8 @@ class DatabaseScheduler(Scheduler):
         return self._schedule  # type: ignore[return-value]
 
 
-@beat_init.connect  # pyright: ignore
-def acquire_distributed_beat_lock(sender: Any = None, **kwargs: Any) -> None:
+@beat_init.connect  # pyright: ignore[reportGeneralTypeIssues]
+def acquire_distributed_beat_lock(sender: Any = None, **_kwargs: Any) -> None:  # noqa: ANN401
     """尝试在启动时获取锁.
 
     :param sender: 接收方应响应的发送方

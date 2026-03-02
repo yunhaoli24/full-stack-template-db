@@ -1,3 +1,5 @@
+"""Role Service."""
+
 from typing import Any
 from collections.abc import Sequence
 
@@ -31,7 +33,7 @@ class RoleService:
         :param pk: 角色 ID
         :return:
         """
-        role = await role_dao.get_join(db, pk)
+        role = await role_dao.get(db, pk)
         if not role:
             raise errors.NotFoundError(msg="角色不存在")
         return role
@@ -81,7 +83,8 @@ class RoleService:
         role = await role_dao.get_join(db, pk)
         if not role:
             raise errors.NotFoundError(msg="角色不存在")
-        return [scope.id for scope in role.scopes]
+        scopes = getattr(role, "scopes", [])
+        return [scope.id for scope in scopes]
 
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateRoleParam) -> None:

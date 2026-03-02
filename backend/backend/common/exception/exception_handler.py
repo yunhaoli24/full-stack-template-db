@@ -1,3 +1,5 @@
+"""Exception Handler."""
+
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -37,7 +39,7 @@ def _get_exception_code(status_code: int) -> int:
     return status_code
 
 
-async def _validation_exception_handler(exc: RequestValidationError | ValidationError):
+async def _validation_exception_handler(exc: RequestValidationError | ValidationError) -> MsgSpecJSONResponse:
     """数据验证异常处理.
 
     :param exc: 验证异常
@@ -51,7 +53,7 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
         error_input = error.get("input")
         field = str(error.get("loc")[-1])
         error_msg = error.get("msg")
-        message = f"{field} {error_msg}，输入：{error_input}" if settings.ENVIRONMENT == "dev" else error_msg
+        message = f"{field} {error_msg}, 输入: {error_input}" if settings.ENVIRONMENT == "dev" else error_msg
     msg = f"请求参数非法: {message}"
     data = {"errors": errors} if settings.ENVIRONMENT == "dev" else None
     content: ResponseContent = {
@@ -65,10 +67,11 @@ async def _validation_exception_handler(exc: RequestValidationError | Validation
 
 
 def register_exception(app: FastAPI) -> None:
+    """Register Exception."""
     registered_handlers: list[object] = []
 
-    @app.exception_handler(HTTPException)  # pyright: ignore
-    async def http_exception_handler(request: Request, exc: HTTPException):
+    @app.exception_handler(HTTPException)  # pyright: ignore[reportGeneralTypeIssues]
+    async def http_exception_handler(request: Request, exc: HTTPException) -> MsgSpecJSONResponse:  # noqa: ARG001
         """全局 HTTP 异常处理.
 
         :param request: FastAPI 请求对象
@@ -94,11 +97,13 @@ def register_exception(app: FastAPI) -> None:
 
     registered_handlers.append(http_exception_handler)
 
-    @app.exception_handler(RequestValidationError)  # pyright: ignore
-    async def fastapi_validation_exception_handler(request: Request, exc: RequestValidationError):
+    @app.exception_handler(RequestValidationError)  # pyright: ignore[reportGeneralTypeIssues]
+    async def fastapi_validation_exception_handler(
+        _request: Request, exc: RequestValidationError
+    ) -> MsgSpecJSONResponse:
         """FastAPI 数据验证异常处理.
 
-        :param request: FastAPI 请求对象
+        :param _request: FastAPI 请求对象
         :param exc: 验证异常
         :return:
         """
@@ -106,8 +111,8 @@ def register_exception(app: FastAPI) -> None:
 
     registered_handlers.append(fastapi_validation_exception_handler)
 
-    @app.exception_handler(ValidationError)  # pyright: ignore
-    async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
+    @app.exception_handler(ValidationError)  # pyright: ignore[reportGeneralTypeIssues]
+    async def pydantic_validation_exception_handler(request: Request, exc: ValidationError) -> MsgSpecJSONResponse:  # noqa: ARG001
         """Pydantic 数据验证异常处理.
 
         :param request: 请求对象
@@ -118,8 +123,8 @@ def register_exception(app: FastAPI) -> None:
 
     registered_handlers.append(pydantic_validation_exception_handler)
 
-    @app.exception_handler(AssertionError)  # pyright: ignore
-    async def assertion_error_handler(request: Request, exc: AssertionError):
+    @app.exception_handler(AssertionError)  # pyright: ignore[reportGeneralTypeIssues]
+    async def assertion_error_handler(request: Request, exc: AssertionError) -> MsgSpecJSONResponse:  # noqa: ARG001
         """断言错误处理.
 
         :param request: FastAPI 请求对象
@@ -144,8 +149,8 @@ def register_exception(app: FastAPI) -> None:
 
     registered_handlers.append(assertion_error_handler)
 
-    @app.exception_handler(BaseExceptionError)  # pyright: ignore
-    async def custom_exception_handler(request: Request, exc: BaseExceptionError):
+    @app.exception_handler(BaseExceptionError)  # pyright: ignore[reportGeneralTypeIssues]
+    async def custom_exception_handler(request: Request, exc: BaseExceptionError) -> MsgSpecJSONResponse:  # noqa: ARG001
         """全局自定义异常处理.
 
         :param request: FastAPI 请求对象
@@ -167,8 +172,8 @@ def register_exception(app: FastAPI) -> None:
 
     registered_handlers.append(custom_exception_handler)
 
-    @app.exception_handler(Exception)  # pyright: ignore
-    async def all_unknown_exception_handler(request: Request, exc: Exception):
+    @app.exception_handler(Exception)  # pyright: ignore[reportGeneralTypeIssues]
+    async def all_unknown_exception_handler(request: Request, exc: Exception) -> MsgSpecJSONResponse:  # noqa: ARG001
         """全局未知异常处理.
 
         :param request: FastAPI 请求对象
@@ -194,8 +199,10 @@ def register_exception(app: FastAPI) -> None:
 
     if settings.MIDDLEWARE_CORS:
 
-        @app.exception_handler(StandardResponseCode.HTTP_500)  # pyright: ignore
-        async def cors_custom_code_500_exception_handler(request: Request, exc: BaseExceptionError | Exception):
+        @app.exception_handler(StandardResponseCode.HTTP_500)  # pyright: ignore[reportGeneralTypeIssues]
+        async def cors_custom_code_500_exception_handler(
+            request: Request, exc: BaseExceptionError | Exception
+        ) -> MsgSpecJSONResponse:
             """跨域自定义 500 异常处理.
 
             :param request: FastAPI 请求对象

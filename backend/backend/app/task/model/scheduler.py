@@ -1,3 +1,5 @@
+"""Scheduler."""
+
 from __future__ import annotations
 
 import asyncio
@@ -31,7 +33,7 @@ class TaskScheduler(Base):
     start_time: Mapped[datetime | None] = mapped_column(TimeZone, comment="任务开始触发的时间")
     expire_time: Mapped[datetime | None] = mapped_column(TimeZone, comment="任务不再触发的截止时间")
     expire_seconds: Mapped[int | None] = mapped_column(comment="任务不再触发的秒数时间差")
-    type: Mapped[int] = mapped_column(comment="调度类型（0间隔 1定时）")
+    type: Mapped[int] = mapped_column(comment="调度类型(0间隔 1定时)")
     interval_every: Mapped[int | None] = mapped_column(comment="任务再次运行前的间隔周期数")
     interval_period: Mapped[str | None] = mapped_column(sa.String(256), comment="任务运行之间的周期类型")
     crontab: Mapped[str | None] = mapped_column(sa.String(64), default="* * * * *", comment="任务运行的 Crontab 计划")
@@ -44,23 +46,27 @@ class TaskScheduler(Base):
     no_changes: bool = False
 
     @staticmethod
-    def before_insert_or_update(mapper: Any, connection: Any, target: TaskScheduler) -> None:
+    def before_insert_or_update(_mapper: Any, _connection: Any, target: TaskScheduler) -> None:  # noqa: ANN401
+        """Validate before insert or update."""
         if target.expire_seconds is not None and target.expire_time:
             raise errors.ConflictError(msg="expires 和 expire_seconds 只能设置一个")
 
     @classmethod
-    def changed(cls, mapper: Any, connection: Any, target: TaskScheduler) -> None:
+    def changed(cls, _mapper: Any, _connection: Any, target: TaskScheduler) -> None:  # noqa: ANN401
+        """Handle changed event."""
         if not target.no_changes:
-            cls.update_changed(mapper, connection, target)
+            cls.update_changed(_mapper, _connection, target)
 
     @classmethod
     async def update_changed_async(cls) -> None:
+        """Update changed timestamp asynchronously."""
         now = timezone.now()
         await redis_client.set(f"{settings.CELERY_REDIS_PREFIX}:last_update", timezone.to_str(now))
 
     @classmethod
-    def update_changed(cls, mapper: Any, connection: Any, target: TaskScheduler) -> None:
-        asyncio.create_task(cls.update_changed_async())
+    def update_changed(cls, _mapper: Any, _connection: Any, _target: TaskScheduler) -> None:  # noqa: ANN401
+        """Update changed timestamp."""
+        asyncio.create_task(cls.update_changed_async())  # noqa: RUF006
 
 
 # 事件监听器

@@ -1,3 +1,5 @@
+"""Scheduler Service."""
+
 import json
 from typing import Any, cast
 from collections.abc import Sequence
@@ -41,17 +43,17 @@ class TaskSchedulerService:
         return await task_scheduler_dao.get_all(db)
 
     @staticmethod
-    async def get_list(*, db: AsyncSession, name: str | None, type: int | None) -> dict[str, Any]:
+    async def get_list(*, db: AsyncSession, name: str | None, scheduler_type: int | None) -> dict[str, Any]:
         """获取任务调度列表.
 
         :param db: 数据库会话
         :param name: 任务调度名称
-        :param type: 任务调度类型
+        :param scheduler_type: 任务调度类型
         :return:
         """
         dao = cast("Any", task_scheduler_dao)
         get_select = dao.get_select
-        task_scheduler_select: Any = await get_select(name=name, type=type)
+        task_scheduler_select: Any = await get_select(name=name, type=scheduler_type)
         return await paging_data(db, task_scheduler_select)
 
     @staticmethod
@@ -123,15 +125,15 @@ class TaskSchedulerService:
         """
         workers = await run_in_threadpool(celery_app.control.ping, timeout=0.5)
         if not workers:
-            raise errors.ServerError(msg="Celery Worker 暂不可用，请稍后重试")
+            raise errors.ServerError(msg="Celery Worker 暂不可用, 请稍后重试")
         task_scheduler = await task_scheduler_dao.get(db, pk)
         if not task_scheduler:
             raise errors.NotFoundError(msg="任务调度不存在")
         try:
             args = json.loads(task_scheduler.args) if task_scheduler.args else None
             kwargs = json.loads(task_scheduler.kwargs) if task_scheduler.kwargs else None
-        except (TypeError, json.JSONDecodeError):
-            raise errors.RequestError(msg="执行失败，任务参数非法")
+        except (TypeError, json.JSONDecodeError) as e:
+            raise errors.RequestError(msg="执行失败, 任务参数非法") from e
         else:
             send_task = cast("Any", celery_app).send_task
             send_task(name=task_scheduler.task, args=args, kwargs=kwargs)

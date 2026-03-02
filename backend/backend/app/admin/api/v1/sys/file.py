@@ -1,3 +1,5 @@
+"""File."""
+
 from typing import Annotated
 
 from fastapi import File, Depends, APIRouter, UploadFile
@@ -19,8 +21,9 @@ router = APIRouter()
         Depends(RequestPermission("sys:file:upload")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def upload_files(file: Annotated[UploadFile, File()]) -> ResponseSchemaModel[UploadUrl]:
+    """Upload Files."""
     upload_file_verify(file)
     filename = await upload_file(file)
     return response_base.success(data={"url": f"/static/upload/{filename}"})

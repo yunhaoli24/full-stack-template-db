@@ -37,7 +37,9 @@ class _TaskRunner:
     def _target(self) -> None:
         """后台线程的目标函数."""
         loop = self.__loop
-        assert loop is not None
+        if loop is None:
+            msg = "Event loop is not initialized"
+            raise RuntimeError(msg)
         try:
             loop.run_forever()
         finally:
@@ -65,7 +67,7 @@ def run_await[T](coro: Callable[..., Awaitable[T]] | Callable[..., Coroutine[Any
     """将协程包装在函数中，直到它执行完为止."""
 
     @wraps(coro)
-    def wrapped(*args: Any, **kwargs: Any) -> T:
+    def wrapped(*args: Any, **kwargs: Any) -> T:  # noqa: ANN401
         inner = coro(*args, **kwargs)
         if not asyncio.iscoroutine(inner) and not asyncio.isfuture(inner):
             msg = f"Expected coroutine or future, got {type(inner)}"

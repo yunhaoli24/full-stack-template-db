@@ -1,3 +1,5 @@
+"""Health Check."""
+
 import time
 import inspect
 import functools
@@ -28,18 +30,18 @@ def ensure_unique_route_names(app: FastAPI) -> None:
             temp_routes.add(route.name)
 
 
-async def http_limit_callback(request: Request, response: Response, expire: int) -> None:
+async def http_limit_callback(_request: Request, _response: Response, expire: int) -> None:
     """请求限制时的默认回调函数.
 
-    :param request: FastAPI 请求对象
-    :param response: FastAPI 响应对象
+    :param _request: FastAPI 请求对象
+    :param _response: FastAPI 响应对象
     :param expire: 剩余毫秒数
     :return:
     """
     expires = ceil(expire / 1000)
     raise errors.HTTPError(
         code=StandardResponseCode.HTTP_429,
-        msg="请求过于频繁，请稍后重试",
+        msg="请求过于频繁, 请稍后重试",
         headers={"Retry-After": str(expires)},
     )
 
@@ -48,7 +50,7 @@ def timer(func: Callable[..., Any]) -> Callable[..., Any]:
     """函数耗时计时装饰器."""
 
     @functools.wraps(func)
-    async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+    async def async_wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         start_time = time.perf_counter()
         result = await func(*args, **kwargs)
         elapsed_seconds = time.perf_counter() - start_time
@@ -56,21 +58,21 @@ def timer(func: Callable[..., Any]) -> Callable[..., Any]:
         return result
 
     @functools.wraps(func)
-    def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
+    def sync_wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         start_time = time.perf_counter()
         result = func(*args, **kwargs)
         elapsed_seconds = time.perf_counter() - start_time
         _log_time(func, elapsed_seconds)
         return result
 
-    def _log_time(func: Callable[..., Any], elapsed: float) -> None:
-        # 智能选择单位（秒、毫秒、微秒、纳秒）
+    def _log_time(_func: Callable[..., Any], elapsed: float) -> None:
+        # 智能选择单位(秒、毫秒、微秒、纳秒)
         if elapsed >= 1:
             unit, factor = "s", 1
         else:
             unit, factor = "ms", 1000
 
-        log.info(f"{func.__module__}.{func.__name__} | {elapsed * factor:.3f} {unit}")
+        log.info(f"{_func.__module__}.{_func.__name__} | {elapsed * factor:.3f} {unit}")
 
     if inspect.iscoroutinefunction(func):
         return async_wrapper

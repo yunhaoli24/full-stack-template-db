@@ -1,3 +1,5 @@
+"""System API v1 package."""
+
 from fastapi import APIRouter
 
 from backend.app.admin.api.v1.sys.dept import router as dept_router

@@ -1,3 +1,5 @@
+"""Dept."""
+
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -16,7 +18,7 @@ class Dept(Base):
     phone: Mapped[str | None] = mapped_column(sa.String(11), default=None, comment="手机")
     email: Mapped[str | None] = mapped_column(sa.String(64), default=None, comment="邮箱")
     status: Mapped[int] = mapped_column(default=1, comment="部门状态(0停用 1正常)")
-    del_flag: Mapped[bool] = mapped_column(default=False, comment="删除标志（0删除 1存在）")
+    del_flag: Mapped[bool] = mapped_column(default=False, comment="删除标志(0删除 1存在)")
 
     # 父级部门
     parent_id: Mapped[int | None] = mapped_column(sa.BigInteger, default=None, index=True, comment="父部门ID")

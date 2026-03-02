@@ -1,3 +1,5 @@
+"""Build Tree."""
+
 import operator
 from typing import Any, cast
 from collections.abc import Sequence
@@ -77,8 +79,8 @@ def get_tree_data(
     """获取树形结构数据.
 
     :param row: 原始数据行序列
-    :param build_type: 构建树形结构的算法类型，默认为遍历算法
-    :param parent_id: 父节点 ID，仅在递归算法中使用
+    :param build_type: 构建树形结构的算法类型, 默认为遍历算法
+    :param parent_id: 父节点 ID, 仅在递归算法中使用
     :param is_sort: 是否启用结果排序
     :param sort_key: 基于此键对结果进行进行排序
     :return:
@@ -90,7 +92,7 @@ def get_tree_data(
         case BuildTreeType.recursive:
             tree = recursive_to_tree(nodes, parent_id=parent_id)
         case _:
-            msg = f"无效的算法类型：{build_type}"
+            msg = f"无效的算法类型: {build_type}"  # type: ignore[unreachable]
             raise ValueError(msg)
     return tree
 

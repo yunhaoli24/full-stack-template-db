@@ -1,3 +1,5 @@
+"""Response Schema."""
+
 from typing import Any, TypeVar
 
 from fastapi import Response
@@ -67,7 +69,7 @@ class ResponseBase:
     def __response(
         *,
         res: CustomResponseCode | CustomResponse,
-        data: Any | None,
+        data: Any | None,  # noqa: ANN401
     ) -> ResponseSchemaModel[Any]:
         """请求返回通用方法.
 
@@ -81,7 +83,7 @@ class ResponseBase:
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_200,
-        data: Any | None = None,
+        data: Any | None = None,  # noqa: ANN401
     ) -> ResponseSchemaModel[Any]:
         """成功响应.
 
@@ -95,7 +97,7 @@ class ResponseBase:
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_400,
-        data: Any = None,
+        data: Any = None,  # noqa: ANN401
     ) -> ResponseSchemaModel[Any]:
         """失败响应.
 
@@ -109,7 +111,7 @@ class ResponseBase:
     def fast_success(
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_200,
-        data: Any | None = None,
+        data: Any | None = None,  # noqa: ANN401
     ) -> Response:
         """此方法是为了提高接口响应速度而创建的，在解析较大 json 时有显著性能提升，但将丢失 pydantic 解析和验证.
 

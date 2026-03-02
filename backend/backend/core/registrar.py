@@ -1,4 +1,5 @@
-import os
+"""Registrar."""
+
 from typing import Any, cast
 from asyncio import create_task
 from contextlib import asynccontextmanager
@@ -36,7 +37,7 @@ from backend.common.exception.exception_handler import register_exception
 
 
 @asynccontextmanager
-async def register_init(app: FastAPI) -> AsyncGenerator[None]:
+async def register_init(app: FastAPI) -> AsyncGenerator[None]:  # noqa: ARG001
     """启动初始化.
 
     :param app: FastAPI 应用实例
@@ -49,7 +50,8 @@ async def register_init(app: FastAPI) -> AsyncGenerator[None]:
     await redis_client.open()
 
     # 创建操作日志任务
-    create_task(OperaLogMiddleware.consumer())
+    task = create_task(OperaLogMiddleware.consumer())
+    _ = task
 
     yield
 
@@ -98,8 +100,8 @@ def register_static_file(app: FastAPI) -> None:
     :return:
     """
     # 上传静态资源
-    if not os.path.exists(UPLOAD_DIR):
-        os.makedirs(UPLOAD_DIR)
+    if not UPLOAD_DIR.exists():
+        UPLOAD_DIR.mkdir(parents=True)
     app.mount("/static/upload", StaticFiles(directory=UPLOAD_DIR), name="upload")
 
     # 固有静态资源
@@ -186,7 +188,7 @@ def register_socket_app(app: FastAPI) -> None:
     :param app: FastAPI 应用实例
     :return:
     """
-    from backend.common.socketio.server import sio
+    from backend.common.socketio.server import sio  # noqa: PLC0415
 
     socket_app = socketio.ASGIApp(
         socketio_server=sio,

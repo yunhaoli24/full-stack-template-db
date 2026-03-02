@@ -1,3 +1,5 @@
+"""Crud User Social."""
+
 from typing import cast
 from collections.abc import Sequence
 

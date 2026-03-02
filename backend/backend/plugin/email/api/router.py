@@ -1,3 +1,5 @@
+"""Router."""
+
 from fastapi import APIRouter
 
 from backend.core.conf import settings

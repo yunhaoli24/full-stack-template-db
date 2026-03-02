@@ -1,3 +1,5 @@
+"""Router."""
+
 from fastapi import APIRouter
 
 from backend.app.task.api.router import v1 as task_v1

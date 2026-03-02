@@ -1,3 +1,5 @@
+"""Notice Service."""
+
 from typing import Any
 from collections.abc import Sequence
 
@@ -27,16 +29,18 @@ class NoticeService:
         return notice
 
     @staticmethod
-    async def get_list(db: AsyncSession, title: str | None, type: int | None, status: int | None) -> dict[str, Any]:
+    async def get_list(
+        db: AsyncSession, title: str | None, notice_type: int | None, status: int | None
+    ) -> dict[str, Any]:
         """获取通知公告列表.
 
         :param db: 数据库会话
         :param title: 通知公告标题
-        :param type: 通知公告类型
+        :param notice_type: 通知公告类型
         :param status: 通知公告状态
         :return:
         """
-        notice_select = await notice_dao.get_select(title, type, status)
+        notice_select = await notice_dao.get_select(title, notice_type, status)
         return await paging_data(db, notice_select)
 
     @staticmethod

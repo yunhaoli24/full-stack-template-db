@@ -1,3 +1,5 @@
+"""Path Conf."""
+
 from pathlib import Path
 
 

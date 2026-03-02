@@ -1,7 +1,9 @@
+"""Crud User."""
+
 from typing import Any, cast
 
 import bcrypt
-from sqlalchemy import delete, insert, select
+from sqlalchemy import Select, delete, insert, select
 from sqlalchemy_crud_plus import CRUDPlus, JoinConfig
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -68,7 +70,9 @@ class CRUDUser(CRUDPlus[User]):
         """
         return cast("User | None", await self.select_model_by_column(db, email=email))
 
-    async def get_select(self, dept: int | None, username: str | None, phone: str | None, status: int | None) -> Any:
+    async def get_select(
+        self, dept: int | None, username: str | None, phone: str | None, status: int | None
+    ) -> Select[Any]:
         """获取用户列表查询表达式.
 
         :param dept: 部门 ID
@@ -141,7 +145,7 @@ class CRUDUser(CRUDPlus[User]):
         role = result.scalars().first()  # 默认绑定第一个角色
 
         if role is None:
-            msg = "系统缺少可用角色，无法创建 OAuth2 用户"
+            msg = "系统缺少可用角色, 无法创建 OAuth2 用户"
             raise ValueError(msg)
 
         user_role_stmt = insert(user_role).values(AddUserRoleParam(user_id=new_user.id, role_id=role.id).model_dump())
@@ -295,7 +299,7 @@ class CRUDUser(CRUDPlus[User]):
         *,
         user_id: int | None = None,
         username: str | None = None,
-    ) -> Any | None:
+    ) -> dict[str, Any] | list[dict[str, Any]] | tuple[Any, ...] | list[tuple[Any, ...]] | None:
         """获取用户关联信息.
 
         :param db: 数据库会话

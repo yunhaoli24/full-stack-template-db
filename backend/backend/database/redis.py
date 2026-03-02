@@ -1,8 +1,11 @@
+"""Redis."""
+
 import sys
 from typing import Any, cast
 
 from redis.asyncio import Redis
-from redis.exceptions import TimeoutError, AuthenticationError
+from redis.exceptions import TimeoutError as RedisTimeoutError
+from redis.exceptions import AuthenticationError
 
 from backend.core.conf import settings
 from backend.common.log import log
@@ -30,7 +33,7 @@ class RedisCli(Redis):
         try:
             ping = cast("Any", self.ping)  # pyright: ignore[reportUnknownMemberType]
             await ping()
-        except TimeoutError:
+        except RedisTimeoutError:
             log.error("❌ 数据库 redis 连接超时")
             sys.exit()
         except AuthenticationError:

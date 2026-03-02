@@ -1,3 +1,5 @@
+"""Model."""
+
 from typing import Annotated
 from datetime import datetime
 
@@ -29,10 +31,10 @@ class UniversalText(TypeDecorator[str]):
     impl = Text
     cache_ok = True
 
-    def process_bind_param(self, value: str | None, dialect: Dialect) -> str | None:
+    def process_bind_param(self, value: str | None, dialect: Dialect) -> str | None:  # noqa: ARG002, D102
         return value
 
-    def process_result_value(self, value: str | None, dialect: Dialect) -> str | None:
+    def process_result_value(self, value: str | None, dialect: Dialect) -> str | None:  # noqa: ARG002, D102
         return value
 
 
@@ -43,16 +45,16 @@ class TimeZone(TypeDecorator[datetime]):
     cache_ok = True
 
     @property
-    def python_type(self) -> type[datetime]:
+    def python_type(self) -> type[datetime]:  # noqa: D102
         return datetime
 
-    def process_bind_param(self, value: datetime | None, dialect: Dialect) -> datetime | None:
+    def process_bind_param(self, value: datetime | None, dialect: Dialect) -> datetime | None:  # noqa: ARG002, D102
         if value is not None and value.utcoffset() != timezone.now().utcoffset():
             # TODO 处理夏令时偏移
             value = timezone.from_datetime(value)
         return value
 
-    def process_result_value(self, value: datetime | None, dialect: Dialect) -> datetime | None:
+    def process_result_value(self, value: datetime | None, dialect: Dialect) -> datetime | None:  # noqa: ARG002, D102
         if value is not None and value.tzinfo is None:
             value = value.replace(tzinfo=timezone.tz_info)
         return value
@@ -95,19 +97,22 @@ class MappedBase(AsyncAttrs, DeclarativeBase):
     `mapped_column() <https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.mapped_column>`__
     """
 
-    @declared_attr.directive  # pyright: ignore
+    @declared_attr.directive  # pyright: ignore[reportGeneralTypeIssues]
     def __tablename__(self) -> str:
         """生成表名."""
         return self.__name__.lower()
 
-    @declared_attr.directive  # pyright: ignore
+    @declared_attr.directive  # pyright: ignore[reportGeneralTypeIssues]
     def __table_args__(self) -> dict[str, str]:
         """表配置."""
         return {"comment": self.__doc__ or ""}
 
 
 class DataClassBase(MappedAsDataclass, MappedBase):
-    """声明性数据类基类, 带有数据类集成, 允许使用更高级配置, 但你必须注意它的一些特性, 尤其是和 DeclarativeBase 一起使用时.
+    """声明性数据类基类.
+
+    带有数据类集成, 允许使用更高级配置,
+    但你必须注意它的一些特性, 尤其是和 DeclarativeBase 一起使用时.
 
     `MappedAsDataclass <https://docs.sqlalchemy.org/en/20/orm/dataclasses.html#orm-declarative-native-dataclasses>`__
     """

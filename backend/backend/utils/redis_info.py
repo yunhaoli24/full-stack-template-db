@@ -1,3 +1,5 @@
+"""Redis Info."""
+
 from typing import Any, cast
 
 from backend.database.redis import redis_client
@@ -5,6 +7,8 @@ from backend.utils.server_info import server_info
 
 
 class RedisInfo:
+    """Redis Info Service."""
+
     @staticmethod
     async def get_info() -> dict[str, str]:
         """获取 Redis 服务器信息."""

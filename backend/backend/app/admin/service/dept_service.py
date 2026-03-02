@@ -1,4 +1,6 @@
-from typing import Any
+"""Dept Service."""
+
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +12,23 @@ from backend.common.exception import errors
 from backend.utils.build_tree import get_tree_data
 from backend.app.admin.schema.dept import CreateDeptParam, UpdateDeptParam
 from backend.app.admin.crud.crud_dept import dept_dao
+
+
+if TYPE_CHECKING:
+
+    class DeptWithUsers:
+        """部门带用户序列化结果."""
+
+        id: int
+        name: str
+        sort: int
+        leader: str | None
+        phone: str | None
+        email: str | None
+        status: int
+        del_flag: bool
+        parent_id: int | None
+        users: list[Any]
 
 
 class DeptService:
@@ -101,13 +120,14 @@ class DeptService:
         dept = await dept_dao.get_join(db, pk)
         if not dept:
             raise errors.NotFoundError(msg="部门不存在")
-        if dept.users:
-            raise errors.ConflictError(msg="部门下存在用户，无法删除")
+        users = getattr(dept, "users", [])
+        if users:
+            raise errors.ConflictError(msg="部门下存在用户, 无法删除")
         children = await dept_dao.get_children(db, pk)
         if children:
-            raise errors.ConflictError(msg="部门下存在子部门，无法删除")
+            raise errors.ConflictError(msg="部门下存在子部门, 无法删除")
         count = await dept_dao.delete(db, pk)
-        for user in dept.users:
+        for user in users:
             await redis_client.delete(f"{settings.JWT_USER_REDIS_PREFIX}:{user.id}")
         return count
 

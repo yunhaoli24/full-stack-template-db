@@ -1,3 +1,5 @@
+"""Schema."""
+
 from typing import Any, Annotated
 from datetime import datetime
 
@@ -10,6 +12,7 @@ CustomPhoneNumber = Annotated[str, Field(pattern=r"^1[3-9]\d{9}$")]
 
 
 def serialize_datetime(value: datetime) -> str:
+    """Serialize Datetime."""
     current_value = (
         timezone.from_datetime(value) if value.tzinfo is not None and value.tzinfo != timezone.tz_info else value
     )
@@ -21,6 +24,7 @@ class CustomEmailStr(EmailStr):
 
     @classmethod
     def _validate(cls, input_value: str, /) -> str:
+        """Validate."""
         return validate_email(input_value)[1] if input_value else ""
 
 
@@ -35,7 +39,8 @@ class SchemaBase(BaseModel):
     )
 
 
-def ser_string(value: Any) -> str | None:
+def ser_string(value: Any) -> str | None:  # noqa: ANN401
+    """Ser String."""
     if value:
         return str(value)
     return value

@@ -1,3 +1,5 @@
+"""Auth Service."""
+
 from fastapi import Request, Response
 from fastapi.security import HTTPBasicCredentials
 from starlette.background import BackgroundTask, BackgroundTasks
@@ -32,6 +34,21 @@ from backend.app.admin.service.user_password_history_service import password_sec
 
 class AuthService:
     """认证服务类."""
+
+    @staticmethod
+    async def _validate_captcha(obj: AuthLoginParam) -> None:
+        """Validate captcha.
+
+        :param obj: Login parameters
+        """
+        if not obj.uuid or not obj.captcha:
+            raise errors.RequestError(msg="验证码不能为空")
+        captcha_code = await redis_client.get(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}")
+        if not captcha_code:
+            raise errors.RequestError(msg="验证码已过期")
+        if captcha_code.lower() != obj.captcha.lower():
+            raise errors.CustomError(error=CustomErrorCode.CAPTCHA_ERROR)
+        await redis_client.delete(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}")
 
     @staticmethod
     async def user_verify(db: AsyncSession, username: str, password: str) -> tuple[User, int | None]:
@@ -98,14 +115,7 @@ class AuthService:
 
             await load_login_config(db)
             if settings.LOGIN_CAPTCHA_ENABLED:
-                if not obj.uuid or not obj.captcha:
-                    raise errors.RequestError(msg="验证码不能为空")
-                captcha_code = await redis_client.get(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}")
-                if not captcha_code:
-                    raise errors.RequestError(msg="验证码已过期")
-                if captcha_code.lower() != obj.captcha.lower():
-                    raise errors.CustomError(error=CustomErrorCode.CAPTCHA_ERROR)
-                await redis_client.delete(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}")
+                await self._validate_captcha(obj)
 
             await user_dao.update_login_time(db, obj.username)
             await db.refresh(user)
@@ -147,7 +157,7 @@ class AuthService:
                 status=LoginLogStatusType.fail.value,
                 msg=e.msg or "用户密码有误",
             )
-            raise errors.RequestError(code=e.code, msg=e.msg or "用户密码有误", background=task)
+            raise errors.RequestError(code=e.code, msg=e.msg or "用户密码有误", background=task) from e
         except Exception as e:
             log.error(f"登陆错误: {e}")
             raise
@@ -203,16 +213,16 @@ class AuthService:
         """
         refresh_token = request.cookies.get(settings.COOKIE_REFRESH_TOKEN_KEY)
         if not refresh_token:
-            raise errors.RequestError(msg="Refresh Token 已过期，请重新登录")
+            raise errors.RequestError(msg="Refresh Token 已过期, 请重新登录")
         token_payload = jwt_decode(refresh_token)
 
         user = await user_dao.get(db, token_payload.id)
         if not user:
             raise errors.NotFoundError(msg="用户不存在")
         if not user.status:
-            raise errors.AuthorizationError(msg="用户已被锁定, 请联系统管理员")
+            raise errors.AuthorizationError(msg="用户已被锁定, 请联系系统管理员")
         if not user.is_multi_login and await redis_client.get_prefix(f"{settings.TOKEN_REDIS_PREFIX}:{user.id}:*"):
-            raise errors.ForbiddenError(msg="此用户已在异地登录，请重新登录并及时修改密码")
+            raise errors.ForbiddenError(msg="此用户已在异地登录, 请重新登录并及时修改密码")
         new_token = await create_new_token(
             refresh_token,
             token_payload.session_uuid,

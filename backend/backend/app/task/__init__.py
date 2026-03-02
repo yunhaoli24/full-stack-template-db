@@ -1,9 +1,8 @@
-import sys
+"""Task module exports."""
 
-from backend.core.path_conf import BASE_PATH
-
-from .actions import *  # noqa: F403
+from backend.app.task.celery import celery_app
 
 
-# 导入项目根目录
-sys.path.append(str(BASE_PATH.parent))
+__all__ = [
+    "celery_app",
+]

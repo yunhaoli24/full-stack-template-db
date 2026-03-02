@@ -1,3 +1,5 @@
+"""Permission."""
+
 from typing import Any, cast
 
 from fastapi import Request
@@ -25,7 +27,7 @@ class RequestPermission:
         """
         self.value = value
 
-    async def __call__(self, request: Request) -> None:
+    async def __call__(self, request: Request) -> None:  # noqa: ARG002
         """验证请求权限.
 
         :param request: FastAPI 请求对象
@@ -41,7 +43,7 @@ def get_data_permission_models() -> dict[str, object]:
     return {getattr(model, "__name__", str(model)): model for model in get_all_models()}
 
 
-def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool]:
+def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool]:  # noqa: ANN401
     """过滤数据权限，控制用户可见数据范围.
 
     使用场景：
@@ -87,7 +89,7 @@ def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool
         if table is None:
             continue
         rule_column = data_rule.column
-        if rule_column not in table.columns:  # pyright: ignore
+        if rule_column not in table.columns:  # pyright: ignore[reportUnknownMemberType]
             continue
         if rule_column in settings.DATA_PERMISSION_COLUMN_EXCLUDE:
             continue
@@ -95,14 +97,14 @@ def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool
         # 构建过滤条件
         column_obj: Any = cast(
             "Any",
-            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column],  # pyright: ignore
+            getattr(target_model, rule_column) if not isinstance(target_model, Table) else table.columns[rule_column],  # pyright: ignore[reportUnknownMemberType]
         )
-        column_type: Any = cast("Any", table.columns[rule_column].type.python_type)  # pyright: ignore
+        column_type: Any = cast("Any", table.columns[rule_column].type.python_type)  # pyright: ignore[reportUnknownMemberType]
 
-        def cast_value(value: Any) -> Any:
+        def cast_value(value: Any) -> Any:  # noqa: ANN401
             """类型转换."""
             try:
-                return column_type(value) if column_type is not str else value
+                return column_type(value) if column_type is not str else value  # noqa: B023
             except (ValueError, TypeError):
                 return value
 
@@ -127,7 +129,7 @@ def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool
             case RoleDataRuleExpressionType.not_in:
                 values = [cast_value(v.strip()) for v in data_rule.value.split(",")]
                 condition = cast("ColumnElement[bool]", column_obj.not_in(values))
-            case _:  # pyright: ignore
+            case _:  # pyright: ignore[reportUnknownVariableType]
                 condition = None
 
         # 根据运算符添加到对应列表
@@ -137,7 +139,7 @@ def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool
                     where_and_list.append(condition)
                 case RoleDataRuleOperatorType.OR:
                     where_or_list.append(condition)
-                case _:  # pyright: ignore
+                case _:  # pyright: ignore[reportUnknownVariableType]
                     pass
 
     # 组合所有条件
@@ -164,8 +166,8 @@ def filter_data_permission(request: Request, *models: Any) -> ColumnElement[bool
 class DataPermissionFilter:
     """指定模型的数据权限过滤器."""
 
-    def __init__(self, *models: Any) -> None:
+    def __init__(self, *models: Any) -> None:  # noqa: ANN401, D107
         self.models = models
 
-    async def __call__(self, request: Request) -> ColumnElement[bool]:
+    async def __call__(self, request: Request) -> ColumnElement[bool]:  # noqa: D102
         return filter_data_permission(request, *self.models)

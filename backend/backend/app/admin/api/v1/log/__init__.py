@@ -1,3 +1,5 @@
+"""Log API v1 package."""
+
 from fastapi import APIRouter
 
 from backend.app.admin.api.v1.log.login_log import router as login_log

@@ -1,3 +1,5 @@
+"""Data Scope."""
+
 from datetime import datetime
 
 from pydantic import Field, ConfigDict

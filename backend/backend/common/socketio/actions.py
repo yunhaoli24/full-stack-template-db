@@ -1,3 +1,5 @@
+"""Actions."""
+
 from backend.common.socketio.server import sio
 
 

@@ -1,3 +1,5 @@
+"""Config Service."""
+
 from typing import Any
 from collections.abc import Sequence
 
@@ -31,25 +33,25 @@ class ConfigService:
         return config
 
     @staticmethod
-    async def get_all(*, db: AsyncSession, type: str | None) -> Sequence[Config | None]:
+    async def get_all(*, db: AsyncSession, config_type: str | None) -> Sequence[Config | None]:
         """获取所有参数配置.
 
         :param db: 数据库会话
-        :param type: 参数配置类型
+        :param config_type: 参数配置类型
         :return:
         """
-        return await config_dao.get_all(db, type)
+        return await config_dao.get_all(db, config_type)
 
     @staticmethod
-    async def get_list(*, db: AsyncSession, name: str | None, type: str | None) -> dict[str, Any]:
+    async def get_list(*, db: AsyncSession, name: str | None, config_type: str | None) -> dict[str, Any]:
         """获取参数配置列表.
 
         :param db: 数据库会话
         :param name: 参数配置名称
-        :param type: 参数配置类型
+        :param config_type: 参数配置类型
         :return:
         """
-        config_select = await config_dao.get_select(name=name, type=type)
+        config_select = await config_dao.get_select(name=name, config_type=config_type)
         return await paging_data(db, config_select)
 
     @staticmethod

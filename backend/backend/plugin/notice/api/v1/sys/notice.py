@@ -1,3 +1,5 @@
+"""Notice API v1."""
+
 from typing import Annotated
 
 from fastapi import Path, Query, Depends, APIRouter
@@ -20,10 +22,11 @@ from backend.plugin.notice.service.notice_service import notice_service
 router = APIRouter()
 
 
-@router.get("/{pk}", summary="获取通知公告详情", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取通知公告详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_notice(
     db: CurrentSession, pk: Annotated[int, Path(description="通知公告 ID")]
 ) -> ResponseSchemaModel[GetNoticeDetail]:
+    """Get Notice."""
     notice = await notice_service.get(db=db, pk=pk)
     return response_base.success(data=notice)
 
@@ -35,14 +38,15 @@ async def get_notice(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_notices_paginated(
     db: CurrentSession,
     title: Annotated[str | None, Query(description="标题")] = None,
-    type: Annotated[int | None, Query(description="类型")] = None,
+    notice_type: Annotated[int | None, Query(description="类型")] = None,
     status: Annotated[int | None, Query(description="状态")] = None,
 ) -> ResponseSchemaModel[PageData[GetNoticeDetail]]:
-    page_data = await notice_service.get_list(db=db, title=title, type=type, status=status)
+    """Get Notices Paginated."""
+    page_data = await notice_service.get_list(db=db, title=title, notice_type=notice_type, status=status)
     return response_base.success(data=page_data)
 
 
@@ -53,8 +57,9 @@ async def get_notices_paginated(
         Depends(RequestPermission("sys:notice:add")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def create_notice(db: CurrentSessionTransaction, obj: CreateNoticeParam) -> ResponseModel:
+    """Create Notice."""
     await notice_service.create(db=db, obj=obj)
     return response_base.success()
 
@@ -66,10 +71,11 @@ async def create_notice(db: CurrentSessionTransaction, obj: CreateNoticeParam) -
         Depends(RequestPermission("sys:notice:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_notice(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description="通知公告 ID")], obj: UpdateNoticeParam
 ) -> ResponseModel:
+    """Update Notice."""
     count = await notice_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
         return response_base.success()
@@ -83,8 +89,9 @@ async def update_notice(
         Depends(RequestPermission("sys:notice:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_notices(db: CurrentSessionTransaction, obj: DeleteNoticeParam) -> ResponseModel:
+    """Delete Notices."""
     count = await notice_service.delete(db=db, obj=obj)
     if count > 0:
         return response_base.success()

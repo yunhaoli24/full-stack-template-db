@@ -1,3 +1,5 @@
+"""Errors."""
+
 from typing import Any
 
 from fastapi import HTTPException
@@ -11,7 +13,7 @@ class BaseExceptionError(Exception):
 
     code: int
 
-    def __init__(self, *, msg: str | None = None, data: Any = None, background: BackgroundTask | None = None) -> None:
+    def __init__(self, *, msg: str | None = None, data: Any = None, background: BackgroundTask | None = None) -> None:  # noqa: ANN401, D107
         self.msg = msg
         self.data = data
         # The original background task: https://www.starlette.io/background/
@@ -21,14 +23,14 @@ class BaseExceptionError(Exception):
 class HTTPError(HTTPException):
     """HTTP 异常."""
 
-    def __init__(self, *, code: int, msg: Any = None, headers: dict[str, Any] | None = None) -> None:
+    def __init__(self, *, code: int, msg: Any = None, headers: dict[str, Any] | None = None) -> None:  # noqa: ANN401, D107
         super().__init__(status_code=code, detail=msg, headers=headers)
 
 
 class CustomError(BaseExceptionError):
     """自定义异常."""
 
-    def __init__(self, *, error: CustomErrorCode, data: Any = None, background: BackgroundTask | None = None) -> None:
+    def __init__(self, *, error: CustomErrorCode, data: Any = None, background: BackgroundTask | None = None) -> None:  # noqa: ANN401, D107
         self.code = error.code
         super().__init__(msg=error.msg, data=data, background=background)
 
@@ -41,9 +43,10 @@ class RequestError(BaseExceptionError):
         *,
         code: int = StandardResponseCode.HTTP_400,
         msg: str = "Bad Request",
-        data: Any = None,
+        data: Any = None,  # noqa: ANN401
         background: BackgroundTask | None = None,
     ) -> None:
+        """Initialize request error."""
         self.code = code
         super().__init__(msg=msg, data=data, background=background)
 
@@ -53,7 +56,7 @@ class ForbiddenError(BaseExceptionError):
 
     code = StandardResponseCode.HTTP_403
 
-    def __init__(self, *, msg: str = "Forbidden", data: Any = None, background: BackgroundTask | None = None) -> None:
+    def __init__(self, *, msg: str = "Forbidden", data: Any = None, background: BackgroundTask | None = None) -> None:  # noqa: ANN401, D107
         super().__init__(msg=msg, data=data, background=background)
 
 
@@ -62,7 +65,7 @@ class NotFoundError(BaseExceptionError):
 
     code = StandardResponseCode.HTTP_404
 
-    def __init__(self, *, msg: str = "Not Found", data: Any = None, background: BackgroundTask | None = None) -> None:
+    def __init__(self, *, msg: str = "Not Found", data: Any = None, background: BackgroundTask | None = None) -> None:  # noqa: ANN401, D107
         super().__init__(msg=msg, data=data, background=background)
 
 
@@ -75,9 +78,10 @@ class ServerError(BaseExceptionError):
         self,
         *,
         msg: str = "Internal Server Error",
-        data: Any = None,
+        data: Any = None,  # noqa: ANN401
         background: BackgroundTask | None = None,
     ) -> None:
+        """Initialize server error."""
         super().__init__(msg=msg, data=data, background=background)
 
 
@@ -87,8 +91,13 @@ class GatewayError(BaseExceptionError):
     code = StandardResponseCode.HTTP_502
 
     def __init__(
-        self, *, msg: str = "Bad Gateway", data: Any = None, background: BackgroundTask | None = None
+        self,
+        *,
+        msg: str = "Bad Gateway",
+        data: Any = None,  # noqa: ANN401
+        background: BackgroundTask | None = None,
     ) -> None:
+        """Initialize gateway error."""
         super().__init__(msg=msg, data=data, background=background)
 
 
@@ -101,9 +110,10 @@ class AuthorizationError(BaseExceptionError):
         self,
         *,
         msg: str = "Permission Denied",
-        data: Any = None,
+        data: Any = None,  # noqa: ANN401
         background: BackgroundTask | None = None,
     ) -> None:
+        """Initialize authorization error."""
         super().__init__(msg=msg, data=data, background=background)
 
 
@@ -112,7 +122,7 @@ class TokenError(HTTPError):
 
     code = StandardResponseCode.HTTP_401
 
-    def __init__(self, *, msg: str = "Not Authenticated", headers: dict[str, Any] | None = None) -> None:
+    def __init__(self, *, msg: str = "Not Authenticated", headers: dict[str, Any] | None = None) -> None:  # noqa: D107
         super().__init__(code=self.code, msg=msg, headers=headers or {"WWW-Authenticate": "Bearer"})
 
 
@@ -121,5 +131,5 @@ class ConflictError(BaseExceptionError):
 
     code = StandardResponseCode.HTTP_409
 
-    def __init__(self, *, msg: str = "Conflict", data: Any = None, background: BackgroundTask | None = None) -> None:
+    def __init__(self, *, msg: str = "Conflict", data: Any = None, background: BackgroundTask | None = None) -> None:  # noqa: ANN401, D107
         super().__init__(msg=msg, data=data, background=background)

@@ -1,3 +1,5 @@
+"""Chat Service."""
+
 from typing import Any, cast
 from collections.abc import AsyncGenerator
 
@@ -8,6 +10,8 @@ from backend.common.exception.errors import GatewayError, RequestError
 
 
 class ChatService:
+    """Chat service for OpenAI API interactions."""
+
     @staticmethod
     def _get_openai_client() -> AsyncOpenAI:
         base_url = settings.OPENAI_BASE_URL or None
@@ -29,12 +33,14 @@ class ChatService:
         return payload
 
     @staticmethod
-    async def iter_stream(stream: Any) -> AsyncGenerator[str]:
+    async def iter_stream(stream: Any) -> AsyncGenerator[str]:  # noqa: ANN401
+        """Iterate through stream and yield formatted chunks."""
         async for chunk in stream:
             yield f"data: {chunk.model_dump_json()}\n\n"
         yield "data: [DONE]\n\n"
 
-    async def create_stream(self, payload: dict[str, Any]) -> Any:
+    async def create_stream(self, payload: dict[str, Any]) -> Any:  # noqa: ANN401
+        """Create a stream response."""
         client = self._get_openai_client()
         try:
             stream = cast("Any", await client.chat.completions.create(**payload))
@@ -44,6 +50,7 @@ class ChatService:
             return stream
 
     async def create_completion(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Create a completion response."""
         client = self._get_openai_client()
         try:
             completion = cast("Any", await client.chat.completions.create(**payload))
@@ -52,6 +59,7 @@ class ChatService:
         return cast("dict[str, Any]", completion.model_dump())
 
     def normalize_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Normalize payload with defaults."""
         return self._apply_defaults(payload)
 
 

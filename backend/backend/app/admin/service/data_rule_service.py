@@ -1,3 +1,5 @@
+"""Data Rule Service."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 

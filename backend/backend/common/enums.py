@@ -1,3 +1,5 @@
+"""Enums."""
+
 from enum import Enum
 from enum import IntEnum as SourceIntEnum
 from typing import Any, TypeVar
@@ -29,7 +31,7 @@ class IntEnum(_EnumBase, SourceIntEnum):
     """整型枚举基类."""
 
 
-class StrEnum(_EnumBase, str, Enum):
+class StrEnum(_EnumBase, str, Enum):  # noqa: UP042
     """字符串枚举基类."""
 
 

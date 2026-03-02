@@ -1,3 +1,5 @@
+"""Crud Dept."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
@@ -94,7 +96,9 @@ class CRUDDept(CRUDPlus[Dept]):
         """
         return await self.delete_model_by_column(db, id=dept_id, logical_deletion=True, deleted_flag_column="del_flag")
 
-    async def get_join(self, db: AsyncSession, dept_id: int) -> Any | None:
+    async def get_join(
+        self, db: AsyncSession, dept_id: int
+    ) -> dict[str, Any] | list[dict[str, Any]] | tuple[Any, ...] | list[tuple[Any, ...]] | None:
         """获取部门及关联数据.
 
         :param db: 数据库会话

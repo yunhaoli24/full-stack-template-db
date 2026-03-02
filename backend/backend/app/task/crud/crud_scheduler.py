@@ -1,6 +1,9 @@
+"""Crud Scheduler."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,19 +32,19 @@ class CRUDTaskScheduler(CRUDPlus[TaskScheduler]):
         """
         return cast("Sequence[TaskScheduler]", await self.select_models(db))
 
-    async def get_select(self, name: str | None, type: int | None) -> Any:
+    async def get_select(self, name: str | None, scheduler_type: int | None) -> Select[Any]:
         """获取任务调度列表查询表达式.
 
         :param name: 任务调度名称
-        :param type: 任务调度类型
+        :param scheduler_type: 任务调度类型
         :return:
         """
         filters = {}
 
         if name is not None:
             filters["name__like"] = f"%{name}%"
-        if type is not None:
-            filters["type"] = type  # type: ignore[assignment]
+        if scheduler_type is not None:
+            filters["type"] = scheduler_type  # type: ignore[assignment]
 
         return await cast("Any", self).select_order("id", **filters)
 

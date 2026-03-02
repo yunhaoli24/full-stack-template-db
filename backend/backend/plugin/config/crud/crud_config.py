@@ -1,6 +1,9 @@
+"""Crud Config."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,14 +23,14 @@ class CRUDConfig(CRUDPlus[Config]):
         """
         return cast("Config | None", await self.select_model_by_column(db, id=pk))
 
-    async def get_all(self, db: AsyncSession, type: str | None) -> Sequence[Config | None]:
+    async def get_all(self, db: AsyncSession, config_type: str | None) -> Sequence[Config | None]:
         """通过键名获取参数配置.
 
         :param db: 数据库会话
-        :param type: 参数配置类型
+        :param config_type: 参数配置类型
         :return:
         """
-        return cast("Sequence[Config | None]", await self.select_models(db, type=type))
+        return cast("Sequence[Config | None]", await self.select_models(db, type=config_type))
 
     async def get_by_key(self, db: AsyncSession, key: str) -> Config | None:
         """通过键名获取参数配置.
@@ -38,19 +41,19 @@ class CRUDConfig(CRUDPlus[Config]):
         """
         return cast("Config | None", await self.select_model_by_column(db, key=key))
 
-    async def get_select(self, name: str | None, type: str | None) -> Any:
+    async def get_select(self, name: str | None, config_type: str | None) -> Select[Any]:
         """获取参数配置列表查询表达式.
 
         :param name: 参数配置名称
-        :param type: 参数配置类型
+        :param config_type: 参数配置类型
         :return:
         """
         filters = {}
 
         if name is not None:
             filters["name__like"] = f"%{name}%"
-        if type is not None:
-            filters["type__like"] = f"%{type}%"
+        if config_type is not None:
+            filters["type__like"] = f"%{config_type}%"
 
         return await cast("Any", self).select_order("created_time", "desc", **filters)
 

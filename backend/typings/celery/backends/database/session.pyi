@@ -10,5 +10,5 @@ class SessionManager:
         self,
         dburi: str | None = ...,
         short_lived_sessions: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> Session: ...

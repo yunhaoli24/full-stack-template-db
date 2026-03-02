@@ -1,3 +1,5 @@
+"""Dynamic Config."""
+
 from sqlalchemy import inspect
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -5,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.core.conf import settings
 from backend.database.db import async_engine
 from backend.utils.serializers import select_list_serialize
+from backend.plugin.config.enums import ConfigType
+from backend.plugin.config.crud.crud_config import config_dao
 
 
 _sys_config_table_exists: bool | None = None
@@ -15,7 +19,7 @@ async def check_sys_config_table_exists() -> bool:
 
     :return:
     """
-    global _sys_config_table_exists
+    global _sys_config_table_exists  # noqa: PLW0603
     if _sys_config_table_exists is None:
 
         def _has_sys_config_table(sync_conn: Connection) -> bool:
@@ -35,21 +39,18 @@ async def load_user_security_config(db: AsyncSession) -> None:
     if not await check_sys_config_table_exists():
         return
 
-    from backend.plugin.config.enums import ConfigType
-    from backend.plugin.config.crud.crud_config import config_dao
-
     dynamic_config = await config_dao.get_all(db, ConfigType.user_security)
 
     if dynamic_config:
         security_config_status_key = "USER_SECURITY_CONFIG_STATUS"
         lock_threshold_key = "USER_LOCK_THRESHOLD"
         lock_seconds_key = "USER_LOCK_SECONDS"
-        password_expiry_days_key = "USER_PASSWORD_EXPIRY_DAYS"
-        password_reminder_days_key = "USER_PASSWORD_REMINDER_DAYS"
-        password_history_check_count_key = "USER_PASSWORD_HISTORY_CHECK_COUNT"
-        password_min_length_key = "USER_PASSWORD_MIN_LENGTH"
-        password_max_length_key = "USER_PASSWORD_MAX_LENGTH"
-        password_require_special_char_key = "USER_PASSWORD_REQUIRE_SPECIAL_CHAR"
+        password_expiry_days_key = "USER_PASSWORD_EXPIRY_DAYS"  # noqa: S105
+        password_reminder_days_key = "USER_PASSWORD_REMINDER_DAYS"  # noqa: S105
+        password_history_check_count_key = "USER_PASSWORD_HISTORY_CHECK_COUNT"  # noqa: S105
+        password_min_length_key = "USER_PASSWORD_MIN_LENGTH"  # noqa: S105
+        password_max_length_key = "USER_PASSWORD_MAX_LENGTH"  # noqa: S105
+        password_require_special_char_key = "USER_PASSWORD_REQUIRE_SPECIAL_CHAR"  # noqa: S105
 
         configs = {dc["key"]: dc["value"] for dc in select_list_serialize(dynamic_config)}
         if int(str(configs.get(security_config_status_key) or 0)):
@@ -80,9 +81,6 @@ async def load_login_config(db: AsyncSession) -> None:
     if not await check_sys_config_table_exists():
         return
 
-    from backend.plugin.config.enums import ConfigType
-    from backend.plugin.config.crud.crud_config import config_dao
-
     dynamic_config = await config_dao.get_all(db, ConfigType.login)
 
     if dynamic_config:
@@ -103,9 +101,6 @@ async def load_email_config(db: AsyncSession) -> None:
     if not await check_sys_config_table_exists():
         return
 
-    from backend.plugin.config.enums import ConfigType
-    from backend.plugin.config.crud.crud_config import config_dao
-
     dynamic_config = await config_dao.get_all(db, ConfigType.email)
 
     if dynamic_config:
@@ -114,7 +109,7 @@ async def load_email_config(db: AsyncSession) -> None:
         port_key = "EMAIL_PORT"
         ssl_key = "EMAIL_SSL"
         username_key = "EMAIL_USERNAME"
-        password_key = "EMAIL_PASSWORD"
+        password_key = "EMAIL_PASSWORD"  # noqa: S105
 
         configs = {dc["key"]: dc["value"] for dc in select_list_serialize(dynamic_config)}
         if int(str(configs.get(email_config_status_key) or 0)):

@@ -1,3 +1,5 @@
+"""User Password History."""
+
 from datetime import datetime
 
 import sqlalchemy as sa

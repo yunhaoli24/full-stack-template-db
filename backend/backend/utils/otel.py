@@ -1,3 +1,5 @@
+"""Otel."""
+
 from fastapi import FastAPI
 from opentelemetry import _logs, trace, metrics  # pyright: ignore[reportPrivateUsage]
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
@@ -15,6 +17,7 @@ from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 
+from backend import __version__
 from backend.core.conf import settings
 from backend.common.log import log, request_id_filter
 from backend.database.db import async_engine
@@ -66,7 +69,7 @@ def _init_logging(resource: Resource) -> None:
         otel_logging_handler,
         level=settings.LOG_STD_LEVEL,
         format=settings.LOG_FORMAT,
-        filter=request_id_filter,  # pyright: ignore
+        filter=request_id_filter,  # pyright: ignore[reportUnknownArgumentType]
     )
 
 
@@ -76,8 +79,6 @@ def init_otel(app: FastAPI) -> None:
     :param app: FastAPI 应用实例
     :return:
     """
-    from backend import __version__
-
     resource = Resource(
         attributes={
             "service.name": settings.GRAFANA_APP_NAME,

@@ -1,3 +1,5 @@
+"""Oauth2 Service."""
+
 import json
 from typing import Any, cast
 
@@ -190,7 +192,7 @@ class OAuth2Service:
         if state_info.get("type") == UserSocialAuthType.binding.value:
             user_id = state_info.get("user_id")
             if not user_id:
-                raise errors.ForbiddenError(msg="非法操作，OAuth2 状态信息无效")
+                raise errors.ForbiddenError(msg="非法操作, OAuth2 状态信息无效")
             await user_social_service.binding_with_oauth2(
                 db=db,
                 user_id=user_id,

@@ -1,3 +1,5 @@
+"""Actions."""
+
 from typing import Any
 
 from starlette.concurrency import run_in_threadpool
@@ -6,7 +8,7 @@ from backend.app.task.celery import celery_app
 from backend.common.socketio.server import sio
 
 
-@sio.event  # pyright: ignore
+@sio.event  # pyright: ignore[reportGeneralTypeIssues]
 async def task_worker_status(sid: str, _data: dict[str, Any] | None) -> None:
     """任务 Worker 状态事件."""
     worker = await run_in_threadpool(celery_app.control.ping)

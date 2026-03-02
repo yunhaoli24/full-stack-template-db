@@ -1,3 +1,5 @@
+"""Serializers."""
+
 from typing import Any, cast
 from decimal import Decimal
 from collections import namedtuple, defaultdict
@@ -15,7 +17,8 @@ type RowData = Any
 class MsgSpecJSONResponse(JSONResponse):
     """使用高性能的 msgspec 库将数据序列化为 JSON 的响应类."""
 
-    def render(self, content: Any) -> bytes:
+    def render(self, content: Any) -> bytes:  # noqa: ANN401
+        """Render response as JSON."""
         return json.encode(content)
 
 
@@ -67,7 +70,7 @@ def select_as_dict(row: RowData, *, use_alias: bool = False) -> dict[str, Any]:
 
 
 def select_join_serialize(
-    row: Any | Sequence[Any],
+    row: Any | Sequence[Any],  # noqa: ANN401
     relationships: list[str] | None = None,
     *,
     return_as_dict: bool = False,
@@ -134,7 +137,7 @@ def select_join_serialize(
 
         return parsed_relation_graph, parsed_reverse_relation, parsed_custom_names
 
-    def get_model_columns(model_obj: Any) -> list[str]:
+    def get_model_columns(model_obj: Any) -> list[str]:  # noqa: ANN401
         """获取模型列名."""
         mapper = class_mapper(cast("Any", type(model_obj)))
         return [
@@ -238,7 +241,7 @@ def select_join_serialize(
                     full_columns or columns,
                 )  # pyright: ignore[reportUntypedNamedTuple]
 
-    def build_flat_result(build_main_id: int, build_main_obj: Any) -> dict[str, Any]:
+    def build_flat_result(build_main_id: int, build_main_obj: Any) -> dict[str, Any]:  # noqa: ANN401
         """构建扁平化结果."""
         flat_result = {col: getattr(build_main_obj, col, None) for col in main_columns}
 
@@ -279,7 +282,7 @@ def select_join_serialize(
 
         return flat_result
 
-    def build_nested_result(nested_main_id: int, nested_main_obj: Any) -> dict[str, Any]:
+    def build_nested_result(nested_main_id: int, nested_main_obj: Any) -> dict[str, Any]:  # noqa: ANN401
         """构建嵌套化结果."""
         nested_result = {col: getattr(nested_main_obj, col, None) for col in main_columns}
 

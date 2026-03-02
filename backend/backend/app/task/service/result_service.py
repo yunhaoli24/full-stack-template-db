@@ -1,3 +1,5 @@
+"""Result Service."""
+
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +12,8 @@ from backend.app.task.crud.crud_result import task_result_dao
 
 
 class TaskResultService:
+    """Task result service."""
+
     @staticmethod
     async def get(*, db: AsyncSession, pk: int) -> TaskResult:
         """获取任务结果详情.

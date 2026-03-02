@@ -161,6 +161,7 @@ show_error_codes = true
 pretty = true
 color_output = true
 python_version = "3.13"
+exclude = ["alembic/"]
 
 [tool.pyright]
 include = ["**"]

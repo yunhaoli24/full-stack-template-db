@@ -1,3 +1,5 @@
+"""Notice."""
+
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -11,6 +13,6 @@ class Notice(Base):
 
     id: Mapped[id_key] = mapped_column(init=False)
     title: Mapped[str] = mapped_column(sa.String(64), comment="标题")
-    type: Mapped[int] = mapped_column(comment="类型（0：通知、1：公告）")
-    status: Mapped[int] = mapped_column(comment="状态（0：隐藏、1：显示）")
+    type: Mapped[int] = mapped_column(comment="类型(0: 通知、1: 公告)")
+    status: Mapped[int] = mapped_column(comment="状态(0: 隐藏、1: 显示)")
     content: Mapped[str] = mapped_column(UniversalText, comment="内容")

@@ -1,3 +1,5 @@
+"""Rbac."""
+
 import re
 from typing import Any, cast
 
@@ -39,16 +41,16 @@ async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:
     # 检测用户角色
     user_roles = cast("list[Any] | None", request.user.roles)
     if not user_roles or all(role.status == 0 for role in user_roles):
-        raise errors.AuthorizationError(msg="用户未分配角色，请联系系统管理员")
+        raise errors.AuthorizationError(msg="用户未分配角色, 请联系系统管理员")
 
     # 检测用户所属角色菜单
     if not any(len(role.menus) > 0 for role in user_roles):
-        raise errors.AuthorizationError(msg="用户未分配菜单，请联系系统管理员")
+        raise errors.AuthorizationError(msg="用户未分配菜单, 请联系系统管理员")
 
     # 检测后台管理操作权限
     method = request.method
     if method not in (MethodType.GET, MethodType.OPTIONS) and not request.user.is_staff:
-        raise errors.AuthorizationError(msg="用户已被禁止后台管理操作，请联系系统管理员")
+        raise errors.AuthorizationError(msg="用户已被禁止后台管理操作, 请联系系统管理员")
 
     # RBAC 鉴权
     if settings.RBAC_ROLE_MENU_MODE:
@@ -80,8 +82,8 @@ async def rbac_verify(request: Request, _token: str = DependsJwtAuth) -> None:
             casbin_rbac = import_module_cached("backend.plugin.casbin_rbac.rbac")
             casbin_verify = casbin_rbac.casbin_verify
         except (ImportError, AttributeError) as e:
-            log.error(f"正在通过 casbin 执行 RBAC 权限校验，但此插件不存在: {e}")
-            raise errors.ServerError(msg="权限校验失败，请联系系统管理员")
+            log.error("正在通过 casbin 执行 RBAC 权限校验, 但此插件不存在: %s", e)
+            raise errors.ServerError(msg="权限校验失败, 请联系系统管理员") from e
 
         await casbin_verify(request)
 

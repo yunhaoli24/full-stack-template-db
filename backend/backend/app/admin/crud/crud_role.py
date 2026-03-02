@@ -1,7 +1,9 @@
+"""Crud Role."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
-from sqlalchemy import delete, insert, select
+from sqlalchemy import Select, delete, insert, select
 from sqlalchemy_crud_plus import CRUDPlus, JoinConfig
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,7 +43,9 @@ class CRUDRole(CRUDPlus[Role]):
         result = await db.execute(menu_stmt)
         return result.scalars().all()
 
-    async def get_join(self, db: AsyncSession, role_id: int) -> Any:
+    async def get_join(
+        self, db: AsyncSession, role_id: int
+    ) -> dict[str, Any] | list[dict[str, Any]] | tuple[Any, ...] | list[tuple[Any, ...]] | None:
         """获取角色及关联数据.
 
         :param db: 数据库会话
@@ -69,7 +73,7 @@ class CRUDRole(CRUDPlus[Role]):
         """
         return cast("Sequence[Role]", await self.select_models(db))
 
-    async def get_select(self, name: str | None, status: int | None) -> Any:
+    async def get_select(self, name: str | None, status: int | None) -> Select[Any]:
         """获取角色列表查询表达式.
 
         :param name: 角色名称

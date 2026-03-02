@@ -1,3 +1,5 @@
+"""User Service."""
+
 import random
 from typing import Any
 from collections.abc import Sequence
@@ -39,7 +41,10 @@ class UserService:
         :param username: 用户名
         :return:
         """
-        user = await user_dao.get_join(db, user_id=pk, username=username)
+        if pk:
+            user = await user_dao.get(db, pk)
+        else:
+            user = await user_dao.get_by_username(db, username or "")
         if not user:
             raise errors.NotFoundError(msg="用户不存在")
         return user
@@ -55,7 +60,7 @@ class UserService:
         user = await user_dao.get_join(db, user_id=pk)
         if not user:
             raise errors.NotFoundError(msg="用户不存在")
-        return user.roles
+        return getattr(user, "roles", [])
 
     @staticmethod
     async def get_list(
@@ -93,7 +98,7 @@ class UserService:
         """
         if await user_dao.get_by_username(db, obj.username):
             raise errors.ConflictError(msg="用户名已注册")
-        obj.nickname = obj.nickname or f"#{random.randrange(88888, 99999)}"
+        obj.nickname = obj.nickname or f"#{random.randrange(88888, 99999)}"  # noqa: S311
         if not obj.password:
             raise errors.RequestError(msg="密码不允许为空")
         if not await dept_dao.get(db, obj.dept_id):
@@ -112,7 +117,7 @@ class UserService:
         :param obj: 用户更新参数
         :return:
         """
-        user = await user_dao.get_join(db, user_id=pk)
+        user = await user_dao.get(db, pk)
         if not user:
             raise errors.NotFoundError(msg="用户不存在")
         if obj.username != user.username and await user_dao.get_by_username(db, obj.username):
@@ -127,13 +132,15 @@ class UserService:
         return count
 
     @staticmethod
-    async def update_permission(*, db: AsyncSession, request: Request, pk: int, type: UserPermissionType) -> int:
+    async def update_permission(
+        *, db: AsyncSession, request: Request, pk: int, permission_type: UserPermissionType
+    ) -> int:
         """更新用户权限.
 
         :param db: 数据库会话
         :param request: FastAPI 请求对象
         :param pk: 用户 ID
-        :param type: 权限类型
+        :param permission_type: 权限类型
         :return:
         """
         user = await user_dao.get(db, pk)
@@ -142,7 +149,7 @@ class UserService:
         if pk == request.user.id:
             raise errors.ForbiddenError(msg="禁止修改自身权限")
 
-        match type:
+        match permission_type:
             case UserPermissionType.superuser:
                 count = await user_dao.set_super(db, pk, is_super=not user.is_superuser)
             case UserPermissionType.staff:
@@ -228,7 +235,7 @@ class UserService:
         """
         captcha_code = await redis_client.get(f"{settings.EMAIL_CAPTCHA_REDIS_PREFIX}:{ctx.ip}")
         if not captcha_code:
-            raise errors.RequestError(msg="验证码已失效，请重新获取")
+            raise errors.RequestError(msg="验证码已失效, 请重新获取")
         if captcha != captcha_code:
             raise errors.CustomError(error=CustomErrorCode.CAPTCHA_ERROR)
         await redis_client.delete(f"{settings.EMAIL_CAPTCHA_REDIS_PREFIX}:{ctx.ip}")

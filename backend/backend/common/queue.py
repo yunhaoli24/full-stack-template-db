@@ -1,10 +1,12 @@
+"""Queue."""
+
 import asyncio
 import contextlib
 from typing import Any
 from asyncio import Queue
 
 
-async def batch_dequeue(queue: Queue[Any], max_items: int, timeout: float) -> list[Any]:
+async def batch_dequeue(queue: Queue[Any], max_items: int, timeout: float) -> list[Any]:  # noqa: ASYNC109
     """从异步队列中获取多个项目.
 
     :param queue: 用于获取项目的 `asyncio.Queue` 队列

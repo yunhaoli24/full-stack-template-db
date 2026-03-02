@@ -1,3 +1,5 @@
+"""Result."""
+
 from typing import Annotated
 
 from fastapi import Path, Query, Depends, APIRouter
@@ -15,11 +17,12 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 router = APIRouter()
 
 
-@router.get("/{pk}", summary="获取任务结果详情", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取任务结果详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_task_result(
     db: CurrentSession,
     pk: Annotated[int, Path(description="任务结果 ID")],
 ) -> ResponseSchemaModel[GetTaskResultDetail]:
+    """Get Task Result."""
     result = await task_result_service.get(db=db, pk=pk)
     return response_base.success(data=result)
 
@@ -31,12 +34,13 @@ async def get_task_result(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_task_results_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description="任务名称")] = None,
     task_id: Annotated[str | None, Query(description="任务 ID")] = None,
 ) -> ResponseSchemaModel[PageData[GetTaskResultDetail]]:
+    """Get Task Results Paginated."""
     page_data = await task_result_service.get_list(db=db, name=name, task_id=task_id)
     return response_base.success(data=page_data)
 
@@ -48,8 +52,9 @@ async def get_task_results_paginated(
         Depends(RequestPermission("sys:task:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_task_result(db: CurrentSessionTransaction, obj: DeleteTaskResultParam) -> ResponseModel:
+    """Delete Task Result."""
     count = await task_result_service.delete(db=db, obj=obj)
     if count > 0:
         return response_base.success()

@@ -19,12 +19,14 @@ class Task:
 @overload
 def shared_task[F: Callable[..., Any]](
     __func: _F,
-    *args: Any,
-    **kwargs: Any,
+    /,
+    *args: Any,  # noqa: ANN401
+    **kwargs: Any,  # noqa: ANN401
 ) -> _F: ...
 @overload
 def shared_task(
     __func: None = ...,
-    *args: Any,
-    **kwargs: Any,
+    /,
+    *args: Any,  # noqa: ANN401
+    **kwargs: Any,  # noqa: ANN401
 ) -> Callable[[_F], _F]: ...

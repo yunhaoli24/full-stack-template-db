@@ -1,3 +1,5 @@
+"""Menu Service."""
+
 from typing import TYPE_CHECKING, Any, cast
 
 from fastapi import Request
@@ -114,7 +116,7 @@ class MenuService:
         """
         children = await menu_dao.get_children(db, pk)
         if children:
-            raise errors.ConflictError(msg="菜单下存在子菜单，无法删除")
+            raise errors.ConflictError(msg="菜单下存在子菜单, 无法删除")
         count = await menu_dao.delete(db, pk)
         if count:
             await user_cache_manager.clear_by_menu_id(db, [pk])

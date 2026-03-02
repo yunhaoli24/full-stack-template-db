@@ -1,3 +1,5 @@
+"""M2M."""
+
 import sqlalchemy as sa
 
 from backend.common.model import MappedBase

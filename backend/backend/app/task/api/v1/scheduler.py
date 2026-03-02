@@ -1,3 +1,5 @@
+"""Scheduler."""
+
 from typing import Annotated
 
 from fastapi import Path, Query, Depends, APIRouter
@@ -19,17 +21,19 @@ from backend.app.task.service.scheduler_service import task_scheduler_service
 router = APIRouter()
 
 
-@router.get("/all", summary="获取所有任务调度", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/all", summary="获取所有任务调度", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_all_task_schedulers(db: CurrentSession) -> ResponseSchemaModel[list[GetTaskSchedulerDetail]]:
+    """Get All Task Schedulers."""
     schedulers = await task_scheduler_service.get_all(db=db)
     return response_base.success(data=schedulers)
 
 
-@router.get("/{pk}", summary="获取任务调度详情", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取任务调度详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_task_scheduler(
     db: CurrentSession,
     pk: Annotated[int, Path(description="任务调度 ID")],
 ) -> ResponseSchemaModel[GetTaskSchedulerDetail]:
+    """Get Task Scheduler."""
     task_scheduler = await task_scheduler_service.get(db=db, pk=pk)
     return response_base.success(data=task_scheduler)
 
@@ -41,13 +45,14 @@ async def get_task_scheduler(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_task_scheduler_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description="任务调度名称")] = None,
-    type: Annotated[int | None, Query(description="任务调度类型")] = None,
+    scheduler_type: Annotated[int | None, Query(description="任务调度类型")] = None,
 ) -> ResponseSchemaModel[PageData[GetTaskSchedulerDetail]]:
-    page_data = await task_scheduler_service.get_list(db=db, name=name, type=type)
+    """Get Task Scheduler Paginated."""
+    page_data = await task_scheduler_service.get_list(db=db, name=name, scheduler_type=scheduler_type)
     return response_base.success(data=page_data)
 
 
@@ -58,8 +63,9 @@ async def get_task_scheduler_paginated(
         Depends(RequestPermission("sys:task:add")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def create_task_scheduler(db: CurrentSessionTransaction, obj: CreateTaskSchedulerParam) -> ResponseModel:
+    """Create Task Scheduler."""
     await task_scheduler_service.create(db=db, obj=obj)
     return response_base.success()
 
@@ -71,12 +77,13 @@ async def create_task_scheduler(db: CurrentSessionTransaction, obj: CreateTaskSc
         Depends(RequestPermission("sys:task:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_task_scheduler(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description="任务调度 ID")],
     obj: UpdateTaskSchedulerParam,
 ) -> ResponseModel:
+    """Update Task Scheduler."""
     count = await task_scheduler_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
         return response_base.success()
@@ -90,10 +97,11 @@ async def update_task_scheduler(
         Depends(RequestPermission("sys:task:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_task_scheduler_status(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description="任务调度 ID")]
 ) -> ResponseModel:
+    """Update Task Scheduler Status."""
     count = await task_scheduler_service.update_status(db=db, pk=pk)
     if count > 0:
         return response_base.success()
@@ -107,10 +115,11 @@ async def update_task_scheduler_status(
         Depends(RequestPermission("sys:task:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_task_scheduler(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description="任务调度 ID")]
 ) -> ResponseModel:
+    """Delete Task Scheduler."""
     count = await task_scheduler_service.delete(db=db, pk=pk)
     if count > 0:
         return response_base.success()
@@ -124,7 +133,8 @@ async def delete_task_scheduler(
         Depends(RequestPermission("sys:task:exec")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def execute_task(db: CurrentSession, pk: Annotated[int, Path(description="任务调度 ID")]) -> ResponseModel:
+    """Execute Task."""
     await task_scheduler_service.execute(db=db, pk=pk)
     return response_base.success()

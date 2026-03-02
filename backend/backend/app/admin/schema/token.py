@@ -1,3 +1,5 @@
+"""Token."""
+
 from datetime import datetime
 
 from pydantic import Field

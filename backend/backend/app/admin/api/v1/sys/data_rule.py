@@ -1,3 +1,5 @@
+"""Data Rule."""
+
 from typing import Annotated
 
 from fastapi import Path, Query, Depends, APIRouter
@@ -21,31 +23,35 @@ from backend.app.admin.service.data_rule_service import data_rule_service
 router = APIRouter()
 
 
-@router.get("/models", summary="获取数据规则可用模型", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/models", summary="获取数据规则可用模型", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rule_models() -> ResponseSchemaModel[list[str]]:
+    """Get Data Rule Models."""
     models = await data_rule_service.get_models()
     return response_base.success(data=models)
 
 
-@router.get("/models/{model}/columns", summary="获取数据规则可用模型列", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/models/{model}/columns", summary="获取数据规则可用模型列", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rule_model_columns(
     model: Annotated[str, Path(description="模型名称")],
 ) -> ResponseSchemaModel[list[GetDataRuleColumnDetail]]:
+    """Get Data Rule Model Columns."""
     models = await data_rule_service.get_columns(model=model)
     return response_base.success(data=models)
 
 
-@router.get("/all", summary="获取所有数据规则", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/all", summary="获取所有数据规则", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_all_data_rules(db: CurrentSession) -> ResponseSchemaModel[list[GetDataRuleDetail]]:
+    """Get All Data Rules."""
     data = await data_rule_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get("/{pk}", summary="获取数据规则详情", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取数据规则详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rule(
     db: CurrentSession,
     pk: Annotated[int, Path(description="数据规则 ID")],
 ) -> ResponseSchemaModel[GetDataRuleDetail]:
+    """Get Data Rule."""
     data = await data_rule_service.get(db=db, pk=pk)
     return response_base.success(data=data)
 
@@ -57,11 +63,12 @@ async def get_data_rule(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rules_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description="规则名称")] = None,
 ) -> ResponseSchemaModel[PageData[GetDataRuleDetail]]:
+    """Get Data Rules Paginated."""
     page_data = await data_rule_service.get_list(db=db, name=name)
     return response_base.success(data=page_data)
 
@@ -73,8 +80,9 @@ async def get_data_rules_paginated(
         Depends(RequestPermission("data:rule:add")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def create_data_rule(db: CurrentSessionTransaction, obj: CreateDataRuleParam) -> ResponseModel:
+    """Create Data Rule."""
     await data_rule_service.create(db=db, obj=obj)
     return response_base.success()
 
@@ -86,12 +94,13 @@ async def create_data_rule(db: CurrentSessionTransaction, obj: CreateDataRulePar
         Depends(RequestPermission("data:rule:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_data_rule(
     db: CurrentSessionTransaction,
     pk: Annotated[int, Path(description="数据规则 ID")],
     obj: UpdateDataRuleParam,
 ) -> ResponseModel:
+    """Update Data Rule."""
     count = await data_rule_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
         return response_base.success()
@@ -105,8 +114,9 @@ async def update_data_rule(
         Depends(RequestPermission("data:rule:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_data_rules(db: CurrentSessionTransaction, obj: DeleteDataRuleParam) -> ResponseModel:
+    """Delete Data Rules."""
     count = await data_rule_service.delete(db=db, obj=obj)
     if count > 0:
         return response_base.success()

@@ -1,3 +1,5 @@
+"""Jwt Auth Middleware."""
+
 import re
 from typing import Any
 from collections.abc import Mapping
@@ -40,22 +42,22 @@ class _AuthenticationError(AuthenticationError):
 class JwtAuthUser(BaseUser):
     """Starlette 兼容用户对象，透传业务用户属性。."""
 
-    def __init__(self, user: GetUserInfoWithRelationDetail) -> None:
+    def __init__(self, user: GetUserInfoWithRelationDetail) -> None:  # noqa: D107
         self._user = user
 
     @property
-    def is_authenticated(self) -> bool:
+    def is_authenticated(self) -> bool:  # noqa: D102
         return True
 
     @property
-    def display_name(self) -> str:
+    def display_name(self) -> str:  # noqa: D102
         return self._user.username
 
     @property
-    def identity(self) -> str:
+    def identity(self) -> str:  # noqa: D102
         return str(self._user.id)
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> Any:  # noqa: ANN401, D105
         return getattr(self._user, name)
 
 
@@ -63,10 +65,10 @@ class JwtAuthMiddleware(AuthenticationBackend):
     """JWT 认证中间件."""
 
     @staticmethod
-    def auth_exception_handler(conn: HTTPConnection, exc: AuthenticationError) -> Response:
+    def auth_exception_handler(_conn: HTTPConnection, exc: AuthenticationError) -> Response:
         """覆盖内部认证错误处理.
 
-        :param conn: HTTP 连接对象
+        :param _conn: HTTP 连接对象
         :param exc: 认证错误对象
         :return:
         """
@@ -101,11 +103,13 @@ class JwtAuthMiddleware(AuthenticationBackend):
         try:
             user = await jwt_authentication(token)
         except TokenError as exc:
-            raise _AuthenticationError(code=exc.code, msg=exc.detail, headers=exc.headers)
+            raise _AuthenticationError(code=exc.code, msg=exc.detail, headers=exc.headers) from exc
         except Exception as e:
-            log.exception(f"JWT 授权异常：{e}")
-            raise _AuthenticationError(code=getattr(e, "code", 500), msg=getattr(e, "msg", "Internal Server Error"))
+            log.exception("JWT 授权异常: %s", e)
+            raise _AuthenticationError(
+                code=getattr(e, "code", 500), msg=getattr(e, "msg", "Internal Server Error")
+            ) from e
 
-        # 请注意，此返回使用非标准模式，所以在认证通过时，将丢失某些标准特性
-        # 标准返回模式请查看：https://www.starlette.io/authentication/
+        # 请注意, 此返回使用非标准模式, 所以在认证通过时, 将丢失某些标准特性
+        # 标准返回模式请查看: https://www.starlette.io/authentication/
         return AuthCredentials(["authenticated"]), JwtAuthUser(user)

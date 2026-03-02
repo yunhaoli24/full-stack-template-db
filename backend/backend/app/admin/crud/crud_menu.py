@@ -1,3 +1,5 @@
+"""Crud Menu."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 

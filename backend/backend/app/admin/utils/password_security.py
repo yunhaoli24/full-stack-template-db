@@ -1,3 +1,5 @@
+"""Password Security."""
+
 from pwdlib import PasswordHash
 from pwdlib.hashers.bcrypt import BcryptHasher
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -55,7 +57,7 @@ async def validate_new_password(db: AsyncSession, user_id: int, new_password: st
         raise errors.RequestError(msg="密码必须包含字母")
 
     if settings.USER_PASSWORD_REQUIRE_SPECIAL_CHAR and not is_has_special_char(new_password):
-        raise errors.RequestError(msg="密码必须包含特殊字符（如：!@#$%）")
+        raise errors.RequestError(msg="密码必须包含特殊字符(如: !@#$%)")
 
     password_history = await user_password_history_dao.get_by_user_id(db, user_id)
 

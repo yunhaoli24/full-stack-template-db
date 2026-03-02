@@ -1,8 +1,10 @@
+"""Result."""
+
 from typing import Any, cast
 from datetime import datetime
 
 import sqlalchemy as sa
-from celery import states  # pyright: ignore
+from celery import states  # pyright: ignore[reportMissingModuleSource]
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import PickleType
 
@@ -11,7 +13,7 @@ from backend.utils.timezone import timezone
 
 
 """
-重写 celery.backends.database.models 内部所有模型，适配 fba 创建表和 alembic 迁移
+重写 celery.backends.database.models 内部所有模型, 适配 fba 创建表和 alembic 迁移
 """
 
 
@@ -34,9 +36,11 @@ class Task(MappedBase):
     traceback: Mapped[str | None] = mapped_column(sa.Text, default=None)
 
     def __init__(self, task_id: str) -> None:
+        """Initialize task result."""
         self.task_id = task_id
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
         return {
             "task_id": self.task_id,
             "status": self.status,
@@ -46,10 +50,12 @@ class Task(MappedBase):
         }
 
     def __repr__(self) -> str:
+        """Return string representation."""
         return f"<Task {self.task_id} state: {self.status}>"
 
     @classmethod
     def configure(cls, schema: str | None = None, name: str | None = None) -> None:
+        """Configure table schema and name."""
         table = cast("Any", cls.__table__)
         table.schema = schema
         id_default = table.c.id.default
@@ -72,6 +78,7 @@ class TaskExtended(Task):
     queue: Mapped[str | None] = mapped_column(sa.String(155), default=None)
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
         task_dict = super().to_dict()
         task_dict.update(
             {
@@ -99,11 +106,13 @@ class TaskSet(MappedBase):
     result: Mapped[Any | None] = mapped_column(PickleType, default=None)
     date_done: Mapped[datetime | None] = mapped_column(TimeZone, default_factory=timezone.now, nullable=True)
 
-    def __init__(self, taskset_id: str, result: Any) -> None:
+    def __init__(self, taskset_id: str, result: Any) -> None:  # noqa: ANN401
+        """Initialize task set result."""
         self.taskset_id = taskset_id
         self.result = result
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
         return {
             "taskset_id": self.taskset_id,
             "result": self.result,
@@ -111,10 +120,12 @@ class TaskSet(MappedBase):
         }
 
     def __repr__(self) -> str:
+        """Return string representation."""
         return f"<TaskSet: {self.taskset_id}>"
 
     @classmethod
     def configure(cls, schema: str | None = None, name: str | None = None) -> None:
+        """Configure table schema and name."""
         table = cast("Any", cls.__table__)
         table.schema = schema
         id_default = table.c.id.default

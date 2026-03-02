@@ -1,3 +1,5 @@
+"""Captcha API endpoints."""
+
 import uuid
 
 from fastapi import Depends, APIRouter
@@ -20,8 +22,9 @@ router = APIRouter()
     "/captcha",
     summary="获取登录验证码",
     dependencies=[Depends(create_rate_limiter(limit=5, seconds=10))],
-)  # pyright: ignore
+)  # pyright: ignore[reportArgumentType]
 async def get_captcha(db: CurrentSession) -> ResponseSchemaModel[GetCaptchaDetail]:
+    """Get login captcha."""
     await load_login_config(db)
     img, code = await run_in_threadpool(img_captcha, img_byte="base64")
     captcha_uuid = str(uuid.uuid4())

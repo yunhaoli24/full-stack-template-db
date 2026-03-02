@@ -1,6 +1,9 @@
+"""Crud Dict Type."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,7 +32,7 @@ class CRUDDictType(CRUDPlus[DictType]):
         """
         return cast("Sequence[DictType]", await self.select_models(db))
 
-    async def get_select(self, name: str | None, code: str | None) -> Any:
+    async def get_select(self, name: str | None, code: str | None) -> Select[Any]:
         """获取字典类型列表查询表达式.
 
         :param name: 字典类型名称

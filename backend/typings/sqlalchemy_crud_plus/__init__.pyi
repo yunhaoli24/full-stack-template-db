@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-ModelT = TypeVar("ModelT")
+ModelT = TypeVar("ModelT")  # noqa: PYI001
 
 class JoinConfig:
     model: Any
@@ -15,8 +15,8 @@ class JoinConfig:
     def __init__(
         self,
         *,
-        model: Any,
-        join_on: Any,
+        model: Any,  # noqa: ANN401
+        join_on: Any,  # noqa: ANN401
         fill_result: bool = ...,
         join_type: str = ...,
     ) -> None: ...
@@ -24,23 +24,23 @@ class JoinConfig:
 class CRUDPlus[ModelT]:
     model: type[ModelT]
     def __init__(self, model: type[ModelT]) -> None: ...
-    async def select_model(self, session: AsyncSession, pk: Any, **kwargs: Any) -> Any: ...
-    async def select_model_by_column(self, session: AsyncSession, *whereclause: Any, **kwargs: Any) -> Any: ...
-    async def select_models(self, session: AsyncSession, *whereclause: Any, **kwargs: Any) -> Any: ...
+    async def select_model(self, session: AsyncSession, pk: Any, **kwargs: Any) -> Any: ...  # noqa: ANN401
+    async def select_model_by_column(self, session: AsyncSession, *whereclause: Any, **kwargs: Any) -> Any: ...  # noqa: ANN401
+    async def select_models(self, session: AsyncSession, *whereclause: Any, **kwargs: Any) -> Any: ...  # noqa: ANN401
     async def select_models_order(
         self,
         session: AsyncSession,
-        sort_columns: Any,
-        sort_orders: Any = ...,
-        *whereclause: Any,
-        **kwargs: Any,
-    ) -> Any: ...
+        sort_columns: Any,  # noqa: ANN401
+        sort_orders: Any = ...,  # noqa: ANN401
+        *whereclause: Any,  # noqa: ANN401
+        **kwargs: Any,  # noqa: ANN401
+    ) -> Any: ...  # noqa: ANN401
     async def select_order(
         self,
-        sort_columns: Any,
-        sort_orders: Any = ...,
-        *whereclause: Any,
-        **kwargs: Any,
+        sort_columns: Any,  # noqa: ANN401
+        sort_orders: Any = ...,  # noqa: ANN401
+        *whereclause: Any,  # noqa: ANN401
+        **kwargs: Any,  # noqa: ANN401
     ) -> Select[Any]: ...
     async def create_model(
         self,
@@ -48,7 +48,7 @@ class CRUDPlus[ModelT]:
         obj: object,
         flush: bool = ...,
         commit: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> ModelT: ...
     async def create_models(
         self,
@@ -56,16 +56,16 @@ class CRUDPlus[ModelT]:
         objs: Sequence[object],
         flush: bool = ...,
         commit: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> list[ModelT]: ...
     async def update_model(
         self,
         session: AsyncSession,
-        pk: Any,
+        pk: Any,  # noqa: ANN401
         obj: object | dict[str, Any],
         flush: bool = ...,
         commit: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> int: ...
     async def update_model_by_column(
         self,
@@ -73,7 +73,7 @@ class CRUDPlus[ModelT]:
         obj: object | dict[str, Any],
         flush: bool = ...,
         commit: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> int: ...
     async def bulk_update_models(
         self,
@@ -81,22 +81,22 @@ class CRUDPlus[ModelT]:
         records: Sequence[object | dict[str, Any]],
         flush: bool = ...,
         commit: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> int: ...
     async def delete_model(
         self,
         session: AsyncSession,
-        pk: Any,
+        pk: Any,  # noqa: ANN401
         logical_deletion: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> int: ...
     async def delete_model_by_column(
         self,
         session: AsyncSession,
-        *whereclause: Any,
+        *whereclause: Any,  # noqa: ANN401
         allow_multiple: bool = ...,
         logical_deletion: bool = ...,
         flush: bool = ...,
         commit: bool = ...,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> int: ...

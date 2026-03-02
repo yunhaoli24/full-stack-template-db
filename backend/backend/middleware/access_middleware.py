@@ -1,3 +1,5 @@
+"""Access Middleware."""
+
 import time
 
 from fastapi import Request, Response

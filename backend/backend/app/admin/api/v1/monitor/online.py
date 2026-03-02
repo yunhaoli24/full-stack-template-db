@@ -1,3 +1,5 @@
+"""Online."""
+
 import json
 from typing import Any, Annotated, cast
 
@@ -14,15 +16,17 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 router = APIRouter()
 
 
-@router.get("", summary="获取在线用户", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("", summary="获取在线用户", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_sessions(
     username: Annotated[str | None, Query(description="用户名")] = None,
 ) -> ResponseSchemaModel[list[GetTokenDetail]]:
+    """Get Sessions."""
     token_keys = await redis_client.get_prefix(f"{settings.TOKEN_REDIS_PREFIX}:*")
     online_clients = cast("set[str]", await cast("Any", redis_client).smembers(settings.TOKEN_ONLINE_REDIS_PREFIX))
     data: list[GetTokenDetail] = []
 
     def append_token_detail() -> None:
+        """Append Token Detail."""
         data.append(
             token_detail.model_copy(
                 update={
@@ -74,10 +78,11 @@ async def get_sessions(
     "/{pk}",
     summary="强制下线",
     dependencies=[DependsSuperUser],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_session(
     pk: Annotated[int, Path(description="用户 ID")],
     session_uuid: Annotated[str, Query(description="会话 UUID")],
 ) -> ResponseModel:
+    """Delete Session."""
     await revoke_token(pk, session_uuid)
     return response_base.success()

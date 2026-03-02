@@ -1,3 +1,5 @@
+"""Enums."""
+
 from backend.common.enums import IntEnum, StrEnum
 
 

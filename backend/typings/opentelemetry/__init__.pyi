@@ -10,13 +10,13 @@ class _Span:
 class _TraceModule:
     def get_current_span(self) -> _Span: ...
     def format_trace_id(self, trace_id: int) -> str: ...
-    def set_tracer_provider(self, provider: Any) -> None: ...
+    def set_tracer_provider(self, provider: Any) -> None: ...  # noqa: ANN401
 
 class _MetricsModule:
-    def set_meter_provider(self, provider: Any) -> None: ...
+    def set_meter_provider(self, provider: Any) -> None: ...  # noqa: ANN401
 
 class _LogsModule:
-    def set_logger_provider(self, provider: Any) -> None: ...
+    def set_logger_provider(self, provider: Any) -> None: ...  # noqa: ANN401
 
 trace: _TraceModule
 metrics: _MetricsModule

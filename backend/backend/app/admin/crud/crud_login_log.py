@@ -1,5 +1,8 @@
+"""Crud Login Log."""
+
 from typing import Any, cast
 
+from sqlalchemy import Select
 from sqlalchemy import delete as sa_delete
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +14,7 @@ from backend.app.admin.schema.login_log import CreateLoginLogParam
 class CRUDLoginLog(CRUDPlus[LoginLog]):
     """登录日志数据库操作类."""
 
-    async def get_select(self, username: str | None, status: int | None, ip: str | None) -> Any:
+    async def get_select(self, username: str | None, status: int | None, ip: str | None) -> Select[Any]:
         """获取登录日志列表查询表达式.
 
         :param username: 用户名

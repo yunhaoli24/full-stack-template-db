@@ -1,3 +1,5 @@
+"""User Password History Service."""
+
 import math
 from datetime import datetime, timedelta
 
@@ -33,7 +35,7 @@ class UserPasswordHistoryService:
             now = timezone.now()
             if locked_until > now:
                 remaining_minutes = math.ceil((locked_until - now).total_seconds() / 60)
-                raise errors.AuthorizationError(msg=f"账号已被锁定，请在 {remaining_minutes} 分钟后重试")
+                raise errors.AuthorizationError(msg=f"账号已被锁定, 请在 {remaining_minutes} 分钟后重试")
 
             await redis_client.delete(f"{settings.USER_LOCK_REDIS_PREFIX}:{user_id}")
             await redis_client.delete(f"{settings.LOGIN_FAILURE_PREFIX}:{user_id}")
@@ -59,7 +61,7 @@ class UserPasswordHistoryService:
         if failure_count >= settings.USER_LOCK_THRESHOLD:
             locked_until = timezone.now() + timedelta(seconds=settings.USER_LOCK_SECONDS)
             await redis_client.set(f"{settings.USER_LOCK_REDIS_PREFIX}:{user_id}", timezone.to_str(locked_until))
-            raise errors.AuthorizationError(msg="登录失败次数过多，账号已被锁定")
+            raise errors.AuthorizationError(msg="登录失败次数过多, 账号已被锁定")
 
     @staticmethod
     async def check_password_expiry_status(db: AsyncSession, password_changed_time: datetime) -> int | None:
@@ -75,13 +77,13 @@ class UserPasswordHistoryService:
             return None
 
         if not password_changed_time:
-            raise errors.AuthorizationError(msg="密码已过期，请修改密码后重新登录")
+            raise errors.AuthorizationError(msg="密码已过期, 请修改密码后重新登录")
 
         expiry_time = password_changed_time + timedelta(days=settings.USER_PASSWORD_EXPIRY_DAYS)
         days_remaining = (expiry_time - timezone.now()).days
 
         if days_remaining < 0:
-            raise errors.AuthorizationError(msg="密码已过期，请修改密码后重新登录")
+            raise errors.AuthorizationError(msg="密码已过期, 请修改密码后重新登录")
 
         if days_remaining <= settings.USER_PASSWORD_REMINDER_DAYS:
             return days_remaining

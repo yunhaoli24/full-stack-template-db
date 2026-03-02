@@ -1,3 +1,5 @@
+"""Chat completions API endpoints."""
+
 from typing import Any
 
 from fastapi import APIRouter
@@ -10,8 +12,9 @@ from backend.app.admin.service.chat_service import chat_service
 router = APIRouter()
 
 
-@router.post("/completions", summary="Chat completions (SSE)", response_model=None)  # pyright: ignore
+@router.post("/completions", summary="Chat completions (SSE)", response_model=None)  # pyright: ignore[reportGeneralTypeIssues]
 async def chat_completions(payload: ChatCompletionPayload) -> StreamingResponse | dict[str, Any]:
+    """Chat completions endpoint with SSE support."""
     payload_data = chat_service.normalize_payload(payload.to_payload())
     if payload_data["stream"]:
         stream = await chat_service.create_stream(payload_data)

@@ -1,5 +1,8 @@
+"""Crud Result."""
+
 from typing import Any, cast
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,7 +21,7 @@ class CRUDTaskResult(CRUDPlus[TaskResult]):
         """
         return cast("TaskResult | None", await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None, task_id: str | None) -> Any:
+    async def get_select(self, name: str | None, task_id: str | None) -> Select[Any]:
         """获取任务结果列表查询表达式.
 
         :param name: 任务名称

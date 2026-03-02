@@ -1,0 +1,14 @@
+{
+    "typeCheckingMode": "strict",
+    "exclude": [
+        "**/.venv",
+        "**/venv",
+        "**/build",
+        "**/dist",
+        "**/.mypy_cache",
+        "**/.pytest_cache",
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*"
+    ]
+}

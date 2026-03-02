@@ -1,3 +1,5 @@
+"""Instruments."""
+
 from prometheus_client import Gauge, Counter, Histogram
 
 from backend.core.conf import settings
@@ -22,12 +24,12 @@ PROMETHEUS_RESPONSE_COUNTER = Counter(
 
 PROMETHEUS_EXCEPTION_COUNTER = Counter(
     "fba_exception_total",
-    "按方法，路径和异常类型统计异常总数",
+    "按方法, 路径和异常类型统计异常总数",
     ["app_name", "method", "path", "exception_type"],
 )
 
 PROMETHEUS_REQUEST_COST_TIME_HISTOGRAM = Histogram(
     "fba_request_cost_time",
-    "按方法和路径划分请求耗时的直方图（以 ms 为单位）",
+    "按方法和路径划分请求耗时的直方图(以 ms 为单位)",
     ["app_name", "method", "path"],
 )

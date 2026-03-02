@@ -1,7 +1,9 @@
+"""Tzcrontab."""
+
 from typing import Any
 from datetime import datetime
 
-from celery import schedules  # pyright: ignore
+from celery import schedules  # pyright: ignore[reportMissingModuleSource]
 from celery.schedules import ParseException, crontab
 
 from backend.utils.timezone import timezone
@@ -18,8 +20,9 @@ class TzAwareCrontab(schedules.crontab):
         day_of_week: str = "*",
         day_of_month: str = "*",
         month_of_year: str = "*",
-        app: Any = None,
+        app: Any = None,  # noqa: ANN401
     ) -> None:
+        """Initialize time zone aware crontab."""
         super().__init__(
             minute=minute,
             hour=hour,
@@ -42,9 +45,10 @@ class TzAwareCrontab(schedules.crontab):
         if due:
             rem_delta = self.remaining_estimate(self.now())
             rem = max(rem_delta.total_seconds(), 0)
-        return schedules.schedstate(is_due=due, next=rem)
+        return schedules.schedstate(is_due=due, next_value=rem)
 
     def __reduce__(self) -> tuple[type, tuple[str, str, str, str, str], None]:
+        """Reduce for pickling."""
         return (
             self.__class__,
             (
@@ -77,4 +81,4 @@ def crontab_verify(crontab_str: str) -> None:
             month_of_year=month_of_year,
         )
     except ParseException:
-        raise errors.RequestError(msg="Crontab 表达式非法")
+        raise errors.RequestError(msg="Crontab 表达式非法") from None

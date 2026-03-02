@@ -1,3 +1,5 @@
+"""Server Info."""
+
 import os
 import sys
 import socket
@@ -6,10 +8,13 @@ from datetime import UTC, datetime, timedelta
 
 import psutil
 
+from backend.common.log import log
 from backend.utils.timezone import timezone
 
 
 class ServerInfo:
+    """Server Info Service."""
+
     @staticmethod
     def format_bytes(size: float) -> str:
         """格式化字节大小.
@@ -79,8 +84,8 @@ class ServerInfo:
                             "current_freq": round(cpu_freq.current, 2),
                         }
                     )
-        except Exception:
-            pass
+        except Exception as e:
+            log.warning("Failed to get CPU frequency info: %s", e)
 
         return cpu_info
 

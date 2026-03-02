@@ -1,3 +1,5 @@
+"""Encrypt."""
+
 import os
 import hashlib
 from typing import Any
@@ -11,6 +13,7 @@ from backend.common.log import log
 
 
 def normalize_key(key: bytes | bytearray | memoryview[Any] | str) -> bytes:
+    """Normalize Key."""
     if isinstance(key, str):
         return bytes.fromhex(key)
     return bytes(key)
@@ -72,7 +75,7 @@ class Md5Cipher:
         :param plaintext: 加密前的明文
         :return:
         """
-        md5 = hashlib.md5()
+        md5 = hashlib.md5()  # noqa: S324
         if not isinstance(plaintext, bytes):
             plaintext = str(plaintext).encode("utf-8")
         md5.update(plaintext)
@@ -90,7 +93,7 @@ class ItsDCipher:
         """
         self.key = normalize_key(key)
 
-    def encrypt(self, plaintext: Any) -> str:
+    def encrypt(self, plaintext: Any) -> str:  # noqa: ANN401
         """ItsDangerous 加密.
 
         :param plaintext: 加密前的明文
@@ -104,7 +107,7 @@ class ItsDCipher:
             ciphertext = Md5Cipher.encrypt(plaintext)
         return ciphertext
 
-    def decrypt(self, ciphertext: str) -> Any:
+    def decrypt(self, ciphertext: str) -> Any:  # noqa: ANN401
         """ItsDangerous 解密.
 
         :param ciphertext: 解密前的密文

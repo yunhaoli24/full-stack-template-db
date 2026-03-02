@@ -1,3 +1,5 @@
+"""User Social."""
+
 from pydantic import Field, ConfigDict
 
 from backend.common.schema import SchemaBase

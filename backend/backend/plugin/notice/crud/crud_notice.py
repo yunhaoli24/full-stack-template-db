@@ -1,6 +1,9 @@
+"""Crud Notice."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,11 +23,11 @@ class CRUDNotice(CRUDPlus[Notice]):
         """
         return cast("Notice | None", await self.select_model(db, pk))
 
-    async def get_select(self, title: str | None, type: int | None, status: int | None) -> Any:
+    async def get_select(self, title: str | None, notice_type: int | None, status: int | None) -> Select[Any]:
         """获取通知公告列表查询表达式.
 
         :param title: 通知公告标题
-        :param type: 通知公告类型
+        :param notice_type: 通知公告类型
         :param status: 通知公告状态
         :return:
         """
@@ -32,8 +35,8 @@ class CRUDNotice(CRUDPlus[Notice]):
 
         if title is not None:
             filters["title__like"] = f"%{title}%"
-        if type is not None:
-            filters["type"] = type
+        if notice_type is not None:
+            filters["type"] = notice_type
         if status is not None:
             filters["status"] = status
 

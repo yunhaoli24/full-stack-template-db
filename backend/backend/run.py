@@ -1,4 +1,6 @@
-import os
+"""Run."""
+
+from pathlib import Path
 
 import uvicorn
 
@@ -19,5 +21,5 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=8080,
         reload=True,
-        reload_excludes=[os.path.abspath("../.venv")],
+        reload_excludes=[str(Path("../.venv").resolve())],
     )

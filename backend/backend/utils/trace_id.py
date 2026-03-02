@@ -1,3 +1,5 @@
+"""Trace Id."""
+
 from typing import Any
 
 from opentelemetry import trace
@@ -20,8 +22,9 @@ class OtelTraceIdPlugin(Plugin):
 
     key = settings.TRACE_ID_REQUEST_HEADER_KEY
 
-    async def process_request(self, request: Request | HTTPConnection) -> Any:
+    async def process_request(self, request: Request | HTTPConnection) -> Any | None:  # noqa: ANN401
         """从 OpenTelemetry span 中提取 trace_id."""
+        _ = request
         span = trace.get_current_span()
         span_ctx = span.get_span_context()
 

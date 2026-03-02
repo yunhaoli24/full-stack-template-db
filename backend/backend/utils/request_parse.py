@@ -1,3 +1,5 @@
+"""Request Parse."""
+
 from typing import Any
 
 import httpx
@@ -51,7 +53,7 @@ async def get_location_online(ip: str, user_agent: str) -> dict[str, Any] | None
                 return None
             return response.json()
         except Exception as e:
-            log.error(f"在线获取 IP 地址属地失败，错误信息：{e}")
+            log.error("在线获取 IP 地址属地失败, 错误信息: %s", e)
             return None
 
 
@@ -74,7 +76,7 @@ def get_location_offline(ip: str) -> dict[str, Any] | None:
             "city": data[2] if data[2] != "0" else None,
         }
     except Exception as e:
-        log.error(f"离线获取 IP 地址属地失败，错误信息：{e}")
+        log.error(f"离线获取 IP 地址属地失败, 错误信息: {e}")
         return None
 
 

@@ -1,3 +1,5 @@
+"""Pagination."""
+
 from __future__ import annotations
 
 from math import ceil
@@ -66,7 +68,7 @@ class _CustomPage[T](_PageDetails, AbstractPage[T]):
         items: Sequence[T],
         params: AbstractParams,
         total: int = 0,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401, ARG003
     ) -> Self:
         if not isinstance(params, _CustomPageParams):
             msg = f"Unsupported params type: {type(params)!r}"
@@ -119,7 +121,7 @@ class PageData[SchemaT](_PageDetails):
     items: Sequence[SchemaT]
 
 
-async def paging_data(db: AsyncSession, select: Any, **kwargs: Any) -> dict[str, Any]:
+async def paging_data(db: AsyncSession, select: Any, **kwargs: Any) -> dict[str, Any]:  # noqa: ANN401
     """基于 SQLAlchemy 创建分页数据.
 
     :param db: 数据库会话

@@ -1,3 +1,5 @@
+"""Linux.do OAuth2 API v1."""
+
 import json
 import uuid
 from typing import Any, Annotated
@@ -20,8 +22,9 @@ router = APIRouter()
 linux_do_client = LinuxDoOAuth20(settings.OAUTH2_LINUX_DO_CLIENT_ID, settings.OAUTH2_LINUX_DO_CLIENT_SECRET)
 
 
-@router.get("", summary="获取 LinuxDo 授权链接")  # pyright: ignore
+@router.get("", summary="获取 LinuxDo 授权链接")  # pyright: ignore[reportGeneralTypeIssues]
 async def get_linux_do_oauth2_url() -> ResponseSchemaModel[str]:
+    """Get Linux Do Oauth2 Url."""
     state = str(uuid.uuid4())
 
     await redis_client.setex(
@@ -39,9 +42,9 @@ async def get_linux_do_oauth2_url() -> ResponseSchemaModel[str]:
 @router.get(
     "/callback",
     summary="LinuxDo 授权自动重定向",
-    description="LinuxDo 授权后，自动重定向到当前地址并获取用户信息，通过用户信息自动创建系统用户",
+    description="LinuxDo 授权后, 自动重定向到当前地址并获取用户信息, 通过用户信息自动创建系统用户",
     dependencies=[Depends(create_rate_limiter(limit=5, minutes=1))],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def linux_do_oauth2_callback(  # noqa: ANN201
     db: CurrentSessionTransaction,
     response: Response,
@@ -51,6 +54,7 @@ async def linux_do_oauth2_callback(  # noqa: ANN201
         Depends(FastAPIOAuth20(linux_do_client, redirect_uri=settings.OAUTH2_LINUX_DO_REDIRECT_URI)),
     ],
 ):
+    """Linux Do Oauth2 Callback."""
     token_data, state = oauth2
     access_token = token_data["access_token"]
     user = await linux_do_client.get_userinfo(access_token)

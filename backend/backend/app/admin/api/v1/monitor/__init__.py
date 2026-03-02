@@ -1,3 +1,5 @@
+"""Monitor API v1 package."""
+
 from fastapi import APIRouter
 
 from backend.app.admin.api.v1.monitor.redis import router as redis_router

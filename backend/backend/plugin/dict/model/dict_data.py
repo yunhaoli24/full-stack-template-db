@@ -1,3 +1,5 @@
+"""Dict Data."""
+
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -15,7 +17,7 @@ class DictData(Base):
     value: Mapped[str] = mapped_column(sa.String(32), comment="字典值")
     color: Mapped[str | None] = mapped_column(sa.String(32), default=None, comment="标签颜色")
     sort: Mapped[int] = mapped_column(default=0, comment="排序")
-    status: Mapped[int] = mapped_column(default=1, comment="状态（0停用 1正常）")
+    status: Mapped[int] = mapped_column(default=1, comment="状态(0停用 1正常)")
     remark: Mapped[str | None] = mapped_column(UniversalText, default=None, comment="备注")
 
     # 逻辑外键

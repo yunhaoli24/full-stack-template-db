@@ -1,9 +1,11 @@
-import os
+"""Alembic migration environment configuration."""
+
 import asyncio
 from typing import Any
+from pathlib import Path
 from logging.config import fileConfig
 
-from alembic import context  # pyright: ignore
+from alembic import context  # pyright: ignore[reportAttributeAccessIssue]
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
@@ -13,8 +15,8 @@ from backend.database.db import SQLALCHEMY_DATABASE_URL
 from backend.common.model import MappedBase
 
 
-if not os.path.exists(path_conf.ALEMBIC_VERSION_DIR):
-    os.makedirs(path_conf.ALEMBIC_VERSION_DIR)
+if not Path(path_conf.ALEMBIC_VERSION_DIR).exists():
+    Path(path_conf.ALEMBIC_VERSION_DIR).mkdir(parents=True)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -64,8 +66,9 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    # 当迁移无变化时，不生成迁移记录
-    def process_revision_directives(context: Any, revision: Any, directives: list[Any]) -> None:
+    """Run migrations online."""
+
+    def process_revision_directives(_context: Any, _revision: Any, directives: list[Any]) -> None:  # noqa: ANN401
         cmd_opts = getattr(alembic_config, "cmd_opts", None)
         if bool(getattr(cmd_opts, "autogenerate", False)):
             script = directives[0]
@@ -86,9 +89,10 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    """In this scenario we need to create an Engine
-    and associate a connection with the context.
+    """Run migrations in async mode.
 
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
     """
     connectable = async_engine_from_config(
         alembic_config.get_section(alembic_config.config_ini_section, {}),

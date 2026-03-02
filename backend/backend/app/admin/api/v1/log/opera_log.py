@@ -1,3 +1,5 @@
+"""Opera Log."""
+
 from typing import Annotated
 
 from fastapi import Query, Depends, APIRouter
@@ -22,13 +24,14 @@ router = APIRouter()
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_opera_logs_paginated(
     db: CurrentSession,
     username: Annotated[str | None, Query(description="用户名")] = None,
     status: Annotated[int | None, Query(description="状态")] = None,
     ip: Annotated[str | None, Query(description="IP 地址")] = None,
 ) -> ResponseSchemaModel[PageData[GetOperaLogDetail]]:
+    """Get Opera Logs Paginated."""
     page_data = await opera_log_service.get_list(db=db, username=username, status=status, ip=ip)
 
     return response_base.success(data=page_data)
@@ -41,8 +44,9 @@ async def get_opera_logs_paginated(
         Depends(RequestPermission("log:opera:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_opera_logs(db: CurrentSessionTransaction, obj: DeleteOperaLogParam) -> ResponseModel:
+    """Delete Opera Logs."""
     count = await opera_log_service.delete(db=db, obj=obj)
     if count > 0:
         return response_base.success()
@@ -56,7 +60,8 @@ async def delete_opera_logs(db: CurrentSessionTransaction, obj: DeleteOperaLogPa
         Depends(RequestPermission("log:opera:clear")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_all_opera_logs(db: CurrentSessionTransaction) -> ResponseModel:
+    """Delete All Opera Logs."""
     await opera_log_service.delete_all(db=db)
     return response_base.success()

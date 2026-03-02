@@ -1,6 +1,8 @@
+"""Database."""
+
 from typing import Any, cast
 
-from celery import states  # pyright: ignore
+from celery import states  # pyright: ignore[reportMissingModuleSource]
 from sqlalchemy.orm import Session
 from celery.exceptions import ImproperlyConfigured
 from celery.utils.time import maybe_timedelta
@@ -12,7 +14,7 @@ from backend.app.task.model.result import Task, TaskSet, TaskExtended
 
 
 """
-重写 from celery.backends.database 内部 DatabaseBackend 类，此类实现与模型配合不佳，导致 fba 创建表和 alembic 迁移困难
+重写 from celery.backends.database 内部 DatabaseBackend 类, 此类实现与模型配合不佳, 导致 fba 创建表和 alembic 迁移困难
 """
 
 
@@ -31,8 +33,9 @@ class DatabaseBackend(BaseBackend):
         dburi: str | None = None,
         engine_options: dict[str, Any] | None = None,
         url: str | None = None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
+        """Initialize database backend."""
         # The `url` argument was added later and is used by
         # the app to set backend by url (celery.app.backends.by_url)
         super().__init__(expires_type=maybe_timedelta, url=url, **kwargs)
@@ -65,6 +68,7 @@ class DatabaseBackend(BaseBackend):
 
     @property
     def extended_result(self) -> bool:
+        """Check if extended result mode is enabled."""
         return self.app.conf.find_value_for_key("extended", "result")
 
     def _create_tables(self) -> None:
@@ -72,6 +76,7 @@ class DatabaseBackend(BaseBackend):
         self.result_session()
 
     def result_session(self, session_manager: SessionManager | None = None) -> Session:
+        """Get result session."""
         if session_manager is None:
             session_manager = self.session_manager
         return session_manager.session_factory(
@@ -80,15 +85,15 @@ class DatabaseBackend(BaseBackend):
             **self.engine_options,
         )
 
-    @retry  # pyright: ignore
+    @retry  # pyright: ignore[reportGeneralTypeIssues]
     def _store_result(
         self,
         task_id: str,
-        result: Any,
+        result: Any,  # noqa: ANN401
         state: str,
         traceback: str | None = None,
-        request: Any = None,
-        **kwargs: Any,
+        request: Any = None,  # noqa: ANN401
+        **_kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Store return value and state of an executed task."""
         session = self.result_session()
@@ -106,10 +111,10 @@ class DatabaseBackend(BaseBackend):
     def _update_result(
         self,
         task: Task | TaskExtended,
-        result: Any,
+        result: Any,  # noqa: ANN401
         state: str,
         traceback: str | None = None,
-        request: Any = None,
+        request: Any = None,  # noqa: ANN401
     ) -> None:
         meta = self._get_result_meta(
             result=result,
@@ -131,7 +136,7 @@ class DatabaseBackend(BaseBackend):
             value = meta.get(column)
             setattr(task, column, value)
 
-    @retry  # pyright: ignore
+    @retry  # pyright: ignore[reportGeneralTypeIssues]
     def _get_task_meta_for(self, task_id: str) -> dict[str, Any]:
         """Get task meta-data for a task by id."""
         session = self.result_session()
@@ -148,8 +153,8 @@ class DatabaseBackend(BaseBackend):
                 data["kwargs"] = self.decode(data["kwargs"])
             return self.meta_from_decoded(data)
 
-    @retry  # pyright: ignore
-    def _save_group(self, group_id: str, result: Any) -> Any:
+    @retry  # pyright: ignore[reportGeneralTypeIssues]
+    def _save_group(self, group_id: str, result: Any) -> Any:  # noqa: ANN401
         """Store the result of an executed group."""
         session = self.result_session()
         with session_cleanup(session):
@@ -159,7 +164,7 @@ class DatabaseBackend(BaseBackend):
             session.commit()
             return result
 
-    @retry  # pyright: ignore
+    @retry  # pyright: ignore[reportGeneralTypeIssues]
     def _restore_group(self, group_id: str) -> dict[str, Any] | None:
         """Get meta-data for group by id."""
         session = self.result_session()
@@ -171,7 +176,7 @@ class DatabaseBackend(BaseBackend):
                 return group.to_dict()
             return None
 
-    @retry  # pyright: ignore
+    @retry  # pyright: ignore[reportGeneralTypeIssues]
     def _delete_group(self, group_id: str) -> None:
         """Delete meta-data for group by id."""
         session = self.result_session()
@@ -180,7 +185,7 @@ class DatabaseBackend(BaseBackend):
             session.flush()
             session.commit()
 
-    @retry  # pyright: ignore
+    @retry  # pyright: ignore[reportGeneralTypeIssues]
     def _forget(self, task_id: str) -> None:
         """Forget about result."""
         session = self.result_session()
@@ -202,7 +207,8 @@ class DatabaseBackend(BaseBackend):
         self,
         args: tuple[Any, ...] = (),
         kwargs: dict[str, Any] | None = None,
-    ) -> Any:
+    ) -> Any:  # noqa: ANN401
+        """Reduce for pickling."""
         kwargs = kwargs or {}
         kwargs.update({"dburi": self.url, "expires": self.expires, "engine_options": self.engine_options})
         return super().__reduce__(args, kwargs)

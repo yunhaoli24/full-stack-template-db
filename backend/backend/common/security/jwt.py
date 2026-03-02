@@ -1,3 +1,5 @@
+"""Jwt."""
+
 import json
 import uuid
 from typing import Any
@@ -14,7 +16,6 @@ from backend.core.conf import settings
 from backend.database.db import async_db_session
 from backend.database.redis import redis_client
 from backend.utils.timezone import timezone
-from backend.app.admin.model import User
 from backend.common.exception import errors
 from backend.common.dataclasses import NewToken, AccessToken, RefreshToken, TokenPayload
 from backend.app.admin.schema.user import GetUserInfoWithRelationDetail
@@ -50,11 +51,11 @@ def jwt_decode(token: str) -> TokenPayload:
         user_id = payload.get("sub")
         expire = payload.get("exp")
         if not session_uuid or not user_id or not expire:
-            raise errors.TokenError(msg="Token 无效")
-    except ExpiredSignatureError:
-        raise errors.TokenError(msg="Token 已过期")
-    except (JWTError, Exception):
-        raise errors.TokenError(msg="Token 无效")
+            raise errors.TokenError(msg="Token 无效")  # noqa: TRY301
+    except ExpiredSignatureError as e:
+        raise errors.TokenError(msg="Token 已过期") from e
+    except (JWTError, Exception) as e:
+        raise errors.TokenError(msg="Token 无效") from e
     return TokenPayload(
         id=int(user_id),
         session_uuid=session_uuid,
@@ -62,7 +63,7 @@ def jwt_decode(token: str) -> TokenPayload:
     )
 
 
-async def create_access_token(user_id: int, *, multi_login: bool, **kwargs: Any) -> AccessToken:
+async def create_access_token(user_id: int, *, multi_login: bool, **kwargs: Any) -> AccessToken:  # noqa: ANN401
     """生成加密 token.
 
     :param user_id: 用户 ID
@@ -134,7 +135,7 @@ async def create_new_token(
     user_id: int,
     *,
     multi_login: bool,
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> NewToken:
     """生成新的 token.
 
@@ -147,7 +148,7 @@ async def create_new_token(
     """
     redis_refresh_token = await redis_client.get(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}")
     if not redis_refresh_token or redis_refresh_token != refresh_token:
-        raise errors.TokenError(msg="Refresh Token 已过期，请重新登录")
+        raise errors.TokenError(msg="Refresh Token 已过期, 请重新登录")
 
     await redis_client.delete(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}")
     await redis_client.delete(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}")
@@ -187,29 +188,33 @@ def get_token(request: Request) -> str:
     return token
 
 
-async def get_current_user(db: AsyncSession, pk: int) -> User:
+async def get_current_user(db: AsyncSession, pk: int) -> Any:  # noqa: ANN401
     """获取当前用户.
 
     :param db: 数据库会话
     :param pk: 用户 ID
     :return:
     """
-    from backend.app.admin.crud.crud_user import user_dao
+    from backend.app.admin.crud.crud_user import user_dao  # noqa: PLC0415
 
     user = await user_dao.get_join(db, user_id=pk)
     if not user:
         raise errors.TokenError(msg="Token 无效")
-    if not user.status:
-        raise errors.AuthorizationError(msg="用户已被锁定，请联系系统管理员")
-    if user.dept_id:
-        if not user.dept.status:
-            raise errors.AuthorizationError(msg="用户所属部门已被锁定，请联系系统管理员")
-        if user.dept.del_flag:
-            raise errors.AuthorizationError(msg="用户所属部门已被删除，请联系系统管理员")
-    if user.roles:
-        role_status = [role.status for role in user.roles]
+    status = getattr(user, "status", None)
+    if not status:
+        raise errors.AuthorizationError(msg="用户已被锁定, 请联系系统管理员")
+    dept_id = getattr(user, "dept_id", None)
+    if dept_id:
+        dept = getattr(user, "dept", None)
+        if dept and not getattr(dept, "status", 1):
+            raise errors.AuthorizationError(msg="用户所属部门已被锁定, 请联系系统管理员")
+        if dept and getattr(dept, "del_flag", False):
+            raise errors.AuthorizationError(msg="用户所属部门已被删除, 请联系系统管理员")
+    roles = getattr(user, "roles", [])
+    if roles:
+        role_status = [getattr(role, "status", 1) for role in roles]
         if all(status == 0 for status in role_status):
-            raise errors.AuthorizationError(msg="用户所属角色已被锁定，请联系系统管理员")
+            raise errors.AuthorizationError(msg="用户所属角色已被锁定, 请联系系统管理员")
     return user
 
 

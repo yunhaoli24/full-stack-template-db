@@ -1,3 +1,5 @@
+"""Tools."""
+
 import os
 import sys
 import json
@@ -5,6 +7,7 @@ import warnings
 import contextlib
 import subprocess
 from typing import Any, cast
+from pathlib import Path
 from functools import lru_cache
 from importlib.metadata import PackageNotFoundError, distribution
 
@@ -15,6 +18,7 @@ from starlette.concurrency import run_in_threadpool
 from packaging.requirements import Requirement
 
 from backend.core.conf import settings
+from backend.app.router import router as main_router
 from backend.common.log import log
 from backend.common.enums import StatusType, DataBaseType
 from backend.utils._await import run_await
@@ -42,14 +46,14 @@ def get_plugins() -> list[str]:
     plugin_packages: list[str] = []
 
     # 遍历插件目录
-    for item in os.listdir(PLUGIN_DIR):
-        item_path = PLUGIN_DIR / item
-        if not os.path.isdir(item_path) and item == "__pycache__":
+    for item in PLUGIN_DIR.iterdir():
+        item_path = PLUGIN_DIR / item.name
+        if not item_path.is_dir() and item.name == "__pycache__":
             continue
 
         # 检查是否为目录且包含 __init__.py 文件
-        if os.path.isdir(item_path) and "__init__.py" in os.listdir(item_path):
-            plugin_packages.append(item)
+        if item_path.is_dir() and "__init__.py" in [f.name for f in item_path.iterdir()]:
+            plugin_packages.append(item.name)
 
     return plugin_packages
 
@@ -67,11 +71,11 @@ def get_plugin_models() -> list[object]:
     return objs
 
 
-async def get_plugin_sql(plugin: str, db_type: DataBaseType) -> str | None:
+async def get_plugin_sql(plugin: str, _db_type: DataBaseType) -> str | None:
     """获取插件 SQL 文件.
 
     :param plugin: 插件名称
-    :param db_type: 数据库类型
+    :param _db_type: 数据库类型
     :return:
     """
     postgresql_dir = PLUGIN_DIR / plugin / "sql" / "postgresql"
@@ -91,11 +95,11 @@ def load_plugin_config(plugin: str) -> dict[str, Any]:
     :return:
     """
     toml_path = PLUGIN_DIR / plugin / "plugin.toml"
-    if not os.path.exists(toml_path):
-        msg = f"插件 {plugin} 缺少 plugin.toml 配置文件，请检查插件是否合法"
+    if not toml_path.exists():
+        msg = f"插件 {plugin} 缺少 plugin.toml 配置文件, 请检查插件是否合法"
         raise PluginInjectError(msg)
 
-    with open(toml_path, encoding="utf-8") as f:
+    with toml_path.open(encoding="utf-8") as f:
         return rtoml.load(f)
 
 
@@ -171,8 +175,8 @@ def inject_extend_router(plugin: dict[str, Any]) -> None:
     """
     plugin_name: str = plugin["plugin"]["name"]
     plugin_api_path = PLUGIN_DIR / plugin_name / "api"
-    if not os.path.exists(plugin_api_path):
-        msg = f"插件 {plugin} 缺少 api 目录，请检查插件文件是否完整"
+    if not plugin_api_path.exists():
+        msg = f"插件 {plugin} 缺少 api 目录, 请检查插件文件是否完整"
         raise PluginConfigError(msg)
 
     for root, _, api_files in os.walk(plugin_api_path):
@@ -186,7 +190,7 @@ def inject_extend_router(plugin: dict[str, Any]) -> None:
             tags = file_config["tags"]
 
             # 获取插件路由模块
-            file_path = os.path.join(root, file)
+            file_path = os.path.join(root, file)  # noqa: PTH118
             path_to_module_str = os.path.relpath(file_path, PLUGIN_DIR).replace(os.sep, ".")[:-3]
             module_path = f"backend.plugin.{path_to_module_str}"
 
@@ -195,7 +199,7 @@ def inject_extend_router(plugin: dict[str, Any]) -> None:
                 plugin_router = getattr(module, "router", None)
                 if not plugin_router:
                     warnings.warn(
-                        f"扩展级插件 {plugin_name} 模块 {module_path} 中没有有效的 router，请检查插件文件是否完整",
+                        f"扩展级插件 {plugin_name} 模块 {module_path} 中没有有效的 router, 请检查插件文件是否完整",
                         FutureWarning,
                         stacklevel=2,
                     )
@@ -209,10 +213,8 @@ def inject_extend_router(plugin: dict[str, Any]) -> None:
                 target_router = getattr(target_module, "router", None)
 
                 if not target_router or not isinstance(target_router, APIRouter):
-                    msg = f"扩展级插件 {plugin_name} 模块 {module_path} 中没有有效的 router，请检查插件文件是否完整"
-                    raise PluginInjectError(
-                        msg,
-                    )
+                    msg = f"扩展级插件 {plugin_name} 模块 {module_path} 中没有有效的 router, 请检查插件文件是否完整"
+                    raise PluginInjectError(msg)  # noqa: TRY301
 
                 # 将插件路由注入到目标路由中
                 target_router.include_router(
@@ -222,7 +224,7 @@ def inject_extend_router(plugin: dict[str, Any]) -> None:
                     dependencies=[Depends(PluginStatusChecker(plugin_name))],
                 )
             except Exception as e:
-                msg = f"扩展级插件 {plugin_name} 路由注入失败：{e!s}"
+                msg = f"扩展级插件 {plugin_name} 路由注入失败: {e!s}"
                 raise PluginInjectError(msg) from e
 
 
@@ -239,21 +241,19 @@ def inject_app_router(plugin: dict[str, Any], target_router: APIRouter) -> None:
         module = import_module_cached(module_path)
         routers = cast("list[str] | None", plugin["app"]["router"])
         if not routers:
-            msg = f"应用级插件 {plugin_name} 配置文件存在错误，请检查"
-            raise PluginConfigError(msg)
+            msg = f"应用级插件 {plugin_name} 配置文件存在错误, 请检查"
+            raise PluginConfigError(msg)  # noqa: TRY301
 
         for router in routers:
             plugin_router = getattr(module, router, None)
             if not plugin_router or not isinstance(plugin_router, APIRouter):
-                msg = f"应用级插件 {plugin_name} 模块 {module_path} 中没有有效的 router，请检查插件文件是否完整"
-                raise PluginInjectError(
-                    msg,
-                )
+                msg = f"应用级插件 {plugin_name} 模块 {module_path} 中没有有效的 router, 请检查插件文件是否完整"
+                raise PluginInjectError(msg)  # noqa: TRY301
 
             # 将插件路由注入到目标路由中
             target_router.include_router(plugin_router, dependencies=[Depends(PluginStatusChecker(plugin_name))])
     except Exception as e:
-        msg = f"应用级插件 {plugin_name} 路由注入失败：{e!s}"
+        msg = f"应用级插件 {plugin_name} 路由注入失败: {e!s}"
         raise PluginInjectError(msg) from e
 
 
@@ -264,9 +264,6 @@ def build_final_router() -> APIRouter:
     for plugin in extend_plugins:
         inject_extend_router(plugin)
 
-    # 主路由，必须在扩展级插件路由注入后，应用级插件路由注入前导入
-    from backend.app.router import router as main_router
-
     for plugin in app_plugins:
         inject_app_router(plugin, main_router)
 
@@ -276,8 +273,11 @@ def build_final_router() -> APIRouter:
 def _ensure_pip_available() -> bool:
     """确保 pip 在虚拟环境中可用."""
     try:
-        result = subprocess.run(
-            [sys.executable, "-m", "pip", "--version"], check=False, capture_output=True, text=True
+        result = subprocess.run(  # noqa: S603
+            [sys.executable, "-m", "pip", "--version"],
+            check=False,
+            capture_output=True,
+            text=True,
         )
         if result.returncode == 0:
             return True
@@ -286,13 +286,16 @@ def _ensure_pip_available() -> bool:
 
     # 尝试使用 ensurepip
     try:
-        subprocess.check_call(
+        subprocess.check_call(  # noqa: S603
             [sys.executable, "-m", "ensurepip", "--default-pip"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        result = subprocess.run(
-            [sys.executable, "-m", "pip", "--version"], check=False, capture_output=True, text=True
+        result = subprocess.run(  # noqa: S603
+            [sys.executable, "-m", "pip", "--version"],
+            check=False,
+            capture_output=True,
+            text=True,
         )
         if result.returncode == 0:
             return True
@@ -301,33 +304,37 @@ def _ensure_pip_available() -> bool:
 
     # 尝试下载并安装
     try:
-        import os
-        import tempfile
+        import tempfile  # noqa: PLC0415
 
-        import httpx
+        import httpx  # noqa: PLC0415
 
         try:
-            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-                with httpx.Client(timeout=3) as client:
-                    get_pip_url = "https://bootstrap.pypa.io/get-pip.py"
-                    response = client.get(get_pip_url)
-                    response.raise_for_status()
-                    f.write(response.text)
-                    temp_file = f.name
-        except Exception:  # noqa: ignore
+            with (
+                tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f,
+                httpx.Client(timeout=3) as client,
+            ):
+                get_pip_url = "https://bootstrap.pypa.io/get-pip.py"
+                response = client.get(get_pip_url)
+                response.raise_for_status()
+                f.write(response.text)
+                temp_file = f.name
+        except Exception:
             return False
 
         try:
-            subprocess.check_call([sys.executable, temp_file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            result = subprocess.run(
-                [sys.executable, "-m", "pip", "--version"], check=False, capture_output=True, text=True
+            subprocess.check_call([sys.executable, temp_file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # noqa: S603
+            result = subprocess.run(  # noqa: S603
+                [sys.executable, "-m", "pip", "--version"],
+                check=False,
+                capture_output=True,
+                text=True,
             )
             return result.returncode == 0
         finally:
             with contextlib.suppress(OSError):
-                os.unlink(temp_file)
-    except Exception:  # noqa: ignore
-        pass
+                Path(temp_file).unlink()
+    except Exception as e:
+        log.warning(f"Failed to install pip: {e!s}")
 
     return False
 
@@ -338,22 +345,22 @@ def install_requirements(plugin: str | None) -> None:
     :param plugin: 指定插件名，否则检查所有插件
     :return:
     """
-    plugins = [plugin] if plugin else get_plugins()
+    plugin_list = [plugin] if plugin else get_plugins()
 
-    for plugin in plugins:
-        requirements_file = PLUGIN_DIR / plugin / "requirements.txt"
+    for plugin_item in plugin_list:
+        requirements_file = PLUGIN_DIR / plugin_item / "requirements.txt"
         missing_dependencies = False
-        if os.path.exists(requirements_file):
-            with open(requirements_file, encoding="utf-8") as f:
+        if requirements_file.exists():
+            with requirements_file.open(encoding="utf-8") as f:
                 for line in f:
-                    line = line.strip()
-                    if not line or line.startswith("#"):
+                    stripped_line = line.strip()
+                    if not stripped_line or stripped_line.startswith("#"):
                         continue
                     try:
-                        req = Requirement(line)
+                        req = Requirement(stripped_line)
                         dependency = req.name.lower()
                     except Exception as e:
-                        msg = f"插件 {plugin} 依赖 {line} 格式错误: {e!s}"
+                        msg = f"插件 {plugin_item} 依赖 {stripped_line} 格式错误: {e!s}"
                         raise PluginInstallError(msg) from e
                     try:
                         distribution(dependency)
@@ -363,7 +370,7 @@ def install_requirements(plugin: str | None) -> None:
         if missing_dependencies:
             try:
                 if not _ensure_pip_available():
-                    msg = f"pip 安装失败，无法继续安装插件 {plugin} 依赖"
+                    msg = f"pip 安装失败, 无法继续安装插件 {plugin_item} 依赖"
                     raise PluginInstallError(msg)
 
                 pip_install = [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)]
@@ -373,24 +380,24 @@ def install_requirements(plugin: str | None) -> None:
                 max_retries = settings.PLUGIN_PIP_MAX_RETRY
                 for attempt in range(max_retries):
                     try:
-                        subprocess.check_call(
+                        subprocess.check_call(  # noqa: S603
                             pip_install,
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL,
                         )
                         break
-                    except subprocess.TimeoutExpired:
+                    except subprocess.TimeoutExpired as err:
                         if attempt == max_retries - 1:
-                            msg = f"插件 {plugin} 依赖安装超时"
-                            raise PluginInstallError(msg)
+                            msg = f"插件 {plugin_item} 依赖安装超时"
+                            raise PluginInstallError(msg) from err
                         continue
                     except subprocess.CalledProcessError as e:
                         if attempt == max_retries - 1:
-                            msg = f"插件 {plugin} 依赖安装失败：{e}"
+                            msg = f"插件 {plugin_item} 依赖安装失败: {e}"
                             raise PluginInstallError(msg) from e
                         continue
             except subprocess.CalledProcessError as e:
-                msg = f"插件 {plugin} 依赖安装失败：{e}"
+                msg = f"插件 {plugin_item} 依赖安装失败: {e}"
                 raise PluginInstallError(msg) from e
 
 
@@ -401,12 +408,12 @@ def uninstall_requirements(plugin: str) -> None:
     :return:
     """
     requirements_file = PLUGIN_DIR / plugin / "requirements.txt"
-    if os.path.exists(requirements_file):
+    if requirements_file.exists():
         try:
             pip_uninstall = [sys.executable, "-m", "pip", "uninstall", "-r", str(requirements_file), "-y"]
-            subprocess.check_call(pip_uninstall, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.check_call(pip_uninstall, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # noqa: S603
         except subprocess.CalledProcessError as e:
-            msg = f"插件 {plugin} 依赖卸载失败：{e}"
+            msg = f"插件 {plugin} 依赖卸载失败: {e}"
             raise PluginInstallError(msg) from e
 
 
@@ -439,17 +446,17 @@ class PluginStatusChecker:
         """
         self.plugin = plugin
 
-    async def __call__(self, request: Request) -> None:
+    async def __call__(self, _request: Request) -> None:
         """验证插件状态.
 
-        :param request: FastAPI 请求对象
+        :param _request: FastAPI 请求对象
         :return:
         """
         plugin_info = await redis_client.get(f"{settings.PLUGIN_REDIS_PREFIX}:{self.plugin}")
         if not plugin_info:
-            log.error("插件状态未初始化或丢失，需重启服务自动修复")
-            msg = "插件状态未初始化或丢失，请联系系统管理员"
+            log.error("插件状态未初始化或丢失, 需重启服务自动修复")
+            msg = "插件状态未初始化或丢失, 请联系系统管理员"
             raise PluginInjectError(msg)
 
         if not int(json.loads(plugin_info)["plugin"]["enable"]):
-            raise errors.ServerError(msg=f"插件 {self.plugin} 未启用，请联系系统管理员")
+            raise errors.ServerError(msg=f"插件 {self.plugin} 未启用, 请联系系统管理员")

@@ -1,3 +1,5 @@
+"""Db."""
+
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio.session import AsyncSession

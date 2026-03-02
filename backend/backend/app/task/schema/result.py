@@ -1,3 +1,5 @@
+"""Result."""
+
 from typing import Any, cast
 from datetime import datetime
 
@@ -36,6 +38,7 @@ class GetTaskResultDetail(TaskResultSchemaBase):
 
     id: int = Field(description="任务结果 ID")
 
-    @field_serializer("args", "kwargs", when_used="unless-none")  # pyright: ignore
-    def serialize_params(self, value: bytes | None) -> Any:
+    @field_serializer("args", "kwargs", when_used="unless-none")  # pyright: ignore[reportGeneralTypeIssues]
+    def serialize_params(self, value: bytes | None) -> Any:  # noqa: ANN401
+        """Serialize parameters."""
         return cast("Any", celery_app).backend.decode(value)

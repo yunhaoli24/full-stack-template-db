@@ -1,3 +1,5 @@
+"""Data Rule."""
+
 from datetime import datetime
 
 from pydantic import Field, ConfigDict
@@ -12,7 +14,7 @@ class DataRuleSchemaBase(SchemaBase):
     name: str = Field(description="规则名称")
     model: str = Field(description="模型名称")
     column: str = Field(description="字段名称")
-    operator: RoleDataRuleOperatorType = Field(description="操作符（AND/OR）")
+    operator: RoleDataRuleOperatorType = Field(description="操作符(AND/OR)")
     expression: RoleDataRuleExpressionType = Field(description="表达式类型")
     value: str = Field(description="规则值")
 

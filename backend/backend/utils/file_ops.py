@@ -1,3 +1,5 @@
+"""File Ops."""
+
 import io
 import os
 import re
@@ -59,12 +61,12 @@ def upload_file_verify(file: UploadFile) -> None:
         if file_ext not in settings.UPLOAD_IMAGE_EXT_INCLUDE:
             raise errors.RequestError(msg="此图片格式暂不支持")
         if file_size > settings.UPLOAD_IMAGE_SIZE_MAX:
-            raise errors.RequestError(msg="图片超出最大限制，请重新选择")
+            raise errors.RequestError(msg="图片超出最大限制, 请重新选择")
     elif file_ext == FileType.video:
         if file_ext not in settings.UPLOAD_VIDEO_EXT_INCLUDE:
             raise errors.RequestError(msg="此视频格式暂不支持")
         if file_size > settings.UPLOAD_VIDEO_SIZE_MAX:
-            raise errors.RequestError(msg="视频超出最大限制，请重新选择")
+            raise errors.RequestError(msg="视频超出最大限制, 请重新选择")
 
 
 async def upload_file(file: UploadFile) -> str:
@@ -82,8 +84,8 @@ async def upload_file(file: UploadFile) -> str:
                     break
                 await fb.write(content)
     except Exception as e:
-        log.error(f"上传文件 {filename} 失败：{e!s}")
-        raise errors.RequestError(msg="上传文件失败")
+        log.error(f"上传文件 {filename} 失败: {e!s}")
+        raise errors.RequestError(msg="上传文件失败") from e
     await file.close()
     return filename
 
@@ -118,7 +120,7 @@ async def install_zip_plugin(file: UploadFile | str) -> str:
         # 插件是否可安装
         plugin_name_match = re.match(
             r"^([a-zA-Z0-9_]+)",
-            file.split(os.sep)[-1].split(".")[0].strip()
+            file.split(os.sep)[-1].split(".")[0].strip()  # noqa: PTH206
             if isinstance(file, str)
             else _require_filename(file).split(".")[0].strip(),
         )
@@ -163,7 +165,7 @@ async def install_git_plugin(repo_url: str) -> str:
         porcelain.clone(repo_url, PLUGIN_DIR / repo_name, checkout=True)
     except Exception as e:
         log.error(f"插件安装失败: {e}")
-        raise errors.ServerError(msg="插件安装失败，请稍后重试") from e
+        raise errors.ServerError(msg="插件安装失败, 请稍后重试") from e
 
     await install_requirements_async(repo_name)
     await redis_client.set(f"{settings.PLUGIN_REDIS_PREFIX}:changed", "true")
@@ -189,6 +191,6 @@ async def parse_sql_script(filepath: str) -> list[str]:
     statements = split(contents)
     for statement in statements:
         if not any(statement.lower().startswith(_) for _ in ["select", "insert"]):
-            raise errors.RequestError(msg="SQL 脚本文件中存在非法操作，仅允许 SELECT 和 INSERT")
+            raise errors.RequestError(msg="SQL 脚本文件中存在非法操作, 仅允许 SELECT 和 INSERT")
 
     return statements

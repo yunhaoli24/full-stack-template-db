@@ -1,3 +1,5 @@
+"""Main."""
+
 from rich.text import Text
 from rich.progress import Progress, TextColumn, SpinnerColumn, TimeElapsedColumn
 

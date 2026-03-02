@@ -1,3 +1,5 @@
+"""Config."""
+
 from typing import Annotated
 
 from fastapi import Body, Path, Query, Depends, APIRouter
@@ -20,19 +22,21 @@ from backend.plugin.config.service.config_service import config_service
 router = APIRouter()
 
 
-@router.get("/all", summary="获取所有参数配置", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/all", summary="获取所有参数配置", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_all_configs(
     db: CurrentSession,
-    type: Annotated[str | None, Query(description="参数配置类型")] = None,
+    config_type: Annotated[str | None, Query(description="参数配置类型")] = None,
 ) -> ResponseSchemaModel[list[GetConfigDetail]]:
-    configs = await config_service.get_all(db=db, type=type)
+    """Get All Configs."""
+    configs = await config_service.get_all(db=db, config_type=config_type)
     return response_base.success(data=configs)
 
 
-@router.get("/{pk}", summary="获取参数配置详情", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取参数配置详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_config(
     db: CurrentSession, pk: Annotated[int, Path(description="参数配置 ID")]
 ) -> ResponseSchemaModel[GetConfigDetail]:
+    """Get Config."""
     config = await config_service.get(db=db, pk=pk)
     return response_base.success(data=config)
 
@@ -44,13 +48,14 @@ async def get_config(
         DependsJwtAuth,
         DependsPagination,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_configs_paginated(
     db: CurrentSession,
     name: Annotated[str | None, Query(description="参数配置名称")] = None,
-    type: Annotated[str | None, Query(description="参数配置类型")] = None,
+    config_type: Annotated[str | None, Query(description="参数配置类型")] = None,
 ) -> ResponseSchemaModel[PageData[GetConfigDetail]]:
-    page_data = await config_service.get_list(db=db, name=name, type=type)
+    """Get Configs Paginated."""
+    page_data = await config_service.get_list(db=db, name=name, config_type=config_type)
     return response_base.success(data=page_data)
 
 
@@ -61,14 +66,16 @@ async def get_configs_paginated(
         Depends(RequestPermission("sys:config:add")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def create_config(db: CurrentSessionTransaction, obj: CreateConfigParam) -> ResponseModel:
+    """Create Config."""
     await config_service.create(db=db, obj=obj)
     return response_base.success()
 
 
-@router.put("", summary="批量更新参数配置", dependencies=[Depends(RequestPermission("sys.config.edits")), DependsRBAC])  # pyright: ignore
+@router.put("", summary="批量更新参数配置", dependencies=[Depends(RequestPermission("sys.config.edits")), DependsRBAC])  # pyright: ignore[reportGeneralTypeIssues]
 async def bulk_update_config(db: CurrentSessionTransaction, objs: list[UpdateConfigsParam]) -> ResponseModel:
+    """Bulk Update Config."""
     count = await config_service.bulk_update(db=db, objs=objs)
     if count > 0:
         return response_base.success()
@@ -82,10 +89,11 @@ async def bulk_update_config(db: CurrentSessionTransaction, objs: list[UpdateCon
         Depends(RequestPermission("sys:config:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_config(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description="参数配置 ID")], obj: UpdateConfigParam
 ) -> ResponseModel:
+    """Update Config."""
     count = await config_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
         return response_base.success()
@@ -99,10 +107,11 @@ async def update_config(
         Depends(RequestPermission("sys:config:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_configs(
     db: CurrentSessionTransaction, pks: Annotated[list[int], Body(description="参数配置 ID 列表")]
 ) -> ResponseModel:
+    """Delete Configs."""
     count = await config_service.delete(db=db, pks=pks)
     if count > 0:
         return response_base.success()

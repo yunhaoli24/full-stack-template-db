@@ -1,3 +1,5 @@
+"""Conf."""
+
 from typing import Any, Literal, cast
 from functools import lru_cache
 
@@ -55,13 +57,13 @@ class Settings(BaseSettings):
     TOKEN_SECRET_KEY: str  # 密钥 secrets.token_urlsafe(32)
 
     # Token
-    TOKEN_ALGORITHM: str = "HS256"
+    TOKEN_ALGORITHM: str = "HS256"  # noqa: S105
     TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 24  # 1 天
     TOKEN_REFRESH_EXPIRE_SECONDS: int = 60 * 60 * 24 * 7  # 7 天
-    TOKEN_REDIS_PREFIX: str = "fba:token"
-    TOKEN_EXTRA_INFO_REDIS_PREFIX: str = "fba:token_extra_info"
-    TOKEN_ONLINE_REDIS_PREFIX: str = "fba:token_online"
-    TOKEN_REFRESH_REDIS_PREFIX: str = "fba:refresh_token"
+    TOKEN_REDIS_PREFIX: str = "fba:token"  # noqa: S105
+    TOKEN_EXTRA_INFO_REDIS_PREFIX: str = "fba:token_extra_info"  # noqa: S105
+    TOKEN_ONLINE_REDIS_PREFIX: str = "fba:token_online"  # noqa: S105
+    TOKEN_REFRESH_REDIS_PREFIX: str = "fba:refresh_token"  # noqa: S105
     TOKEN_REQUEST_PATH_EXCLUDE: list[str] = [  # JWT / RBAC 路由白名单
         f"{FASTAPI_API_V1_PATH}/auth/login",
     ]
@@ -97,7 +99,7 @@ class Settings(BaseSettings):
     ]
 
     # Cookie
-    COOKIE_REFRESH_TOKEN_KEY: str = "fba_refresh_token"
+    COOKIE_REFRESH_TOKEN_KEY: str = "fba_refresh_token"  # noqa: S105
     COOKIE_REFRESH_TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 24 * 7  # 7 天
 
     # 数据权限
@@ -270,9 +272,9 @@ class Settings(BaseSettings):
     EMAIL_CAPTCHA_REDIS_PREFIX: str = "fba:email:captcha"
     EMAIL_CAPTCHA_EXPIRE_SECONDS: int = 60 * 3  # 3 分钟
 
-    @model_validator(mode="before")  # pyright: ignore
+    @model_validator(mode="before")  # pyright: ignore[reportGeneralTypeIssues]
     @classmethod
-    def check_env(cls, values: Any) -> Any:
+    def check_env(cls, values: Any) -> Any:  # noqa: ANN401
         """检查环境变量."""
         if values.get("ENVIRONMENT") == "prod":
             # FastAPI

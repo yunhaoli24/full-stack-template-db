@@ -1,3 +1,5 @@
+"""Context."""
+
 from typing import Any, Protocol, cast
 from datetime import datetime
 
@@ -5,6 +7,8 @@ from starlette_context.ctx import context
 
 
 class TypedContextProtocol(Protocol):
+    """类型化上下文协议."""
+
     perf_time: float
     start_time: datetime
 
@@ -25,28 +29,30 @@ class TypedContextProtocol(Protocol):
     __request_assertion_error__: Any
     __request_custom_exception__: Any
 
-    def exists(self) -> bool: ...
+    def exists(self) -> bool: ...  # noqa: D102
 
-    def get(self, key: str, default: Any = None) -> Any: ...
+    def get(self, key: str, default: Any = None) -> Any: ...  # noqa: ANN401, D102
 
-    def __getattr__(self, name: str) -> Any: ...
+    def __getattr__(self, name: str) -> Any: ...  # noqa: ANN401, D105
 
-    def __setattr__(self, name: str, value: Any) -> None: ...
+    def __setattr__(self, name: str, value: Any) -> None: ...  # noqa: ANN401, D105
 
 
 class TypedContext:
-    def exists(self) -> bool:
+    """类型化上下文."""
+
+    def exists(self) -> bool:  # noqa: D102
         return context.exists()
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: Any = None) -> Any:  # noqa: ANN401, D102
         context_proxy = cast("Any", context)
         return context_proxy.get(key, default)
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> Any:  # noqa: ANN401, D105
         context_proxy = cast("Any", context)
         return context_proxy.get(name)
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:  # noqa: ANN401, D105
         context[name] = value
 
 

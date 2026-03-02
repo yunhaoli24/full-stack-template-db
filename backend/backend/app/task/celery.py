@@ -1,8 +1,10 @@
+"""Celery."""
+
 import os
 import urllib.parse
 
 import celery_aio_pool
-from celery import celery  # pyright: ignore
+from celery import celery  # pyright: ignore[reportMissingModuleSource]
 from celery.app.base import Celery
 
 from backend.core.conf import settings
@@ -11,6 +13,7 @@ from backend.app.task.tasks.beat import LOCAL_BEAT_SCHEDULE
 
 
 def find_task_packages() -> list[str]:
+    """Find Task Packages."""
     packages: list[str] = []
     task_dir = BASE_PATH / "app" / "task" / "tasks"
     for root, _dirs, files in os.walk(task_dir):
@@ -25,8 +28,8 @@ def init_celery() -> Celery:
     # TODO: Update this work if celery version >= 6.0.0
     # https://github.com/fastapi-practices/fastapi_best_architecture/issues/321
     # https://github.com/celery/celery/issues/7874
-    celery.app.trace.build_tracer = celery_aio_pool.build_async_tracer  # pyright: ignore
-    celery.app.trace.reset_worker_optimizations()  # pyright: ignore
+    celery.app.trace.build_tracer = celery_aio_pool.build_async_tracer  # pyright: ignore[reportAssignmentType]
+    celery.app.trace.reset_worker_optimizations()  # pyright: ignore[reportAssignmentType]
 
     broker_url = f"amqp://{settings.CELERY_RABBITMQ_USERNAME}:{urllib.parse.quote(settings.CELERY_RABBITMQ_PASSWORD)}@{settings.CELERY_RABBITMQ_HOST}:{settings.CELERY_RABBITMQ_PORT}/{settings.CELERY_RABBITMQ_VHOST}"
     if settings.CELERY_BROKER == "redis":

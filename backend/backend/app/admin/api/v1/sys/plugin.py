@@ -1,3 +1,5 @@
+"""Plugin."""
+
 from typing import Any, Annotated
 
 from fastapi import File, Path, Depends, APIRouter, UploadFile
@@ -16,14 +18,16 @@ from backend.app.admin.service.plugin_service import plugin_service
 router = APIRouter()
 
 
-@router.get("", summary="获取所有插件", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("", summary="获取所有插件", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_all_plugins() -> ResponseSchemaModel[list[dict[str, Any]]]:
+    """Get All Plugins."""
     plugins = await plugin_service.get_all()
     return response_base.success(data=plugins)
 
 
-@router.get("/changed", summary="是否存在插件变更", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/changed", summary="是否存在插件变更", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def plugin_changed() -> ResponseSchemaModel[bool]:
+    """Plugin Changed."""
     plugins = await plugin_service.changed()
     return response_base.success(data=bool(plugins))
 
@@ -36,17 +40,18 @@ async def plugin_changed() -> ResponseSchemaModel[bool]:
         Depends(RequestPermission("sys:plugin:install")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def install_plugin(
-    type: Annotated[PluginType, Query(description="插件类型")],
+    plugin_type: Annotated[PluginType, Query(description="插件类型")],
     file: Annotated[UploadFile | None, File()] = None,
     repo_url: Annotated[str | None, Query(description="插件 git 仓库地址")] = None,
 ) -> ResponseModel:
-    plugin_name = await plugin_service.install(type=type, file=file, repo_url=repo_url)
+    """Install Plugin."""
+    plugin_name = await plugin_service.install(plugin_type=plugin_type, file=file, repo_url=repo_url)
     return response_base.success(
         res=CustomResponse(
             code=200,
-            msg=f"插件 {plugin_name} 安装成功，请根据插件说明（README.md）进行相关配置并重启服务",
+            msg=f"插件 {plugin_name} 安装成功, 请根据插件说明 (README.md) 进行相关配置并重启服务",
         ),
     )
 
@@ -54,16 +59,17 @@ async def install_plugin(
 @router.delete(
     "/{plugin}",
     summary="卸载插件",
-    description="此操作会直接删除插件依赖，但不会直接删除插件，而是将插件移动到备份目录",
+    description="此操作会直接删除插件依赖, 但不会直接删除插件, 而是将插件移动到备份目录",
     dependencies=[
         Depends(RequestPermission("sys:plugin:uninstall")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def uninstall_plugin(plugin: Annotated[str, Path(description="插件名称")]) -> ResponseModel:
+    """Uninstall Plugin."""
     await plugin_service.uninstall(plugin=plugin)
     return response_base.success(
-        res=CustomResponse(code=200, msg=f"插件 {plugin} 卸载成功，请根据插件说明（README.md）移除相关配置并重启服务"),
+        res=CustomResponse(code=200, msg=f"插件 {plugin} 卸载成功, 请根据插件说明 (README.md) 移除相关配置并重启服务"),
     )
 
 
@@ -74,14 +80,16 @@ async def uninstall_plugin(plugin: Annotated[str, Path(description="插件名称
         Depends(RequestPermission("sys:plugin:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_plugin_status(plugin: Annotated[str, Path(description="插件名称")]) -> ResponseModel:
+    """Update Plugin Status."""
     await plugin_service.update_status(plugin=plugin)
     return response_base.success()
 
 
-@router.get("/{plugin}", summary="下载插件", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{plugin}", summary="下载插件", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def download_plugin(plugin: Annotated[str, Path(description="插件名称")]) -> StreamingResponse:
+    """Download Plugin."""
     bio = await plugin_service.build(plugin=plugin)
     return StreamingResponse(
         bio,

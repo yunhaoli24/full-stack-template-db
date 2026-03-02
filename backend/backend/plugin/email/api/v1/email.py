@@ -1,3 +1,5 @@
+"""Email API."""
+
 import random
 from typing import Any, Annotated
 
@@ -15,12 +17,13 @@ from backend.common.response.response_schema import ResponseModel, response_base
 router = APIRouter()
 
 
-@router.post("/captcha", summary="发送电子邮件验证码", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.post("/captcha", summary="发送电子邮件验证码", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def send_email_captcha(
     db: CurrentSession,
     recipients: Annotated[str | list[str], Body(embed=True, description="邮件接收者")],
 ) -> ResponseModel:
-    code = "".join([str(random.randint(1, 9)) for _ in range(6)])
+    """Send Email Captcha."""
+    code = "".join([str(random.randint(1, 9)) for _ in range(6)])  # noqa: S311
     ip = ctx.ip
     await redis_client.set(
         f"{settings.EMAIL_CAPTCHA_REDIS_PREFIX}:{ip}",

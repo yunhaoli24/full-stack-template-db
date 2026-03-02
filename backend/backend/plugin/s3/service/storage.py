@@ -1,3 +1,5 @@
+"""Storage Service."""
+
 from typing import Any
 from collections.abc import Sequence
 
@@ -11,6 +13,8 @@ from backend.plugin.s3.schema.storage import CreateS3StorageParam, DeleteS3Stora
 
 
 class S3StorageService:
+    """S3 Storage Service."""
+
     @staticmethod
     async def get(*, db: AsyncSession, pk: int) -> S3Storage:
         """获取 S3 存储.

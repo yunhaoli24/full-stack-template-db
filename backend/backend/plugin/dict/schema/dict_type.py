@@ -1,3 +1,5 @@
+"""Dict Type."""
+
 from datetime import datetime
 
 from pydantic import Field, ConfigDict

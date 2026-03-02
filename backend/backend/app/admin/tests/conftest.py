@@ -1,3 +1,5 @@
+"""Conftest."""
+
 from collections.abc import Generator
 
 import pytest
@@ -15,18 +17,20 @@ app.dependency_overrides[get_db] = override_get_db
 
 # Test data
 PYTEST_USERNAME = "admin"
-PYTEST_PASSWORD = "123456"
+PYTEST_PASSWORD = "123456"  # noqa: S105
 PYTEST_BASE_URL = f"http://testserver{settings.FASTAPI_API_V1_PATH}"
 
 
-@pytest.fixture(scope="module")  # pyright: ignore
+@pytest.fixture(scope="module")  # pyright: ignore[reportGeneralTypeIssues]
 def client() -> Generator[TestClient]:
+    """Client."""
     with TestClient(app, base_url=PYTEST_BASE_URL) as c:
         yield c
 
 
-@pytest.fixture(scope="module")  # pyright: ignore
+@pytest.fixture(scope="module")  # pyright: ignore[reportGeneralTypeIssues]
 def token_headers(client: TestClient) -> dict[str, str]:
+    """Token Headers."""
     params = {
         "username": PYTEST_USERNAME,
         "password": PYTEST_PASSWORD,

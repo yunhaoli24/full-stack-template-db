@@ -1,7 +1,9 @@
+"""Crud Dict Data."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
-from sqlalchemy import and_
+from sqlalchemy import Select, and_
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -53,7 +55,7 @@ class CRUDDictData(CRUDPlus[DictData]):
         value: str | None,
         status: int | None,
         type_id: int | None,
-    ) -> Any:
+    ) -> Select[Any]:
         """获取字典数据列表查询表达式.
 
         :param type_code: 字典类型编码

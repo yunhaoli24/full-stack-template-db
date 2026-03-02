@@ -1,3 +1,5 @@
+"""Server."""
+
 from fastapi import APIRouter
 from starlette.concurrency import run_in_threadpool
 
@@ -9,8 +11,9 @@ from backend.common.response.response_schema import ResponseModel, response_base
 router = APIRouter()
 
 
-@router.get("", summary="server 监控", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("", summary="server 监控", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_server_info() -> ResponseModel:
+    """Get Server Info."""
     data: dict[str, object] = {
         # 扔到线程池，避免阻塞
         "cpu": await run_in_threadpool(server_info.get_cpu_info),

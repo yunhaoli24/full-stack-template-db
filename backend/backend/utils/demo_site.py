@@ -1,3 +1,5 @@
+"""Demo Site."""
+
 from fastapi import Request
 
 from backend.core.conf import settings

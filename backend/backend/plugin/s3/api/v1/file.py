@@ -1,3 +1,5 @@
+"""S3 File API v1."""
+
 from typing import Annotated
 
 from fastapi import File, Query, Depends, APIRouter, UploadFile
@@ -23,10 +25,11 @@ router = APIRouter()
         Depends(RequestPermission("s3:file:upload")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def upload_s3_files(
     db: CurrentSession, file: Annotated[UploadFile, File()], storage: Annotated[int, Query(description="S3 存储 ID")]
 ) -> ResponseSchemaModel[UploadUrl]:
+    """Upload S3 Files."""
     s3_storage = await s3_storage_dao.get(db, storage)
     if not s3_storage:
         raise errors.NotFoundError(msg="S3 存储不存在")

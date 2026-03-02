@@ -1,6 +1,9 @@
+"""Storage."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +12,8 @@ from backend.plugin.s3.schema.storage import CreateS3StorageParam, UpdateS3Stora
 
 
 class CRUDS3Storage(CRUDPlus[S3Storage]):
+    """S3 Storage CRUD operations."""
+
     async def get(self, db: AsyncSession, pk: int) -> S3Storage | None:
         """获取 S3 存储.
 
@@ -18,7 +23,7 @@ class CRUDS3Storage(CRUDPlus[S3Storage]):
         """
         return cast("S3Storage | None", await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None, region: str | None) -> Any:
+    async def get_select(self, name: str | None, region: str | None) -> Select[Any]:
         """获取 S3 存储列表查询表达式.
 
         :param name: 存储名称

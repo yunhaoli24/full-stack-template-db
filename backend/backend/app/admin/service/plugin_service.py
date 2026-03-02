@@ -1,9 +1,12 @@
+"""Plugin Service."""
+
 import io
 import os
 import json
 import shutil
 import zipfile
 from typing import Any, cast
+from pathlib import Path
 
 import anyio
 from fastapi import UploadFile
@@ -34,17 +37,17 @@ class PluginService:
         return await redis_client.get(f"{settings.PLUGIN_REDIS_PREFIX}:changed")
 
     @staticmethod
-    async def install(*, type: PluginType, file: UploadFile | None = None, repo_url: str | None = None) -> str:
+    async def install(*, plugin_type: PluginType, file: UploadFile | None = None, repo_url: str | None = None) -> str:
         """安装插件.
 
-        :param type: 插件类型
+        :param plugin_type: 插件类型
         :param file: 插件 zip 压缩包
         :param repo_url: git 仓库地址
         :return:
         """
         if settings.ENVIRONMENT != "dev":
             raise errors.RequestError(msg="禁止在非开发环境下安装插件")
-        if type == PluginType.zip:
+        if plugin_type == PluginType.zip:
             if not file:
                 raise errors.RequestError(msg="ZIP 压缩包不能为空")
             return await install_zip_plugin(file)
@@ -103,13 +106,14 @@ class PluginService:
             raise errors.NotFoundError(msg="插件不存在")
 
         bio = io.BytesIO()
+        plugin_dir_path = str(plugin_dir)
         with zipfile.ZipFile(bio, "w") as zf:
-            for root, dirs, files in os.walk(plugin_dir):
+            for root, dirs, files in os.walk(plugin_dir_path):
                 dirs[:] = [d for d in dirs if d != "__pycache__"]
                 for file in files:
-                    file_path = os.path.join(root, file)
-                    arcname = os.path.relpath(file_path, start=plugin_dir)
-                    zf.write(file_path, os.path.join(plugin, arcname))
+                    file_path = Path(root) / file
+                    arcname = file_path.relative_to(plugin_dir_path)
+                    zf.write(str(file_path), str(Path(plugin) / arcname))
 
         bio.seek(0)
         return bio

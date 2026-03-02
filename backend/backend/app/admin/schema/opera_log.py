@@ -1,3 +1,5 @@
+"""Opera Log."""
+
 from typing import Any
 from datetime import datetime
 

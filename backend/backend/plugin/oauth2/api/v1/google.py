@@ -1,3 +1,5 @@
+"""Google OAuth2 API v1."""
+
 import json
 import uuid
 from typing import Any, Annotated
@@ -20,8 +22,9 @@ router = APIRouter()
 google_client = GoogleOAuth20(settings.OAUTH2_GOOGLE_CLIENT_ID, settings.OAUTH2_GOOGLE_CLIENT_SECRET)
 
 
-@router.get("", summary="获取 google 授权链接")  # pyright: ignore
+@router.get("", summary="获取 google 授权链接")  # pyright: ignore[reportGeneralTypeIssues]
 async def get_google_oauth2_url() -> ResponseSchemaModel[str]:
+    """Get Google Oauth2 Url."""
     state = str(uuid.uuid4())
 
     await redis_client.setex(
@@ -37,9 +40,9 @@ async def get_google_oauth2_url() -> ResponseSchemaModel[str]:
 @router.get(
     "/callback",
     summary="google 授权自动重定向",
-    description="google 授权后，自动重定向到当前地址并获取用户信息，通过用户信息自动创建系统用户",
+    description="google 授权后, 自动重定向到当前地址并获取用户信息, 通过用户信息自动创建系统用户",
     dependencies=[Depends(create_rate_limiter(limit=5, minutes=1))],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def google_oauth2_callback(  # noqa: ANN201
     db: CurrentSessionTransaction,
     response: Response,
@@ -49,6 +52,7 @@ async def google_oauth2_callback(  # noqa: ANN201
         Depends(FastAPIOAuth20(google_client, redirect_uri=settings.OAUTH2_GOOGLE_REDIRECT_URI)),
     ],
 ):
+    """Google Oauth2 Callback."""
     token_data, state = oauth2
     access_token = token_data["access_token"]
     user = await google_client.get_userinfo(access_token)

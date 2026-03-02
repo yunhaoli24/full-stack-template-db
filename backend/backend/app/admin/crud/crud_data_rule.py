@@ -1,6 +1,9 @@
+"""Crud Data Rule."""
+
 from typing import Any, cast
 from collections.abc import Sequence
 
+from sqlalchemy import Select
 from sqlalchemy_crud_plus import CRUDPlus
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +23,7 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         """
         return cast("DataRule | None", await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None) -> Any:
+    async def get_select(self, name: str | None) -> Select[Any]:
         """获取规则列表查询表达式.
 
         :param name: 规则名称

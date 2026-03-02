@@ -1,9 +1,12 @@
+"""Log."""
+
 import os
 import re
 import sys
 import inspect
 import logging
 from typing import Any
+from pathlib import Path
 
 from loguru import logger as _logger
 
@@ -23,6 +26,7 @@ class InterceptHandler(logging.Handler):
     """
 
     def emit(self, record: logging.LogRecord) -> None:
+        """Emit."""
         # 获取对应的 Loguru 级别（如果存在）
         try:
             level = logger.level(record.levelname).name
@@ -60,16 +64,19 @@ def request_id_filter(record: logging.LogRecord | dict[str, Any]) -> logging.Log
 
 
 def loguru_request_id_filter(record: dict[str, Any]) -> bool:
+    """Loguru Request Id Filter."""
     request_id_filter(record)
     return True
 
 
 def access_level_filter(record: dict[str, Any]) -> bool:
+    """Access Level Filter."""
     level_no = getattr(record.get("level"), "no", 0)
     return bool(level_no <= 25)
 
 
 def error_level_filter(record: dict[str, Any]) -> bool:
+    """Error Level Filter."""
     level_no = getattr(record.get("level"), "no", 0)
     return bool(level_no >= 30)
 
@@ -116,8 +123,8 @@ def setup_logging() -> None:
 
 def set_custom_logfile() -> None:
     """设置自定义日志文件."""
-    if not os.path.exists(LOG_DIR):
-        os.mkdir(LOG_DIR)
+    if not LOG_DIR.exists():
+        LOG_DIR.mkdir()
 
     # 日志文件
     log_access_file = LOG_DIR / settings.LOG_ACCESS_FILENAME
@@ -125,6 +132,7 @@ def set_custom_logfile() -> None:
 
     # 日志压缩回调
     def compression(filepath: str) -> str:
+        """Compression."""
         filename = filepath.rsplit(os.sep, maxsplit=1)[-1]
         original_filename = filename.split(".")[0]
         if "-" in original_filename:
@@ -132,7 +140,8 @@ def set_custom_logfile() -> None:
         return str(LOG_DIR / f"{original_filename}_{timezone.now().strftime('%Y-%m-%d')}.log")
 
     def compression_handler(filepath: str) -> None:
-        os.rename(filepath, compression(filepath))
+        """Compression Handler."""
+        Path(filepath).rename(compression(filepath))
 
     # 日志文件通用配置
     # https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add

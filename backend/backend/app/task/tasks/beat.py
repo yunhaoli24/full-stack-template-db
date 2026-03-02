@@ -1,3 +1,5 @@
+"""Beat."""
+
 from typing import Any
 
 from celery.schedules import schedule
@@ -20,7 +22,7 @@ LOCAL_BEAT_SCHEDULE: dict[str, BeatScheduleEntry] = {
     "测试传参任务": {
         "task": "task_demo_params",
         "schedule": TzAwareCrontab("1"),
-        "args": ["你好，"],
+        "args": ["你好,"],
         "kwargs": {"world": "世界"},
     },
     "清理操作日志": {

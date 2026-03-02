@@ -1,3 +1,5 @@
+"""Limiter."""
+
 from pyrate_limiter import Rate, Limiter, Duration
 from fastapi_limiter.depends import RateLimiter
 

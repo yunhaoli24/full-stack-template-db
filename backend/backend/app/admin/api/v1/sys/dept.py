@@ -1,3 +1,5 @@
+"""Dept."""
+
 from typing import Annotated
 
 from fastapi import Path, Query, Depends, APIRouter
@@ -16,15 +18,16 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 router = APIRouter()
 
 
-@router.get("/{pk}", summary="获取部门详情", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("/{pk}", summary="获取部门详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_dept(
     db: CurrentSession, pk: Annotated[int, Path(description="部门 ID")]
 ) -> ResponseSchemaModel[GetDeptDetail]:
+    """Get Dept."""
     data = await dept_service.get(db=db, pk=pk)
     return response_base.success(data=data)
 
 
-@router.get("", summary="获取部门树", dependencies=[DependsJwtAuth])  # pyright: ignore
+@router.get("", summary="获取部门树", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_dept_tree(
     db: CurrentSession,
     data_filter: Annotated[ColumnElement[bool], Depends(DataPermissionFilter(Dept))],
@@ -33,6 +36,7 @@ async def get_dept_tree(
     phone: Annotated[str | None, Query(description="联系电话")] = None,
     status: Annotated[int | None, Query(description="状态")] = None,
 ) -> ResponseSchemaModel[list[GetDeptTree]]:
+    """Get Dept Tree."""
     dept = await dept_service.get_tree(
         db=db, data_filter=data_filter, name=name, leader=leader, phone=phone, status=status
     )
@@ -46,8 +50,9 @@ async def get_dept_tree(
         Depends(RequestPermission("sys:dept:add")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def create_dept(db: CurrentSessionTransaction, obj: CreateDeptParam) -> ResponseModel:
+    """Create Dept."""
     await dept_service.create(db=db, obj=obj)
     return response_base.success()
 
@@ -59,10 +64,11 @@ async def create_dept(db: CurrentSessionTransaction, obj: CreateDeptParam) -> Re
         Depends(RequestPermission("sys:dept:edit")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_dept(
     db: CurrentSessionTransaction, pk: Annotated[int, Path(description="部门 ID")], obj: UpdateDeptParam
 ) -> ResponseModel:
+    """Update Dept."""
     count = await dept_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
         return response_base.success()
@@ -76,8 +82,9 @@ async def update_dept(
         Depends(RequestPermission("sys:dept:del")),
         DependsRBAC,
     ],
-)  # pyright: ignore
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_dept(db: CurrentSessionTransaction, pk: Annotated[int, Path(description="部门 ID")]) -> ResponseModel:
+    """Delete Dept."""
     count = await dept_service.delete(db=db, pk=pk)
     if count > 0:
         return response_base.success()

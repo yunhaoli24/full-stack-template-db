@@ -1,3 +1,5 @@
+"""Response Code."""
+
 import dataclasses
 from enum import Enum
 

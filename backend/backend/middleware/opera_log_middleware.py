@@ -1,3 +1,5 @@
+"""Opera Log Middleware."""
+
 import time
 from typing import Any, cast
 from asyncio import Queue
@@ -32,7 +34,7 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
 
     opera_log_queue: Queue[CreateOperaLogParam] = Queue(maxsize=100000)
 
-    async def dispatch(self, request: Request, call_next: Any) -> Response:
+    async def dispatch(self, request: Request, call_next: Any) -> Response:  # noqa: ANN401
         """处理请求并记录操作日志.
 
         :param request: FastAPI 请求对象
@@ -112,9 +114,9 @@ class OperaLogMiddleware(BaseHTTPMiddleware):
                 username = None
 
             # 日志记录
-            log.debug(f"接口摘要：[{summary}]")
-            log.debug(f"请求地址：[{ctx.ip}]")
-            log.debug(f"请求参数：{args}")
+            log.debug(f"接口摘要: [{summary}]")
+            log.debug(f"请求地址: [{ctx.ip}]")
+            log.debug(f"请求参数: {args}")
             log.info(f"{ctx.ip: <15} | {request.method: <8} | {code!s: <6} | {path} | {elapsed:.3f}ms")
             if request.method != "OPTIONS":
                 log.debug("<-- 请求结束")
