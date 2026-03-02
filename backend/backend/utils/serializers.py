@@ -1,37 +1,35 @@
-from collections import defaultdict, namedtuple
-from collections.abc import Sequence
-from decimal import Decimal
-from typing import Any, TypeAlias, TypeVar
+"""Serializers."""
 
-from fastapi.encoders import decimal_encoder
+from typing import Any, cast
+from decimal import Decimal
+from collections import namedtuple, defaultdict
+from collections.abc import Sequence
+
 from msgspec import json
-from sqlalchemy import Row, RowMapping
 from sqlalchemy.orm import ColumnProperty, SynonymProperty, class_mapper
+from fastapi.encoders import decimal_encoder
 from starlette.responses import JSONResponse
 
-RowData: TypeAlias = Row[Any] | RowMapping | Any
 
-R = TypeVar('R', bound=RowData)
+type RowData = Any
 
 
 class MsgSpecJSONResponse(JSONResponse):
-    """
-    使用高性能的 msgspec 库将数据序列化为 JSON 的响应类
-    """
+    """使用高性能的 msgspec 库将数据序列化为 JSON 的响应类."""
 
-    def render(self, content: Any) -> bytes:
+    def render(self, content: Any) -> bytes:  # noqa: ANN401
+        """Render response as JSON."""
         return json.encode(content)
 
 
-def select_columns_serialize(row: R) -> dict[str, Any]:
-    """
-    序列化 SQLAlchemy 查询表的列，不包含关联列
+def select_columns_serialize(row: RowData) -> dict[str, Any]:
+    """序列化 SQLAlchemy 查询表的列，不包含关联列.
 
     :param row: SQLAlchemy 查询结果行
     :return:
     """
-    result = {}
-    for column in row.__table__.columns.keys():
+    result: dict[str, Any] = {}
+    for column in row.__table__.columns:
         value = getattr(row, column)
         if isinstance(value, Decimal):
             value = decimal_encoder(value)
@@ -39,9 +37,8 @@ def select_columns_serialize(row: R) -> dict[str, Any]:
     return result
 
 
-def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
-    """
-    序列化 SQLAlchemy 查询列表
+def select_list_serialize(row: Sequence[RowData]) -> list[dict[str, Any]]:
+    """序列化 SQLAlchemy 查询列表.
 
     :param row: SQLAlchemy 查询结果列表
     :return:
@@ -49,18 +46,18 @@ def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
     return [select_columns_serialize(item) for item in row]
 
 
-def select_as_dict(row: R, *, use_alias: bool = False) -> dict[str, Any]:
-    """
-    将 SQLAlchemy 查询结果转换为字典，可以包含关联数据
+def select_as_dict(row: RowData, *, use_alias: bool = False) -> dict[str, Any]:
+    """将 SQLAlchemy 查询结果转换为字典，可以包含关联数据.
 
     :param row: SQLAlchemy 查询结果行
     :param use_alias: 是否使用别名作为列名
     :return:
     """
+    result: dict[str, Any]
     if not use_alias:
-        result = row.__dict__
-        if '_sa_instance_state' in result:
-            del result['_sa_instance_state']
+        result = cast("dict[str, Any]", row.__dict__)
+        if "_sa_instance_state" in result:
+            del result["_sa_instance_state"]
     else:
         result = {}
         mapper = class_mapper(row.__class__)
@@ -72,14 +69,13 @@ def select_as_dict(row: R, *, use_alias: bool = False) -> dict[str, Any]:
     return result
 
 
-def select_join_serialize(  # noqa: C901
-    row: R | Sequence[R],
+def select_join_serialize(
+    row: Any | Sequence[Any],  # noqa: ANN401
     relationships: list[str] | None = None,
     *,
     return_as_dict: bool = False,
 ) -> dict[str, Any] | list[dict[str, Any]] | tuple[Any, ...] | list[tuple[Any, ...]] | None:
-    """
-    将 SQLAlchemy 连接查询结果序列化为字典或支持属性访问的 namedtuple
+    """将 SQLAlchemy 连接查询结果序列化为字典或支持属性访问的 namedtuple.
 
     扁平序列化：``relationships=None``
         | 将所有查询结果平铺到同一层级，不进行嵌套处理
@@ -107,11 +103,13 @@ def select_join_serialize(  # noqa: C901
     """
 
     def get_relation_key(model_name: str, rel_type: str, custom_field: str | None = None) -> str:
-        """获取关系键名"""
-        return custom_field or (model_name if rel_type in ('o2o', 'm2o') else f'{model_name}s')
+        """获取关系键名."""
+        return custom_field or (model_name if rel_type in ("o2o", "m2o") else f"{model_name}s")
 
-    def parse_relationships(relationship_list: list[str]) -> tuple[dict, dict, dict]:
-        """解析关系定义"""
+    def parse_relationships(
+        relationship_list: list[str],
+    ) -> tuple[dict[str, dict[str, str]], dict[str, str], dict[tuple[str, str], str]]:
+        """解析关系定义."""
         if not relationship_list:
             return {}, {}, {}
 
@@ -120,16 +118,16 @@ def select_join_serialize(  # noqa: C901
         parsed_custom_names: dict[tuple[str, str], str] = {}
 
         for rel_str in relationship_list:
-            parts = rel_str.split(':', 1)
+            parts = rel_str.split(":", 1)
             rel_part = parts[0].strip()
             field_custom_name = parts[1].strip() if len(parts) > 1 else None
 
-            rel_info = rel_part.split('-')
+            rel_info = rel_part.split("-")
             if len(rel_info) != 3:
                 continue
 
             source_model, rel_type, target_model = (info.lower() for info in rel_info)
-            if rel_type not in ('o2m', 'm2o', 'o2o', 'm2m'):
+            if rel_type not in ("o2m", "m2o", "o2o", "m2m"):
                 continue
 
             parsed_relation_graph[source_model][target_model] = rel_type
@@ -139,19 +137,19 @@ def select_join_serialize(  # noqa: C901
 
         return parsed_relation_graph, parsed_reverse_relation, parsed_custom_names
 
-    def get_model_columns(model_obj: Any) -> list[str]:
-        """获取模型列名"""
-        mapper = class_mapper(type(model_obj))
+    def get_model_columns(model_obj: Any) -> list[str]:  # noqa: ANN401
+        """获取模型列名."""
+        mapper = class_mapper(cast("Any", type(model_obj)))
         return [
             prop.key
             for prop in mapper.iterate_properties
             if isinstance(prop, (ColumnProperty, SynonymProperty)) and hasattr(model_obj, prop.key)
         ]
 
-    def get_unique_objects(objs: list[Any], key_attr: str = 'id') -> list[Any]:
-        """根据键属性去重对象列表"""
-        seen = set()
-        unique = []
+    def get_unique_objects(objs: list[Any], key_attr: str = "id") -> list[Any]:
+        """根据键属性去重对象列表."""
+        seen: set[Any] = set()
+        unique: list[Any] = []
         for item in objs:
             item_id = getattr(item, key_attr, None)
             if item_id is not None and item_id not in seen:
@@ -162,13 +160,18 @@ def select_join_serialize(  # noqa: C901
     if not row:
         return None
 
-    rows_list = [row] if not isinstance(row, list) else row
+    rows_list: list[Any] = []
+    if isinstance(row, list):
+        rows_from_list: list[Any] = list(row)  # pyright: ignore[reportUnknownArgumentType]
+        rows_list.extend(rows_from_list)
+    else:
+        rows_list.append(row)
     if not rows_list:
         return None
 
     # 获取主对象信息
     first_row = rows_list[0]
-    main_obj = first_row[0] if hasattr(first_row, '__getitem__') and first_row else first_row
+    main_obj = first_row[0] if hasattr(first_row, "__getitem__") and first_row else first_row
     if main_obj is None:
         return None
 
@@ -180,11 +183,11 @@ def select_join_serialize(  # noqa: C901
     has_relationships = bool(relation_graph)
 
     # 预处理所有模型类型和列信息
-    model_info = {}
-    cls_idxs = {}
+    model_info: dict[str, list[str]] = {}
+    cls_idxs: dict[str, int] = {}
 
     for preprocess_row in rows_list:
-        preprocess_row_items = preprocess_row if hasattr(preprocess_row, '__getitem__') else (preprocess_row,)
+        preprocess_row_items = preprocess_row if hasattr(preprocess_row, "__getitem__") else (preprocess_row,)
         for idx, row_obj in enumerate(preprocess_row_items):
             if row_obj is None:
                 continue
@@ -199,12 +202,12 @@ def select_join_serialize(  # noqa: C901
     grouped_data: dict[Any, dict[str, list[Any]]] = defaultdict(lambda: defaultdict(list))
 
     for data_row in rows_list:
-        data_row_items = data_row if hasattr(data_row, '__getitem__') else (data_row,)
+        data_row_items = data_row if hasattr(data_row, "__getitem__") else (data_row,)
         if not data_row_items or data_row_items[0] is None:
             continue
 
         main_obj = data_row_items[0]
-        main_id = getattr(main_obj, 'id', None) or id(main_obj)
+        main_id = getattr(main_obj, "id", None) or id(main_obj)
 
         if main_id not in main_data:
             main_data[main_id] = main_obj
@@ -220,7 +223,7 @@ def select_join_serialize(  # noqa: C901
         return None
 
     # 预生成 namedtuple 类型
-    namedtuple_cache = {}
+    namedtuple_cache: dict[str, Any] = {}
     if not return_as_dict:
         for cls_name, columns in model_info.items():
             if columns:
@@ -233,10 +236,13 @@ def select_join_serialize(  # noqa: C901
                         full_columns.append(rel_key)
                     full_columns = sorted(set(full_columns))  # 去重并排序
 
-                namedtuple_cache[cls_name] = namedtuple(cls_name.capitalize(), full_columns or columns)  # noqa: PYI024
+                namedtuple_cache[cls_name] = namedtuple(  # noqa: PYI024
+                    cls_name.capitalize(),
+                    full_columns or columns,
+                )  # pyright: ignore[reportUntypedNamedTuple]
 
-    def build_flat_result(build_main_id: int, build_main_obj: Any) -> dict[str, Any]:  # noqa: C901
-        """构建扁平化结果"""
+    def build_flat_result(build_main_id: int, build_main_obj: Any) -> dict[str, Any]:  # noqa: ANN401
+        """构建扁平化结果."""
         flat_result = {col: getattr(build_main_obj, col, None) for col in main_columns}
 
         for class_name in sorted(grouped_data[build_main_id]):
@@ -252,43 +258,42 @@ def select_join_serialize(  # noqa: C901
                 obj_data = {col: getattr(flat_objs[0], col, None) for col in cls_columns}
                 # 确保 namedtuple 所需的所有字段都存在
                 if not return_as_dict and class_name in namedtuple_cache:
-                    nt_fields = getattr(namedtuple_cache[class_name], '_fields', [])
+                    nt_fields = cast("list[str]", getattr(namedtuple_cache[class_name], "_fields", []))
                     for field in nt_fields:
                         if field not in obj_data:
                             obj_data[field] = None
                 flat_result[class_name] = obj_data if return_as_dict else namedtuple_cache[class_name](**obj_data)
+            elif return_as_dict:
+                flat_result[class_name] = [
+                    {col: getattr(flat_obj, col, None) for col in cls_columns} for flat_obj in flat_objs
+                ]
             else:
-                if return_as_dict:
-                    flat_result[class_name] = [
-                        {col: getattr(flat_obj, col, None) for col in cls_columns} for flat_obj in flat_objs
-                    ]
-                else:
-                    nested_result_list = []
-                    for nested_obj in flat_objs:
-                        obj_data = {col: getattr(nested_obj, col, None) for col in cls_columns}
-                        # 确保 namedtuple 所需的所有字段都存在
-                        if class_name in namedtuple_cache:
-                            nt_fields = getattr(namedtuple_cache[class_name], '_fields', [])
-                            for field in nt_fields:
-                                if field not in obj_data:
-                                    obj_data[field] = None
-                        nested_result_list.append(namedtuple_cache[class_name](**obj_data))
-                    flat_result[class_name] = nested_result_list
+                nested_result_list: list[Any] = []
+                for nested_obj in flat_objs:
+                    obj_data = {col: getattr(nested_obj, col, None) for col in cls_columns}
+                    # 确保 namedtuple 所需的所有字段都存在
+                    if class_name in namedtuple_cache:
+                        nt_fields = cast("list[str]", getattr(namedtuple_cache[class_name], "_fields", []))
+                        for field in nt_fields:
+                            if field not in obj_data:
+                                obj_data[field] = None
+                    nested_result_list.append(namedtuple_cache[class_name](**obj_data))
+                flat_result[class_name] = nested_result_list
 
         return flat_result
 
-    def build_nested_result(nested_main_id: int, nested_main_obj: Any) -> dict[str, Any]:  # noqa: C901
-        """构建嵌套化结果"""
+    def build_nested_result(nested_main_id: int, nested_main_obj: Any) -> dict[str, Any]:  # noqa: ANN401
+        """构建嵌套化结果."""
         nested_result = {col: getattr(nested_main_obj, col, None) for col in main_columns}
 
         # 构建关系层级数据结构
         hierarchy: dict[str, dict[Any, list[Any]]] = defaultdict(lambda: defaultdict(list))
         for iter_row in rows_list:
-            iter_row_items = iter_row if hasattr(iter_row, '__getitem__') else (iter_row,)
+            iter_row_items = iter_row if hasattr(iter_row, "__getitem__") else (iter_row,)
             if not iter_row_items or iter_row_items[0] is None:
                 continue
 
-            iter_main_id = getattr(iter_row_items[0], 'id', None) or id(iter_row_items[0])
+            iter_main_id = getattr(iter_row_items[0], "id", None) or id(iter_row_items[0])
             if iter_main_id != nested_main_id:
                 continue
 
@@ -303,24 +308,24 @@ def select_join_serialize(  # noqa: C901
                     if parent_idx < len(iter_row_items):
                         parent_obj = iter_row_items[parent_idx]
                         if parent_obj is not None:
-                            parent_obj_id = getattr(parent_obj, 'id', None)
+                            parent_obj_id = getattr(parent_obj, "id", None)
                             if parent_obj_id is not None:
                                 hierarchy[related_class_name][parent_obj_id].append(related_obj)
 
-        def build_recursive(current_cls_name: str, current_parent_id: int) -> list:
-            """递归构建嵌套数据"""
+        def build_recursive(current_cls_name: str, current_parent_id: int) -> list[Any]:
+            """递归构建嵌套数据."""
             recursive_objs = get_unique_objects(hierarchy[current_cls_name].get(current_parent_id, []))
             if not recursive_objs:
                 return []
 
-            recursive_result = []
+            recursive_result: list[Any] = []
             for nested_obj in recursive_objs:
                 # 基础数据
                 obj_data = {col: getattr(nested_obj, col, None) for col in model_info[current_cls_name]}
 
                 # 处理子关系
                 for child_cls, child_rel_type in relation_graph.get(current_cls_name, {}).items():
-                    child_parent_id = getattr(nested_obj, 'id', None)
+                    child_parent_id = getattr(nested_obj, "id", None)
                     if child_parent_id is None:
                         continue
 
@@ -329,13 +334,13 @@ def select_join_serialize(  # noqa: C901
                         child_cls, child_rel_type, custom_names.get((current_cls_name, child_cls))
                     )
 
-                    if child_rel_type in ('m2o', 'o2o'):
+                    if child_rel_type in ("m2o", "o2o"):
                         obj_data[child_key] = child_list[0] if child_list else None
                     else:
                         obj_data[child_key] = child_list
 
                 if not return_as_dict and current_cls_name in namedtuple_cache:
-                    nt_fields = getattr(namedtuple_cache[current_cls_name], '_fields', [])
+                    nt_fields = cast("list[str]", getattr(namedtuple_cache[current_cls_name], "_fields", []))
                     for field in nt_fields:
                         if field not in obj_data:
                             obj_data[field] = None
@@ -349,7 +354,7 @@ def select_join_serialize(  # noqa: C901
             instances = build_recursive(top_cls_name, nested_main_id)
             key = get_relation_key(top_cls_name, top_rel_type, custom_names.get((main_obj_name, top_cls_name)))
 
-            if top_rel_type in ('m2o', 'o2o'):
+            if top_rel_type in ("m2o", "o2o"):
                 nested_result[key] = instances[0] if instances else None
             else:
                 nested_result[key] = instances
@@ -368,7 +373,7 @@ def select_join_serialize(  # noqa: C901
 
         if not return_as_dict:
             all_fields = list(final_result_data.keys())
-            result_type = namedtuple('Result', list(all_fields))  # type: ignore[misc]  # noqa: PYI024
+            result_type = namedtuple("Result", list(all_fields))  # type: ignore[misc]  # noqa: PYI024
             final_result_list.append(result_type(**final_result_data))
         else:
             final_result_list.append(final_result_data)

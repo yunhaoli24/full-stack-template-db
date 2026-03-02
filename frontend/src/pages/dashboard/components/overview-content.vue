@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import OverviewChart from './overview-chart.vue'
-import RecentSales from './recent-sales.vue'
+import OverviewChart from "./overview-chart.vue";
+import RecentSales from "./recent-sales.vue";
 </script>
 
 <template>

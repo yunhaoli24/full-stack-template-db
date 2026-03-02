@@ -1,36 +1,36 @@
 <script lang="ts" setup>
-import { Icon } from '@iconify/vue'
+import { Icon } from "@iconify/vue";
 
-import { useSidebar } from '@/components/ui/sidebar'
+import { useSidebar } from "@/components/ui/sidebar";
 
-import type { NavGroup, NavItem } from './types'
+import type { NavGroup, NavItem } from "./types";
 
 const { navMain } = defineProps<{
-  navMain: NavGroup[]
-}>()
+  navMain: NavGroup[];
+}>();
 
-const route = useRoute()
+const route = useRoute();
 
-const { state, isMobile } = useSidebar()
+const { state, isMobile } = useSidebar();
 
 function isCollapsed(menu: NavItem): boolean {
-  const pathname = route.path
+  const pathname = route.path;
   navMain.forEach((group) => {
     group.items.forEach((item) => {
       if (item.url === pathname) {
-        return true
+        return true;
       }
-    })
-  })
-  return !!menu.items?.some(item => item.url === pathname)
+    });
+  });
+  return !!menu.items?.some((item) => item.url === pathname);
 }
 
 function isActive(menu: NavItem): boolean {
-  const pathname = route.path
+  const pathname = route.path;
   if (menu.url) {
-    return pathname === menu.url && !menu.external
+    return pathname === menu.url && !menu.external;
   }
-  return !!menu.items?.some(item => item.url === pathname)
+  return !!menu.items?.some((item) => item.url === pathname);
 }
 </script>
 

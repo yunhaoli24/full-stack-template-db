@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface TaskItemProps {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<TaskItemProps>()
+const props = defineProps<TaskItemProps>();
 </script>
 
 <template>

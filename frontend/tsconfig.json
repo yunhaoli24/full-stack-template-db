@@ -2,10 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     },
-    "types": ["unplugin-vue-router/client", "vite-plugin-vue-layouts/client"],
+    "types": ["vue-router/auto-routes", "vite-plugin-vue-layouts/client"]
   },
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
-  "files": [],
+  "files": []
 }

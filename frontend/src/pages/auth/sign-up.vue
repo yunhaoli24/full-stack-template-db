@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import AuthTitle from './components/auth-title.vue'
-import GitHubButton from './components/github-button.vue'
-import GoogleButton from './components/google-button.vue'
-import PrivacyPolicyButton from './components/privacy-policy-button.vue'
-import TermsOfServiceButton from './components/terms-of-service-button.vue'
+import AuthTitle from "./components/auth-title.vue";
+import GitHubButton from "./components/github-button.vue";
+import GoogleButton from "./components/google-button.vue";
+import PrivacyPolicyButton from "./components/privacy-policy-button.vue";
+import TermsOfServiceButton from "./components/terms-of-service-button.vue";
 </script>
 
 <template>

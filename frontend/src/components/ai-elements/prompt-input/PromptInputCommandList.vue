@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { CommandList } from '@/components/ui/command'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
-type PromptInputCommandListProps = InstanceType<typeof CommandList>['$props']
+type PromptInputCommandListProps = InstanceType<typeof CommandList>["$props"];
 
 interface Props extends /* @vue-ignore */ PromptInputCommandListProps {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 </script>
 
 <template>

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { KeyRound, Pencil, Trash2 } from 'lucide-vue-next'
+import { KeyRound, Pencil, Trash2 } from "lucide-vue-next";
 
-import { Button } from '@/components/ui/button'
-import type { UserDetail } from '@/services/api/system/user/user.api'
+import { Button } from "@/components/ui/button";
+import type { UserDetail } from "@/services/api/system/user/user.api";
 
 defineProps<{
-  user: UserDetail
-  onEdit: (user: UserDetail) => void
-  onDelete: (user: UserDetail) => void
-  onResetPassword: (user: UserDetail) => void
-}>()
+  user: UserDetail;
+  onEdit: (user: UserDetail) => void;
+  onDelete: (user: UserDetail) => void;
+  onResetPassword: (user: UserDetail) => void;
+}>();
 </script>
 
 <template>

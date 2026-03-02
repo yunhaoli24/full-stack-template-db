@@ -1,47 +1,45 @@
 <script setup lang="ts">
 // import type { InputGroupButtonVariants } from '@/components/ui/input-group'
-import type { ChatStatus } from 'ai'
-import type { HTMLAttributes } from 'vue'
-import { InputGroupButton } from '@/components/ui/input-group'
-import { cn } from '@/lib/utils'
-import { CornerDownLeftIcon, Loader2Icon, SquareIcon, XIcon } from 'lucide-vue-next'
-import { computed } from 'vue'
+import type { ChatStatus } from "ai";
+import type { HTMLAttributes } from "vue";
+import { InputGroupButton } from "@/components/ui/input-group";
+import { cn } from "@/lib/utils";
+import { CornerDownLeftIcon, Loader2Icon, SquareIcon, XIcon } from "lucide-vue-next";
+import { computed } from "vue";
 
-type InputGroupButtonProps = InstanceType<typeof InputGroupButton>['$props']
+type InputGroupButtonProps = InstanceType<typeof InputGroupButton>["$props"];
 
 interface Props extends /* @vue-ignore */ InputGroupButtonProps {
-  class?: HTMLAttributes['class']
-  status?: ChatStatus
-  variant?: InputGroupButtonProps['variant']
-  size?: InputGroupButtonProps['size']
+  class?: HTMLAttributes["class"];
+  status?: ChatStatus;
+  variant?: InputGroupButtonProps["variant"];
+  size?: InputGroupButtonProps["size"];
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  variant: 'default',
-  size: 'icon-sm',
-})
+  variant: "default",
+  size: "icon-sm",
+});
 
 const icon = computed(() => {
-  if (props.status === 'submitted') {
-    return Loader2Icon
+  if (props.status === "submitted") {
+    return Loader2Icon;
+  } else if (props.status === "streaming") {
+    return SquareIcon;
+  } else if (props.status === "error") {
+    return XIcon;
   }
-  else if (props.status === 'streaming') {
-    return SquareIcon
-  }
-  else if (props.status === 'error') {
-    return XIcon
-  }
-  return CornerDownLeftIcon
-})
+  return CornerDownLeftIcon;
+});
 
 const iconClass = computed(() => {
-  if (props.status === 'submitted') {
-    return 'size-4 animate-spin'
+  if (props.status === "submitted") {
+    return "size-4 animate-spin";
   }
-  return 'size-4'
-})
+  return "size-4";
+});
 
-const { status, size, variant, class: _, ...restProps } = props
+const { status, size, variant, class: _, ...restProps } = props;
 </script>
 
 <template>

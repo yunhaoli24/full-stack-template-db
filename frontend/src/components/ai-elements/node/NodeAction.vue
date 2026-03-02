@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CardAction from '@/components/ui/card/CardAction.vue'
+import CardAction from "@/components/ui/card/CardAction.vue";
 </script>
 
 <template>

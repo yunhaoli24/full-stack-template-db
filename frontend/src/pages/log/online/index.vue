@@ -1,69 +1,65 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
-import { LogOut, RefreshCw } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { isAxiosError } from "axios";
+import { LogOut, RefreshCw } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
 import {
   useGetOnlineUsersQuery,
   useKickOnlineUserMutation,
   type OnlineUserDetail,
-} from '@/services/api/log/online/online-users.api'
+} from "@/services/api/log/online/online-users.api";
 
-import { createColumns } from './components/columns'
-import OnlineUserDataTable from './components/data-table.vue'
+import { createColumns } from "./components/columns";
+import OnlineUserDataTable from "./components/data-table.vue";
 
-const query = useGetOnlineUsersQuery()
-const kickMutation = useKickOnlineUserMutation()
+const query = useGetOnlineUsersQuery();
+const kickMutation = useKickOnlineUserMutation();
 
-const deleteDialogOpen = ref(false)
-const kickTarget = ref<OnlineUserDetail | null>(null)
+const deleteDialogOpen = ref(false);
+const kickTarget = ref<OnlineUserDetail | null>(null);
 
-const isKicking = computed(() => kickMutation.isPending.value)
-const isRefetching = computed(() => query.isFetching.value)
+const isKicking = computed(() => kickMutation.isPending.value);
+const isRefetching = computed(() => query.isFetching.value);
 
-const onlineUsers = computed(() => query.data.value?.data ?? [])
-const onlineCount = computed(() => onlineUsers.value.filter(u => u.status === 1).length)
-const totalCount = computed(() => onlineUsers.value.length)
-const isLoading = computed(() => query.isLoading.value)
+const onlineUsers = computed(() => query.data.value?.data ?? []);
+const onlineCount = computed(() => onlineUsers.value.filter((u) => u.status === 1).length);
+const totalCount = computed(() => onlineUsers.value.length);
+const isLoading = computed(() => query.isLoading.value);
 
-const columns = computed(() =>
-  createColumns((user: OnlineUserDetail) => requestKick(user)),
-)
+const columns = computed(() => createColumns((user: OnlineUserDetail) => requestKick(user)));
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function requestKick(user: OnlineUserDetail) {
-  kickTarget.value = user
-  deleteDialogOpen.value = true
+  kickTarget.value = user;
+  deleteDialogOpen.value = true;
 }
 
 async function handleKickConfirm() {
   if (!kickTarget.value) {
-    return
+    return;
   }
   try {
     await kickMutation.mutateAsync({
       id: kickTarget.value.id,
       sessionUuid: kickTarget.value.session_uuid,
-    })
-    toast.success('User kicked successfully')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    kickTarget.value = null
+    });
+    toast.success("User kicked successfully");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    kickTarget.value = null;
   }
 }
 </script>

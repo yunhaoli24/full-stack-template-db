@@ -1,73 +1,73 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { useAuth } from '@/composables/use-auth'
-import { useAxios } from '@/composables/use-axios'
+import { ref, onMounted } from "vue";
+import { useAuth } from "@/composables/use-auth";
+import { useAxios } from "@/composables/use-axios";
 
-import ToForgotPasswordLink from './to-forgot-password-link.vue'
-import PrivacyPolicyButton from './privacy-policy-button.vue'
-import TermsOfServiceButton from './terms-of-service-button.vue'
+import ToForgotPasswordLink from "./to-forgot-password-link.vue";
+import PrivacyPolicyButton from "./privacy-policy-button.vue";
+import TermsOfServiceButton from "./terms-of-service-button.vue";
 
-const { login, loading } = useAuth()
-const { axiosInstance } = useAxios()
+const { login, loading } = useAuth();
+const { axiosInstance } = useAxios();
 
-const username = ref('')
-const password = ref('')
-const captcha = ref('')
-const captchaImage = ref('')
-const captchaUuid = ref('')
-const captchaEnabled = ref(false)
-const loginError = ref('')
+const username = ref("");
+const password = ref("");
+const captcha = ref("");
+const captchaImage = ref("");
+const captchaUuid = ref("");
+const captchaEnabled = ref(false);
+const loginError = ref("");
 
 // 获取验证码
 const fetchCaptcha = async () => {
   try {
-    loginError.value = ''
-    const response = await axiosInstance.get('/auth/captcha')
-    const { code, data } = response.data
+    loginError.value = "";
+    const response = await axiosInstance.get("/auth/captcha");
+    const { code, data } = response.data;
     if (code === 200) {
-      captchaEnabled.value = data.is_enabled
-      captchaImage.value = data.image
-      captchaUuid.value = data.uuid
+      captchaEnabled.value = data.is_enabled;
+      captchaImage.value = data.image;
+      captchaUuid.value = data.uuid;
       // 清空验证码输入框
-      captcha.value = ''
+      captcha.value = "";
     }
   } catch (error) {
-    console.error('Failed to fetch captcha:', error)
-    loginError.value = 'Failed to load verification code'
+    console.error("Failed to fetch captcha:", error);
+    loginError.value = "Failed to load verification code";
   }
-}
+};
 
 const handleLogin = async () => {
   // 验证输入
   if (!username.value.trim()) {
-    loginError.value = 'Please enter username'
-    return
+    loginError.value = "Please enter username";
+    return;
   }
   if (!password.value) {
-    loginError.value = 'Please enter password'
-    return
+    loginError.value = "Please enter password";
+    return;
   }
   if (captchaEnabled.value && !captcha.value.trim()) {
-    loginError.value = 'Please enter verification code'
-    return
+    loginError.value = "Please enter verification code";
+    return;
   }
 
   try {
-    await login(username.value, password.value, captchaUuid.value, captcha.value)
-    loginError.value = ''
+    await login(username.value, password.value, captchaUuid.value, captcha.value);
+    loginError.value = "";
   } catch (error: any) {
-    loginError.value = error.message || 'Login failed'
+    loginError.value = error.message || "Login failed";
     // 登录失败时刷新验证码
     if (captchaEnabled.value) {
-      fetchCaptcha()
+      fetchCaptcha();
     }
   }
-}
+};
 
 // 页面加载时获取验证码
 onMounted(() => {
-  fetchCaptcha()
-})
+  fetchCaptcha();
+});
 </script>
 
 <template>
@@ -160,7 +160,7 @@ onMounted(() => {
 
       <UiButton class="w-full" @click="handleLogin" :disabled="loading">
         <UiSpinner v-if="loading" class="mr-2" />
-        {{ loading ? 'Logging in...' : 'Login' }}
+        {{ loading ? "Logging in..." : "Login" }}
       </UiButton>
 
       <UiCardDescription>

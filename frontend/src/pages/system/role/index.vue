@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { isAxiosError } from 'axios'
-import { Plus } from 'lucide-vue-next'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { isAxiosError } from "axios";
+import { Plus } from "lucide-vue-next";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import { z } from "zod";
 
-import type { ServerPagination } from '@/components/data-table/types'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { FormField } from '@/components/ui/form'
+import type { ServerPagination } from "@/components/data-table/types";
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { FormField } from "@/components/ui/form";
 import {
   useCreateRoleMutation,
   useDeleteRoleMutation,
@@ -18,102 +18,102 @@ import {
   type RoleDetail,
   type CreateRolePayload,
   type UpdateRolePayload,
-} from '@/services/api/system/role/roles.api'
+} from "@/services/api/system/role/roles.api";
 
-import { createColumns } from './components/columns'
-import RoleDataTable from './components/data-table.vue'
+import { createColumns } from "./components/columns";
+import RoleDataTable from "./components/data-table.vue";
 
-const query = useGetRolesQuery()
-const createMutation = useCreateRoleMutation()
-const updateMutation = useUpdateRoleMutation()
-const deleteMutation = useDeleteRoleMutation()
+const query = useGetRolesQuery();
+const createMutation = useCreateRoleMutation();
+const updateMutation = useUpdateRoleMutation();
+const deleteMutation = useDeleteRoleMutation();
 
-const dialogOpen = ref(false)
-const deleteDialogOpen = ref(false)
-const editingRole = ref<RoleDetail | null>(null)
-const deleteTarget = ref<RoleDetail | null>(null)
+const dialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const editingRole = ref<RoleDetail | null>(null);
+const deleteTarget = ref<RoleDetail | null>(null);
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
 const roleFormSchema = toTypedSchema(
   z.object({
-    name: z.string().trim().min(1, 'Please enter a role name.'),
+    name: z.string().trim().min(1, "Please enter a role name."),
     status: z.coerce.number().min(0).max(1),
     is_filter_scopes: z.boolean(),
     remark: z.string().optional(),
   }),
-)
+);
 
 const { handleSubmit: handleCreateSubmit, resetForm: resetCreateForm } = useForm({
   validationSchema: roleFormSchema,
   initialValues: {
-    name: '',
+    name: "",
     status: 1,
     is_filter_scopes: true,
-    remark: '',
+    remark: "",
   },
-})
+});
 
 const { handleSubmit: handleUpdateSubmit, resetForm: resetUpdateForm } = useForm({
   validationSchema: roleFormSchema,
   initialValues: {
-    name: '',
+    name: "",
     status: 1,
     is_filter_scopes: true,
-    remark: '',
+    remark: "",
   },
-})
+});
 
-const roles = computed(() => query.data.value?.data?.items ?? [])
-const isLoading = computed(() => query.isLoading.value)
+const roles = computed(() => query.data.value?.data?.items ?? []);
+const isLoading = computed(() => query.isLoading.value);
 
 const columns = computed(() =>
   createColumns({
-    onEdit: role => openEdit(role),
-    onDelete: role => requestDelete(role),
+    onEdit: (role) => openEdit(role),
+    onDelete: (role) => requestDelete(role),
   }),
-)
+);
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function openCreate() {
-  editingRole.value = null
-  dialogOpen.value = true
+  editingRole.value = null;
+  dialogOpen.value = true;
   resetCreateForm({
     values: {
-      name: '',
+      name: "",
       status: 1,
       is_filter_scopes: true,
-      remark: '',
+      remark: "",
     },
-  })
+  });
 }
 
 function openEdit(role: RoleDetail) {
-  editingRole.value = role
-  dialogOpen.value = true
+  editingRole.value = role;
+  dialogOpen.value = true;
   resetUpdateForm({
     values: {
       name: role.name,
       status: role.status,
       is_filter_scopes: role.is_filter_scopes,
-      remark: role.remark || '',
+      remark: role.remark || "",
     },
-  })
+  });
 }
 
 function requestDelete(role: RoleDetail) {
-  deleteTarget.value = role
-  deleteDialogOpen.value = true
+  deleteTarget.value = role;
+  deleteDialogOpen.value = true;
 }
 
 const onCreateSubmit = handleCreateSubmit(async (values) => {
@@ -122,61 +122,56 @@ const onCreateSubmit = handleCreateSubmit(async (values) => {
     status: values.status,
     is_filter_scopes: values.is_filter_scopes,
     remark: values.remark?.trim() || undefined,
-  }
+  };
 
   try {
-    await createMutation.mutateAsync(payload)
-    toast.success('Role created')
-    dialogOpen.value = false
+    await createMutation.mutateAsync(payload);
+    toast.success("Role created");
+    dialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-})
+});
 
 const onUpdateSubmit = handleUpdateSubmit(async (values) => {
-  if (!editingRole.value)
-    return
+  if (!editingRole.value) return;
 
   const payload: UpdateRolePayload = {
     name: values.name.trim(),
     status: values.status,
     is_filter_scopes: values.is_filter_scopes,
     remark: values.remark?.trim() || undefined,
-  }
+  };
 
   try {
-    await updateMutation.mutateAsync({ id: editingRole.value.id, payload })
-    toast.success('Role updated')
-    dialogOpen.value = false
+    await updateMutation.mutateAsync({ id: editingRole.value.id, payload });
+    toast.success("Role updated");
+    dialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-})
+});
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync([deleteTarget.value.id])
-    toast.success('Role deleted')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTarget.value = null
+    await deleteMutation.mutateAsync([deleteTarget.value.id]);
+    toast.success("Role deleted");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTarget.value = null;
   }
 }
 
 watch(dialogOpen, (open) => {
   if (!open) {
-    editingRole.value = null
+    editingRole.value = null;
   }
-})
+});
 </script>
 
 <template>
@@ -196,9 +191,9 @@ watch(dialogOpen, (open) => {
     <UiDialog v-model:open="dialogOpen">
       <UiDialogContent>
         <UiDialogHeader>
-          <UiDialogTitle>{{ editingRole ? 'Edit Role' : 'New Role' }}</UiDialogTitle>
+          <UiDialogTitle>{{ editingRole ? "Edit Role" : "New Role" }}</UiDialogTitle>
           <UiDialogDescription>
-            {{ editingRole ? 'Update role information.' : 'Create a new role.' }}
+            {{ editingRole ? "Update role information." : "Create a new role." }}
           </UiDialogDescription>
         </UiDialogHeader>
 
@@ -271,7 +266,7 @@ watch(dialogOpen, (open) => {
               Cancel
             </UiButton>
             <UiButton type="submit" :disabled="isSaving">
-              {{ editingRole ? 'Save Changes' : 'Create Role' }}
+              {{ editingRole ? "Save Changes" : "Create Role" }}
             </UiButton>
           </UiDialogFooter>
         </form>

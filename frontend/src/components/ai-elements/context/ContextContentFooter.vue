@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { getUsage } from 'tokenlens'
-import { computed } from 'vue'
-import { useContextValue } from './context'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { getUsage } from "tokenlens";
+import { computed } from "vue";
+import { useContextValue } from "./context";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const { modelId, usage } = useContextValue()
+const { modelId, usage } = useContextValue();
 
 const totalCost = computed(() => {
-  if (!modelId.value)
-    return 0
+  if (!modelId.value) return 0;
 
   const costUSD = getUsage({
     modelId: modelId.value,
@@ -21,22 +20,19 @@ const totalCost = computed(() => {
       input: usage.value?.inputTokens ?? 0,
       output: usage.value?.outputTokens ?? 0,
     },
-  }).costUSD?.totalUSD
+  }).costUSD?.totalUSD;
 
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(costUSD ?? 0)
-})
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(costUSD ?? 0);
+});
 </script>
 
 <template>
   <div
     :class="
-      cn(
-        'flex w-full items-center justify-between gap-3 bg-secondary p-3 text-xs',
-        props.class,
-      )
+      cn('flex w-full items-center justify-between gap-3 bg-secondary p-3 text-xs', props.class)
     "
   >
     <slot v-if="$slots.default" />

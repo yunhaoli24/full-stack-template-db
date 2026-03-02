@@ -1,22 +1,22 @@
 <script setup lang="ts" generic="T">
-import type { Table } from '@tanstack/vue-table'
+import type { Table } from "@tanstack/vue-table";
 
-import { RefreshCcw, Settings2 } from 'lucide-vue-next'
+import { RefreshCcw, Settings2 } from "lucide-vue-next";
 
 interface DataTableViewOptionsProps {
-  table: Table<T>
+  table: Table<T>;
 }
 
-const props = defineProps<DataTableViewOptionsProps>()
+const props = defineProps<DataTableViewOptionsProps>();
 
-const columns = computed(() => props.table.getAllColumns()
-  .filter(
-    column =>
-      typeof column.accessorFn !== 'undefined' && column.getCanHide(),
-  ))
+const columns = computed(() =>
+  props.table
+    .getAllColumns()
+    .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide()),
+);
 
 function resetColumnVisible() {
-  columns.value.forEach(column => column.toggleVisibility(true))
+  columns.value.forEach((column) => column.toggleVisibility(true));
 }
 </script>
 
@@ -37,7 +37,7 @@ function resetColumnVisible() {
         :key="column.id"
         class="capitalize"
         :model-value="column.getIsVisible()"
-        @update:model-value="(value:boolean) => column.toggleVisibility(!!value)"
+        @update:model-value="(value: boolean) => column.toggleVisibility(!!value)"
       >
         {{ column.id }}
       </UiDropdownMenuCheckboxItem>

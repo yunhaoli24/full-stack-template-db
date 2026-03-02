@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { CircleIcon } from 'lucide-vue-next'
+import { CircleIcon } from "lucide-vue-next";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 defineProps<{
-  checked: boolean
-}>()
+  checked: boolean;
+}>();
 
 const emit = defineEmits<{
-  click: [event: MouseEvent]
-}>()
+  click: [event: MouseEvent];
+}>();
 </script>
 
 <template>

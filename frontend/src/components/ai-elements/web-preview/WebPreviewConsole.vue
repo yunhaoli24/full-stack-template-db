@@ -1,43 +1,37 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Button } from '@/components/ui/button'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from 'lucide-vue-next'
-import { computed } from 'vue'
-import { useWebPreviewContext } from './context'
+import type { HTMLAttributes } from "vue";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { ChevronDownIcon } from "lucide-vue-next";
+import { computed } from "vue";
+import { useWebPreviewContext } from "./context";
 
-type LogLevel = 'log' | 'warn' | 'error'
+type LogLevel = "log" | "warn" | "error";
 
 interface ConsoleLog {
-  level: LogLevel
-  message: string
-  timestamp: Date
+  level: LogLevel;
+  message: string;
+  timestamp: Date;
 }
 
 interface Props {
-  class?: HTMLAttributes['class']
-  logs?: ConsoleLog[]
+  class?: HTMLAttributes["class"];
+  logs?: ConsoleLog[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   logs: () => [],
-})
+});
 
-const context = useWebPreviewContext()
+const context = useWebPreviewContext();
 
-const isConsoleOpen = computed(() => context.consoleOpen.value)
+const isConsoleOpen = computed(() => context.consoleOpen.value);
 
 function levelClass(level: LogLevel) {
-  if (level === 'error')
-    return 'text-destructive'
-  if (level === 'warn')
-    return 'text-yellow-600'
-  return 'text-foreground'
+  if (level === "error") return "text-destructive";
+  if (level === "warn") return "text-yellow-600";
+  return "text-foreground";
 }
 </script>
 
@@ -79,7 +73,7 @@ function levelClass(level: LogLevel) {
             <span class="text-muted-foreground">
               {{ log.timestamp.toLocaleTimeString() }}
             </span>
-            {{ ' ' }}
+            {{ " " }}
             {{ log.message }}
           </div>
         </template>

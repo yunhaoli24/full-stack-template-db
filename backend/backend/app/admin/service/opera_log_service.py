@@ -1,19 +1,22 @@
+"""Opera Log Service."""
+
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.admin.crud.crud_opera_log import opera_log_dao
-from backend.app.admin.schema.opera_log import CreateOperaLogParam, DeleteOperaLogParam
 from backend.common.pagination import paging_data
+from backend.app.admin.schema.opera_log import CreateOperaLogParam, DeleteOperaLogParam
+from backend.app.admin.crud.crud_opera_log import opera_log_dao
 
 
 class OperaLogService:
-    """操作日志服务类"""
+    """操作日志服务类."""
 
     @staticmethod
-    async def get_list(*, db: AsyncSession, username: str | None, status: int | None, ip: str | None) -> dict[str, Any]:
-        """
-        获取操作日志列表
+    async def get_list(
+        *, db: AsyncSession, username: str | None, status: int | None, ip: str | None
+    ) -> dict[str, Any]:
+        """获取操作日志列表.
 
         :param db: 数据库会话
         :param username: 用户名
@@ -26,8 +29,7 @@ class OperaLogService:
 
     @staticmethod
     async def create(*, db: AsyncSession, obj: CreateOperaLogParam) -> None:
-        """
-        创建操作日志
+        """创建操作日志.
 
         :param db: 数据库会话
         :param obj: 操作日志创建参数
@@ -37,8 +39,7 @@ class OperaLogService:
 
     @staticmethod
     async def bulk_create(*, db: AsyncSession, objs: list[CreateOperaLogParam]) -> None:
-        """
-        批量创建操作日志
+        """批量创建操作日志.
 
         :param db: 数据库会话
         :param objs: 操作日志创建参数列表
@@ -48,20 +49,17 @@ class OperaLogService:
 
     @staticmethod
     async def delete(*, db: AsyncSession, obj: DeleteOperaLogParam) -> int:
-        """
-        批量删除操作日志
+        """批量删除操作日志.
 
         :param db: 数据库会话
         :param obj: 日志 ID 列表
         :return:
         """
-        count = await opera_log_dao.delete(db, obj.pks)
-        return count
+        return await opera_log_dao.delete(db, obj.pks)
 
     @staticmethod
     async def delete_all(*, db: AsyncSession) -> None:
-        """
-        清空所有操作日志
+        """清空所有操作日志.
 
         :param db: 数据库会话
         :return:

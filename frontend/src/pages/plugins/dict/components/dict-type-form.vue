@@ -1,59 +1,59 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { z } from "zod";
 
-import { FormField } from '@/components/ui/form'
+import { FormField } from "@/components/ui/form";
 
-import type { DictType, DictTypePayload } from '@/services/api/plugins/dict/dict-types.api'
+import type { DictType, DictTypePayload } from "@/services/api/plugins/dict/dict-types.api";
 
 const props = defineProps<{
-  dictType: DictType | null
-  loading?: boolean
-}>()
+  dictType: DictType | null;
+  loading?: boolean;
+}>();
 
 const emits = defineEmits<{
-  (e: 'submit', payload: DictTypePayload): void
-}>()
+  (e: "submit", payload: DictTypePayload): void;
+}>();
 
 const formSchema = toTypedSchema(
   z.object({
-    name: z.string().trim().min(1, 'Please enter a name.'),
-    code: z.string().trim().min(1, 'Please enter a code.'),
+    name: z.string().trim().min(1, "Please enter a name."),
+    code: z.string().trim().min(1, "Please enter a code."),
     remark: z.string().optional(),
   }),
-)
+);
 
 function getInitialValues(dictType: DictType | null) {
   return {
-    name: dictType?.name ?? '',
-    code: dictType?.code ?? '',
-    remark: dictType?.remark ?? '',
-  }
+    name: dictType?.name ?? "",
+    code: dictType?.code ?? "",
+    remark: dictType?.remark ?? "",
+  };
 }
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
   initialValues: getInitialValues(props.dictType),
-})
+});
 
 watch(
   () => props.dictType,
   (dictType) => {
-    resetForm({ values: getInitialValues(dictType) })
+    resetForm({ values: getInitialValues(dictType) });
   },
   { immediate: true },
-)
+);
 
 const onSubmit = handleSubmit((values) => {
   const payload: DictTypePayload = {
     name: values.name.trim(),
     code: values.code.trim(),
     remark: values.remark?.trim() ? values.remark.trim() : null,
-  }
+  };
 
-  emits('submit', payload)
-})
+  emits("submit", payload);
+});
 </script>
 
 <template>

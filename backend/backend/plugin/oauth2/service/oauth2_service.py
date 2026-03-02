@@ -1,30 +1,31 @@
+"""Oauth2 Service."""
+
 import json
+from typing import Any, cast
 
-from typing import Any
-
+from fastapi import Response, BackgroundTasks
 from fast_captcha import text_captcha
-from fastapi import BackgroundTasks, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.admin.crud.crud_user import user_dao
-from backend.app.admin.schema.token import GetLoginToken
-from backend.app.admin.schema.user import AddOAuth2UserParam
-from backend.app.admin.service.login_log_service import login_log_service
-from backend.common.context import ctx
-from backend.common.enums import LoginLogStatusType
-from backend.common.exception import errors
-from backend.common.security import jwt
 from backend.core.conf import settings
+from backend.common.enums import LoginLogStatusType
+from backend.common.context import ctx
 from backend.database.redis import redis_client
-from backend.plugin.oauth2.crud.crud_user_social import user_social_dao
-from backend.plugin.oauth2.enums import UserSocialAuthType, UserSocialType
-from backend.plugin.oauth2.schema.user_social import CreateUserSocialParam
-from backend.plugin.oauth2.service.user_social_service import user_social_service
 from backend.utils.timezone import timezone
+from backend.common.security import jwt
+from backend.common.exception import errors
+from backend.plugin.oauth2.enums import UserSocialType, UserSocialAuthType
+from backend.app.admin.schema.user import GetUserInfoDetail, AddOAuth2UserParam
+from backend.app.admin.schema.token import GetLoginToken
+from backend.app.admin.crud.crud_user import user_dao
+from backend.plugin.oauth2.schema.user_social import CreateUserSocialParam
+from backend.app.admin.service.login_log_service import login_log_service
+from backend.plugin.oauth2.crud.crud_user_social import user_social_dao
+from backend.plugin.oauth2.service.user_social_service import user_social_service
 
 
 class OAuth2Service:
-    """OAuth2 认证服务类"""
+    """OAuth2 认证服务类."""
 
     @staticmethod
     async def login(
@@ -39,8 +40,7 @@ class OAuth2Service:
         email: str | None = None,
         avatar: str | None = None,
     ) -> GetLoginToken:
-        """
-        OAuth2 用户登录
+        """OAuth2 用户登录.
 
         :param db: 数据库会话
         :param response: FastAPI 响应对象
@@ -67,28 +67,31 @@ class OAuth2Service:
 
             # 创建系统用户
             if not sys_user:
+                safe_username = username or f"{source.value.lower()}_{sid}"
                 while username and await user_dao.get_by_username(db, username):
-                    username = f'{username}_{text_captcha(5)}'
-                new_sys_user = AddOAuth2UserParam(
-                    username=username,
-                    password=None,
-                    nickname=nickname,
-                    email=email,
-                    avatar=avatar,
+                    username = f"{username}_{text_captcha(5)}"
+                new_sys_user = AddOAuth2UserParam.model_validate(
+                    {
+                        "username": username or safe_username,
+                        "password": None,
+                        "nickname": nickname,
+                        "email": email,
+                        "avatar": avatar,
+                    }
                 )
                 await user_dao.add_by_oauth2(db, new_sys_user)
                 await db.flush()
-                sys_user = await user_dao.get_by_username(db, username) if username else None
+                sys_user = await user_dao.get_by_username(db, username or safe_username)
 
             # 绑定社交账号
             if not sys_user:
-                raise errors.AuthorizationError(msg='用户不存在')
-            new_user_social = CreateUserSocialParam(sid=sid, source=source.value, user_id=sys_user.id)
+                raise errors.AuthorizationError(msg="用户不存在")
+            new_user_social = CreateUserSocialParam(sid=sid, source=source, user_id=sys_user.id)
             await user_social_dao.create(db, new_user_social)
 
         # 创建 token
         if not sys_user:
-            raise errors.AuthorizationError(msg='用户不存在')
+            raise errors.AuthorizationError(msg="用户不存在")
         access_token_data = await jwt.create_access_token(
             sys_user.id,
             multi_login=sys_user.is_multi_login,
@@ -115,9 +118,9 @@ class OAuth2Service:
             username=sys_user.username,
             login_time=timezone.now(),
             status=LoginLogStatusType.success.value,
-            msg='OAuth2登录成功',
+            msg="OAuth2登录成功",
         )
-        await redis_client.delete(f'{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{ctx.ip}')
+        await redis_client.delete(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{ctx.ip}")
         response.set_cookie(
             key=settings.COOKIE_REFRESH_TOKEN_KEY,
             value=refresh_token_data.refresh_token,
@@ -125,13 +128,13 @@ class OAuth2Service:
             expires=timezone.to_utc(refresh_token_data.refresh_token_expire_time),
             httponly=True,
         )
-        data = GetLoginToken(
+        return GetLoginToken(
             access_token=access_token_data.access_token,
             access_token_expire_time=access_token_data.access_token_expire_time,
             session_uuid=access_token_data.session_uuid,
-            user=sys_user,
+            password_expire_days_remaining=None,
+            user=GetUserInfoDetail.model_validate(sys_user),
         )
-        return data
 
     async def login_or_binding(
         self,
@@ -143,8 +146,7 @@ class OAuth2Service:
         social: UserSocialType,
         state: str | None = None,
     ) -> GetLoginToken | None:
-        """
-        OAuth2 登录或绑定
+        """OAuth2 登录或绑定.
 
         :param db: 数据库会话
         :param response: FastAPI 响应对象
@@ -154,44 +156,43 @@ class OAuth2Service:
         :param state: OAuth2 state 参数
         :return:
         """
-
-        sid = user.get('uuid')
-        username = user.get('username')
-        nickname = user.get('nickname')
-        email = user.get('email')
-        avatar = user.get('avatar_url')
+        sid = user.get("uuid")
+        username = user.get("username")
+        nickname = user.get("nickname")
+        email = user.get("email")
+        avatar = user.get("avatar_url")
 
         match social:
             case UserSocialType.github:
-                sid = user.get('id')
-                username = user.get('login')
-                nickname = user.get('name')
+                sid = user.get("id")
+                username = user.get("login")
+                nickname = user.get("name")
             case UserSocialType.google:
-                sid = user.get('id')
-                username = user.get('name')
-                nickname = user.get('given_name')
-                avatar = user.get('picture')
+                sid = user.get("id")
+                username = user.get("name")
+                nickname = user.get("given_name")
+                avatar = user.get("picture")
             case UserSocialType.linux_do:
-                sid = user.get('id')
-                nickname = user.get('name')
+                sid = user.get("id")
+                nickname = user.get("name")
             case _:
-                raise errors.ForbiddenError(msg=f'暂不支持 {social} OAuth2 登录')
+                raise errors.ForbiddenError(msg=f"暂不支持 {social} OAuth2 登录")
 
         if not state:
-            raise errors.ForbiddenError(msg='OAuth2 状态信息缺失')
+            raise errors.ForbiddenError(msg="OAuth2 状态信息缺失")
 
-        state_data = await redis_client.get(f'{settings.OAUTH2_STATE_REDIS_PREFIX}:{state}')
+        state_data = await redis_client.get(f"{settings.OAUTH2_STATE_REDIS_PREFIX}:{state}")
         if not state_data:
-            raise errors.ForbiddenError(msg='OAuth2 状态信息无效或缺失')
+            raise errors.ForbiddenError(msg="OAuth2 状态信息无效或缺失")
 
-        state_info = json.loads(state_data)
-        await redis_client.delete(f'{settings.OAUTH2_STATE_REDIS_PREFIX}:{state}')
+        state_info = json.loads(cast("str", state_data))
+        await redis_client.delete(f"{settings.OAUTH2_STATE_REDIS_PREFIX}:{state}")
 
         # 绑定流程
-        if state_info.get('type') == UserSocialAuthType.binding.value:
-            user_id = state_info.get('user_id')
+        if state_info.get("type") == UserSocialAuthType.binding.value:
+            user_id = state_info.get("user_id")
             if not user_id:
-                raise errors.ForbiddenError(msg='非法操作，OAuth2 状态信息无效')
+                raise errors.ForbiddenError(msg="非法操作, OAuth2 状态信息无效")
             await user_social_service.binding_with_oauth2(
                 db=db,
                 user_id=user_id,
@@ -201,8 +202,8 @@ class OAuth2Service:
             return None
 
         # 登录流程
-        if state_info.get('type') != UserSocialAuthType.login.value:
-            raise errors.ForbiddenError(msg='OAuth2 状态信息无效')
+        if state_info.get("type") != UserSocialAuthType.login.value:
+            raise errors.ForbiddenError(msg="OAuth2 状态信息无效")
 
         return await self.login(
             db=db,

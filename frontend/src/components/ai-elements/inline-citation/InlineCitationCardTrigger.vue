@@ -1,29 +1,27 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Badge } from '@/components/ui/badge'
-import { HoverCardTrigger } from '@/components/ui/hover-card'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
+import type { HTMLAttributes } from "vue";
+import { Badge } from "@/components/ui/badge";
+import { HoverCardTrigger } from "@/components/ui/hover-card";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
 
 const props = defineProps<{
-  sources: string[]
-  class?: HTMLAttributes['class']
-}>()
+  sources: string[];
+  class?: HTMLAttributes["class"];
+}>();
 
 const displayText = computed(() => {
-  const firstSource = props.sources[0]
-  if (!firstSource)
-    return 'unknown'
+  const firstSource = props.sources[0];
+  if (!firstSource) return "unknown";
 
   try {
-    const hostname = new URL(firstSource).hostname
-    const additionalCount = props.sources.length - 1
-    return additionalCount > 0 ? `${hostname} +${additionalCount}` : hostname
+    const hostname = new URL(firstSource).hostname;
+    const additionalCount = props.sources.length - 1;
+    return additionalCount > 0 ? `${hostname} +${additionalCount}` : hostname;
+  } catch {
+    return "unknown";
   }
-  catch {
-    return 'unknown'
-  }
-})
+});
 </script>
 
 <template>

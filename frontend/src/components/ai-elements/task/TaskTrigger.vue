@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import {
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { ChevronDown, Search } from 'lucide-vue-next'
+import type { HTMLAttributes } from "vue";
+import { CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { ChevronDown, Search } from "lucide-vue-next";
 
 interface TaskTriggerProps {
-  title: string
-  class?: HTMLAttributes['class']
+  title: string;
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<TaskTriggerProps>()
+const props = defineProps<TaskTriggerProps>();
 </script>
 
 <template>

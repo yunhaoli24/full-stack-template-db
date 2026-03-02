@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CommandItem } from '@/components/ui/command'
+import { CommandItem } from "@/components/ui/command";
 </script>
 
 <template>

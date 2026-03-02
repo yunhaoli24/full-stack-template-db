@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CommandList } from '@/components/ui/command'
+import { CommandList } from "@/components/ui/command";
 </script>
 
 <template>

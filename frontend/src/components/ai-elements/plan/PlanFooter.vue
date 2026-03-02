@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CardFooter } from '@/components/ui/card'
+import { CardFooter } from "@/components/ui/card";
 </script>
 
 <template>

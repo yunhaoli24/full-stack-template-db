@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Card } from '@/components/ui/card'
-import { Collapsible } from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
-import { providePlan } from './context'
+import type { HTMLAttributes } from "vue";
+import { Card } from "@/components/ui/card";
+import { Collapsible } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
+import { providePlan } from "./context";
 
 interface PlanProps {
-  isStreaming?: boolean
-  class?: HTMLAttributes['class']
+  isStreaming?: boolean;
+  class?: HTMLAttributes["class"];
 }
 
-const props = withDefaults(
-  defineProps<PlanProps>(),
-  {
-    isStreaming: false,
-  },
-)
+const props = withDefaults(defineProps<PlanProps>(), {
+  isStreaming: false,
+});
 
 providePlan({
   isStreaming: computed(() => props.isStreaming),
-})
+});
 </script>
 
 <template>

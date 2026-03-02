@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { isAxiosError } from 'axios'
-import { Plus } from 'lucide-vue-next'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { isAxiosError } from "axios";
+import { Plus } from "lucide-vue-next";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import { z } from "zod";
 
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { FormField } from '@/components/ui/form'
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { FormField } from "@/components/ui/form";
 import {
   useCreateSchedulerMutation,
   useDeleteSchedulerMutation,
@@ -18,47 +18,47 @@ import {
   useUpdateSchedulerStatusMutation,
   type TaskScheduler,
   type TaskSchedulerPayload,
-} from '@/services/api/scheduler/manage/schedulers.api'
+} from "@/services/api/scheduler/manage/schedulers.api";
 
-import { createColumns } from './components/columns'
-import SchedulerDataTable from './components/data-table.vue'
+import { createColumns } from "./components/columns";
+import SchedulerDataTable from "./components/data-table.vue";
 
-const query = useGetSchedulersQuery(ref({ name: '', type: undefined }))
-const createMutation = useCreateSchedulerMutation()
-const updateMutation = useUpdateSchedulerMutation()
-const deleteMutation = useDeleteSchedulerMutation()
-const statusMutation = useUpdateSchedulerStatusMutation()
-const executeMutation = useExecuteSchedulerMutation()
+const query = useGetSchedulersQuery(ref({ name: "", type: undefined }));
+const createMutation = useCreateSchedulerMutation();
+const updateMutation = useUpdateSchedulerMutation();
+const deleteMutation = useDeleteSchedulerMutation();
+const statusMutation = useUpdateSchedulerStatusMutation();
+const executeMutation = useExecuteSchedulerMutation();
 
-const dialogOpen = ref(false)
-const deleteDialogOpen = ref(false)
-const editingScheduler = ref<TaskScheduler | null>(null)
-const deleteTarget = ref<TaskScheduler | null>(null)
+const dialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const editingScheduler = ref<TaskScheduler | null>(null);
+const deleteTarget = ref<TaskScheduler | null>(null);
 
-const searchName = ref('')
-const searchType = ref<number | undefined>(undefined)
+const searchName = ref("");
+const searchType = ref<number | undefined>(undefined);
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
-const isTogglingStatus = ref(false)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
+const isTogglingStatus = ref(false);
 
 const schedulerTypeOptions = [
-  { label: 'Interval', value: 0 },
-  { label: 'Crontab', value: 1 },
-] as const
+  { label: "Interval", value: 0 },
+  { label: "Crontab", value: 1 },
+] as const;
 
 const periodTypeOptions = [
-  { label: 'Days', value: 'days' },
-  { label: 'Hours', value: 'hours' },
-  { label: 'Minutes', value: 'minutes' },
-  { label: 'Seconds', value: 'seconds' },
-  { label: 'Microseconds', value: 'microseconds' },
-] as const
+  { label: "Days", value: "days" },
+  { label: "Hours", value: "hours" },
+  { label: "Minutes", value: "minutes" },
+  { label: "Seconds", value: "seconds" },
+  { label: "Microseconds", value: "microseconds" },
+] as const;
 
 const schedulerFormSchema = toTypedSchema(
   z.object({
-    name: z.string().trim().min(1, 'Please enter a name.'),
-    task: z.string().trim().min(1, 'Please enter a task name.'),
+    name: z.string().trim().min(1, "Please enter a name."),
+    task: z.string().trim().min(1, "Please enter a task name."),
     args: z.string().optional(),
     kwargs: z.string().optional(),
     queue: z.string().optional(),
@@ -74,135 +74,136 @@ const schedulerFormSchema = toTypedSchema(
     one_off: z.boolean(),
     remark: z.string().optional(),
   }),
-)
+);
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: schedulerFormSchema,
   initialValues: {
-    name: '',
-    task: '',
-    args: '',
-    kwargs: '',
-    queue: '',
-    exchange: '',
-    routing_key: '',
-    start_time: '',
-    expire_time: '',
+    name: "",
+    task: "",
+    args: "",
+    kwargs: "",
+    queue: "",
+    exchange: "",
+    routing_key: "",
+    start_time: "",
+    expire_time: "",
     expire_seconds: undefined,
     type: 1,
     interval_every: undefined,
-    interval_period: 'minutes',
-    crontab: '* * * * *',
+    interval_period: "minutes",
+    crontab: "* * * * *",
     one_off: false,
-    remark: '',
+    remark: "",
   },
-})
+});
 
-const schedulers = computed(() => query.data.value?.data?.items ?? [])
-const pagination = computed(() => query.data.value?.data)
-const isLoading = computed(() => query.isLoading.value)
+const schedulers = computed(() => query.data.value?.data?.items ?? []);
+const pagination = computed(() => query.data.value?.data);
+const isLoading = computed(() => query.isLoading.value);
 
 const columns = computed(() =>
   createColumns({
-    onEdit: scheduler => openEdit(scheduler),
-    onDelete: scheduler => requestDelete(scheduler),
-    onToggleStatus: scheduler => toggleStatus(scheduler),
-    onExecute: scheduler => executeNow(scheduler),
+    onEdit: (scheduler) => openEdit(scheduler),
+    onDelete: (scheduler) => requestDelete(scheduler),
+    onToggleStatus: (scheduler) => toggleStatus(scheduler),
+    onExecute: (scheduler) => executeNow(scheduler),
   }),
-)
+);
 
 watch(dialogOpen, (open) => {
   if (!open) {
-    editingScheduler.value = null
+    editingScheduler.value = null;
   }
-})
+});
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function openCreate() {
-  editingScheduler.value = null
-  dialogOpen.value = true
+  editingScheduler.value = null;
+  dialogOpen.value = true;
   resetForm({
     values: {
-      name: '',
-      task: '',
-      args: '',
-      kwargs: '',
-      queue: '',
-      exchange: '',
-      routing_key: '',
-      start_time: '',
-      expire_time: '',
+      name: "",
+      task: "",
+      args: "",
+      kwargs: "",
+      queue: "",
+      exchange: "",
+      routing_key: "",
+      start_time: "",
+      expire_time: "",
       expire_seconds: undefined,
       type: 1,
       interval_every: undefined,
-      interval_period: 'minutes',
-      crontab: '* * * * *',
+      interval_period: "minutes",
+      crontab: "* * * * *",
       one_off: false,
-      remark: '',
+      remark: "",
     },
-  })
+  });
 }
 
 function openEdit(scheduler: TaskScheduler) {
-  editingScheduler.value = scheduler
-  dialogOpen.value = true
+  editingScheduler.value = scheduler;
+  dialogOpen.value = true;
   resetForm({
     values: {
       name: scheduler.name,
       task: scheduler.task,
-      args: scheduler.args ? JSON.stringify(scheduler.args) : '',
-      kwargs: scheduler.kwargs ? JSON.stringify(scheduler.kwargs) : '',
-      queue: scheduler.queue ?? '',
-      exchange: scheduler.exchange ?? '',
-      routing_key: scheduler.routing_key ?? '',
-      start_time: scheduler.start_time ? new Date(scheduler.start_time).toISOString().slice(0, 16) : '',
-      expire_time: scheduler.expire_time ? new Date(scheduler.expire_time).toISOString().slice(0, 16) : '',
+      args: scheduler.args ? JSON.stringify(scheduler.args) : "",
+      kwargs: scheduler.kwargs ? JSON.stringify(scheduler.kwargs) : "",
+      queue: scheduler.queue ?? "",
+      exchange: scheduler.exchange ?? "",
+      routing_key: scheduler.routing_key ?? "",
+      start_time: scheduler.start_time
+        ? new Date(scheduler.start_time).toISOString().slice(0, 16)
+        : "",
+      expire_time: scheduler.expire_time
+        ? new Date(scheduler.expire_time).toISOString().slice(0, 16)
+        : "",
       expire_seconds: scheduler.expire_seconds ?? undefined,
       type: scheduler.type,
       interval_every: scheduler.interval_every ?? undefined,
-      interval_period: scheduler.interval_period ?? 'minutes',
+      interval_period: scheduler.interval_period ?? "minutes",
       crontab: scheduler.crontab,
       one_off: scheduler.one_off,
-      remark: scheduler.remark ?? '',
+      remark: scheduler.remark ?? "",
     },
-  })
+  });
 }
 
 function requestDelete(scheduler: TaskScheduler) {
-  deleteTarget.value = scheduler
-  deleteDialogOpen.value = true
+  deleteTarget.value = scheduler;
+  deleteDialogOpen.value = true;
 }
 
 async function toggleStatus(scheduler: TaskScheduler) {
-  isTogglingStatus.value = true
+  isTogglingStatus.value = true;
   try {
-    await statusMutation.mutateAsync(scheduler.id)
-    toast.success(`Scheduler ${scheduler.enabled ? 'disabled' : 'enabled'}`)
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    isTogglingStatus.value = false
+    await statusMutation.mutateAsync(scheduler.id);
+    toast.success(`Scheduler ${scheduler.enabled ? "disabled" : "enabled"}`);
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    isTogglingStatus.value = false;
   }
 }
 
 async function executeScheduler(scheduler: TaskScheduler) {
   try {
-    await executeMutation.mutateAsync(scheduler.id)
-    toast.success('Scheduler executed')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+    await executeMutation.mutateAsync(scheduler.id);
+    toast.success("Scheduler executed");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 
@@ -224,53 +225,48 @@ const onSubmit = handleSubmit(async (values) => {
     crontab: values.crontab.trim(),
     one_off: values.one_off,
     remark: values.remark?.trim() || null,
-  }
+  };
 
   try {
     if (editingScheduler.value) {
-      await updateMutation.mutateAsync({ id: editingScheduler.value.id, payload })
-      toast.success('Scheduler updated')
+      await updateMutation.mutateAsync({ id: editingScheduler.value.id, payload });
+      toast.success("Scheduler updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Scheduler created");
     }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Scheduler created')
-    }
-    dialogOpen.value = false
+    dialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-})
+});
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync(deleteTarget.value.id)
-    toast.success('Scheduler deleted')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTarget.value = null
+    await deleteMutation.mutateAsync(deleteTarget.value.id);
+    toast.success("Scheduler deleted");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTarget.value = null;
   }
 }
 
 function handleSearch() {
-  query.refetch()
+  query.refetch();
 }
 
 function formatType(type: number) {
-  return schedulerTypeOptions.find((option) => option.value === type)?.label || `Type ${type}`
+  return schedulerTypeOptions.find((option) => option.value === type)?.label || `Type ${type}`;
 }
 
 function formatDate(dateStr: string | null) {
-  if (!dateStr)
-    return '-'
-  return new Date(dateStr).toLocaleString()
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleString();
 }
 </script>
 
@@ -316,7 +312,7 @@ function formatDate(dateStr: string | null) {
     <UiDialog v-model:open="dialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
-          <UiDialogTitle>{{ editingScheduler ? 'Edit Scheduler' : 'New Scheduler' }}</UiDialogTitle>
+          <UiDialogTitle>{{ editingScheduler ? "Edit Scheduler" : "New Scheduler" }}</UiDialogTitle>
           <UiDialogDescription> Configure Celery task scheduler. </UiDialogDescription>
         </UiDialogHeader>
 
@@ -563,7 +559,7 @@ function formatDate(dateStr: string | null) {
               Cancel
             </UiButton>
             <UiButton type="submit" :disabled="isSaving">
-              {{ editingScheduler ? 'Save Changes' : 'Create Scheduler' }}
+              {{ editingScheduler ? "Save Changes" : "Create Scheduler" }}
             </UiButton>
           </UiDialogFooter>
         </form>

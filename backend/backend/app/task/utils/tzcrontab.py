@@ -1,16 +1,28 @@
+"""Tzcrontab."""
+
+from typing import Any
 from datetime import datetime
 
-from celery import schedules
+from celery import schedules  # pyright: ignore[reportMissingModuleSource]
 from celery.schedules import ParseException, crontab
 
-from backend.common.exception import errors
 from backend.utils.timezone import timezone
+from backend.common.exception import errors
 
 
 class TzAwareCrontab(schedules.crontab):
-    """时区感知 Crontab"""
+    """时区感知 Crontab."""
 
-    def __init__(self, minute='*', hour='*', day_of_week='*', day_of_month='*', month_of_year='*', app=None) -> None:  # noqa: ANN001
+    def __init__(
+        self,
+        minute: str = "*",
+        hour: str = "*",
+        day_of_week: str = "*",
+        day_of_month: str = "*",
+        month_of_year: str = "*",
+        app: Any = None,  # noqa: ANN401
+    ) -> None:
+        """Initialize time zone aware crontab."""
         super().__init__(
             minute=minute,
             hour=hour,
@@ -22,8 +34,7 @@ class TzAwareCrontab(schedules.crontab):
         )
 
     def is_due(self, last_run_at: datetime) -> tuple[bool, int | float]:
-        """
-        任务到期状态
+        """任务到期状态.
 
         :param last_run_at: 最后运行时间
         :return:
@@ -34,9 +45,10 @@ class TzAwareCrontab(schedules.crontab):
         if due:
             rem_delta = self.remaining_estimate(self.now())
             rem = max(rem_delta.total_seconds(), 0)
-        return schedules.schedstate(is_due=due, next=rem)
+        return schedules.schedstate(is_due=due, next_value=rem)
 
     def __reduce__(self) -> tuple[type, tuple[str, str, str, str, str], None]:
+        """Reduce for pickling."""
         return (
             self.__class__,
             (
@@ -51,16 +63,22 @@ class TzAwareCrontab(schedules.crontab):
 
 
 def crontab_verify(crontab_str: str) -> None:
-    """
-    验证 Celery crontab 表达式
+    """验证 Celery crontab 表达式.
 
     :param crontab_str: 计划表达式
     :return:
     """
-    crontab_split = crontab_str.split(' ')
+    crontab_split = crontab_str.split(" ")
     if len(crontab_split) != 5:
-        raise errors.RequestError(msg='Crontab 表达式非法')
+        raise errors.RequestError(msg="Crontab 表达式非法")
     try:
-        crontab(*crontab_split)
+        minute, hour, day_of_week, day_of_month, month_of_year = crontab_split
+        crontab(
+            minute=minute,
+            hour=hour,
+            day_of_week=day_of_week,
+            day_of_month=day_of_month,
+            month_of_year=month_of_year,
+        )
     except ParseException:
-        raise errors.RequestError(msg='Crontab 表达式非法')
+        raise errors.RequestError(msg="Crontab 表达式非法") from None

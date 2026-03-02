@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface QueueItemDescriptionProps {
-  completed?: boolean
-  class?: HTMLAttributes['class']
+  completed?: boolean;
+  class?: HTMLAttributes["class"];
 }
 
-const props = withDefaults(
-  defineProps<QueueItemDescriptionProps>(),
-  {
-    completed: false,
-  },
-)
+const props = withDefaults(defineProps<QueueItemDescriptionProps>(), {
+  completed: false,
+});
 </script>
 
 <template>
@@ -20,9 +17,7 @@ const props = withDefaults(
     :class="
       cn(
         'ml-6 text-xs',
-        props.completed
-          ? 'text-muted-foreground/40 line-through'
-          : 'text-muted-foreground',
+        props.completed ? 'text-muted-foreground/40 line-through' : 'text-muted-foreground',
         props.class,
       )
     "

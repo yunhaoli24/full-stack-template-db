@@ -1,71 +1,78 @@
 <script setup lang="ts">
-import type { BundledLanguage } from 'shiki'
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { reactiveOmit, useDebounceFn } from '@vueuse/core'
-import { computed, onBeforeUnmount, provide, ref, watch } from 'vue'
-import { CodeBlockKey } from './context'
-import { highlightCode } from './utils'
+import type { BundledLanguage } from "shiki";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { reactiveOmit, useDebounceFn } from "@vueuse/core";
+import { computed, onBeforeUnmount, provide, ref, watch } from "vue";
+import { CodeBlockKey } from "./context";
+import { highlightCode } from "./utils";
 
 const props = withDefaults(
   defineProps<{
-    code: string
-    language: BundledLanguage
-    showLineNumbers?: boolean
-    class?: HTMLAttributes['class']
+    code: string;
+    language: BundledLanguage;
+    showLineNumbers?: boolean;
+    class?: HTMLAttributes["class"];
   }>(),
   {
     showLineNumbers: false,
   },
-)
+);
 
-const delegatedProps = reactiveOmit(props, 'code', 'language', 'showLineNumbers', 'class')
+const delegatedProps = reactiveOmit(props, "code", "language", "showLineNumbers", "class");
 
-const html = ref('')
-const darkHtml = ref('')
+const html = ref("");
+const darkHtml = ref("");
 
 provide(CodeBlockKey, {
   code: computed(() => props.code),
-})
+});
 
-let requestId = 0
-let isUnmounted = false
+let requestId = 0;
+let isUnmounted = false;
 
-const updateHighlight = useDebounceFn(async (code: string, language: BundledLanguage, showLineNumbers: boolean) => {
-  requestId += 1
-  const currentId = requestId
+const updateHighlight = useDebounceFn(
+  async (code: string, language: BundledLanguage, showLineNumbers: boolean) => {
+    requestId += 1;
+    const currentId = requestId;
 
-  try {
-    const [light, dark] = await highlightCode(code, language, showLineNumbers)
+    try {
+      const [light, dark] = await highlightCode(code, language, showLineNumbers);
 
-    if (currentId === requestId && !isUnmounted) {
-      html.value = light
-      darkHtml.value = dark
+      if (currentId === requestId && !isUnmounted) {
+        html.value = light;
+        darkHtml.value = dark;
+      }
+    } catch (error) {
+      console.error("[CodeBlock] highlight failed", error);
     }
-  }
-  catch (error) {
-    console.error('[CodeBlock] highlight failed', error)
-  }
-}, 100)
+  },
+  100,
+);
 
 watch(
   () => [props.code, props.language, props.showLineNumbers] as const,
   ([code, language, showLineNumbers]) => {
-    updateHighlight(code, language, showLineNumbers)
+    updateHighlight(code, language, showLineNumbers);
   },
   { immediate: true },
-)
+);
 
 onBeforeUnmount(() => {
-  isUnmounted = true
-})
+  isUnmounted = true;
+});
 </script>
 
 <template>
   <div
     data-slot="code-block"
     v-bind="delegatedProps"
-    :class="cn('group relative w-full overflow-hidden rounded-md border bg-background text-foreground', props.class)"
+    :class="
+      cn(
+        'group relative w-full overflow-hidden rounded-md border bg-background text-foreground',
+        props.class,
+      )
+    "
   >
     <div class="relative">
       <div

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CardContent } from '@/components/ui/card'
-import { CollapsibleContent } from '@/components/ui/collapsible'
+import { CardContent } from "@/components/ui/card";
+import { CollapsibleContent } from "@/components/ui/collapsible";
 </script>
 
 <template>

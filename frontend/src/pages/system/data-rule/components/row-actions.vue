@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Pencil, Trash2 } from 'lucide-vue-next'
+import { Pencil, Trash2 } from "lucide-vue-next";
 
-import { Button } from '@/components/ui/button'
-import type { DataRuleDetail } from '@/services/api/system/data-rule/data-rules.api'
+import { Button } from "@/components/ui/button";
+import type { DataRuleDetail } from "@/services/api/system/data-rule/data-rules.api";
 
 defineProps<{
-  rule: DataRuleDetail
-  onEdit: (rule: DataRuleDetail) => void
-  onDelete: (rule: DataRuleDetail) => void
-}>()
+  rule: DataRuleDetail;
+  onEdit: (rule: DataRuleDetail) => void;
+  onDelete: (rule: DataRuleDetail) => void;
+}>();
 </script>
 
 <template>

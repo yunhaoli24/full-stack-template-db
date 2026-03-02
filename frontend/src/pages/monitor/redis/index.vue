@@ -1,41 +1,40 @@
 <script setup lang="ts">
-import { Activity, Database, Timer, Zap } from 'lucide-vue-next'
+import { Activity, Database, Timer, Zap } from "lucide-vue-next";
 
-import { BasicPage } from '@/components/global-layout'
-import { useGetRedisMonitorQuery } from '@/services/api/monitor/redis/redis-monitor.api'
+import { BasicPage } from "@/components/global-layout";
+import { useGetRedisMonitorQuery } from "@/services/api/monitor/redis/redis-monitor.api";
 
-const query = useGetRedisMonitorQuery()
+const query = useGetRedisMonitorQuery();
 
-const redisInfo = computed(() => query.data.value?.data?.info ?? {})
-const commandStats = computed(() => query.data.value?.data?.stats ?? [])
-const isLoading = computed(() => query.isLoading.value)
-const error = computed(() => query.error.value)
+const redisInfo = computed(() => query.data.value?.data?.info ?? {});
+const commandStats = computed(() => query.data.value?.data?.stats ?? []);
+const isLoading = computed(() => query.isLoading.value);
+const error = computed(() => query.error.value);
 
 const displayFields = computed(() => [
-  { key: 'redis_version', label: 'Redis Version', icon: Database },
-  { key: 'keys_num', label: 'Total Keys', icon: Zap },
-  { key: 'uptime_in_seconds', label: 'Uptime', icon: Timer },
-  { key: 'connected_clients', label: 'Connected Clients', icon: Activity },
-  { key: 'used_memory_human', label: 'Used Memory', icon: Database },
-  { key: 'maxmemory_human', label: 'Max Memory', icon: Database },
-])
+  { key: "redis_version", label: "Redis Version", icon: Database },
+  { key: "keys_num", label: "Total Keys", icon: Zap },
+  { key: "uptime_in_seconds", label: "Uptime", icon: Timer },
+  { key: "connected_clients", label: "Connected Clients", icon: Activity },
+  { key: "used_memory_human", label: "Used Memory", icon: Database },
+  { key: "maxmemory_human", label: "Max Memory", icon: Database },
+]);
 
 const displayedStats = computed(() => {
   return commandStats.value
     .filter((stat) => Number(stat.value) > 0)
     .sort((a, b) => Number(b.value) - Number(a.value))
-    .slice(0, 10)
-})
+    .slice(0, 10);
+});
 
 function getValue(key: string) {
-  return redisInfo.value[key] || '-'
+  return redisInfo.value[key] || "-";
 }
 
 function formatNumber(value: string) {
-  const num = Number(value)
-  if (Number.isNaN(num))
-    return value
-  return num.toLocaleString()
+  const num = Number(value);
+  if (Number.isNaN(num)) return value;
+  return num.toLocaleString();
 }
 </script>
 
@@ -61,9 +60,11 @@ function formatNumber(value: string) {
               <div>
                 <p class="text-sm font-medium text-muted-foreground">{{ field.label }}</p>
                 <p class="text-2xl font-bold">
-                  {{ field.key.includes('num') || field.key.includes('clients')
-                    ? formatNumber(getValue(field.key))
-                    : getValue(field.key) }}
+                  {{
+                    field.key.includes("num") || field.key.includes("clients")
+                      ? formatNumber(getValue(field.key))
+                      : getValue(field.key)
+                  }}
                 </p>
               </div>
               <component :is="field.icon" class="size-8 text-muted-foreground" />
@@ -96,17 +97,18 @@ function formatNumber(value: string) {
                 <UiTableCell>
                   <UiBadge variant="secondary">{{ stat.name }}</UiBadge>
                 </UiTableCell>
-                <UiTableCell
-                  class="text-right font-mono"
-                  >{{ formatNumber(stat.value) }}</UiTableCell
-                >
+                <UiTableCell class="text-right font-mono">{{
+                  formatNumber(stat.value)
+                }}</UiTableCell>
                 <UiTableCell class="text-right">
                   {{
                     commandStats.length > 0
-                      ? `${((Number(stat.value)
-                        / commandStats.reduce((sum, s) => sum + Number(s.value), 0))
-                        * 100).toFixed(2)}%`
-                      : '0%'
+                      ? `${(
+                          (Number(stat.value) /
+                            commandStats.reduce((sum, s) => sum + Number(s.value), 0)) *
+                          100
+                        ).toFixed(2)}%`
+                      : "0%"
                   }}
                 </UiTableCell>
               </UiTableRow>

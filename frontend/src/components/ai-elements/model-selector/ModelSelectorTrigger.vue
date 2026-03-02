@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DialogTrigger } from '@/components/ui/dialog'
+import { DialogTrigger } from "@/components/ui/dialog";
 </script>
 
 <template>

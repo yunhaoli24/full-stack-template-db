@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { ChevronDownIcon } from 'lucide-vue-next'
+import { Button } from "@/components/ui/button";
+import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDownIcon } from "lucide-vue-next";
 </script>
 
 <template>

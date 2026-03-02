@@ -12,9 +12,9 @@
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     },
-    "types": ["unplugin-vue-router/client", "vite-plugin-vue-layouts/client"],
+    "types": ["vue-router/auto-routes", "vite-plugin-vue-layouts/client"],
     "allowImportingTsExtensions": true,
 
     /* Linting */
@@ -25,8 +25,8 @@
     "noEmit": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "noUncheckedSideEffectImports": true,
+    "noUncheckedSideEffectImports": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["src/components/ui"],
+  "exclude": ["src/components/ui"]
 }

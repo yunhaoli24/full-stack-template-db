@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Button } from '@/components/ui/button'
-import { CollapsibleTrigger } from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { ChevronsUpDownIcon } from 'lucide-vue-next'
+import type { HTMLAttributes } from "vue";
+import { Button } from "@/components/ui/button";
+import { CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { ChevronsUpDownIcon } from "lucide-vue-next";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 </script>
 
 <template>

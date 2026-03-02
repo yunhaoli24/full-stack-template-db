@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface QueueItemIndicatorProps {
-  completed?: boolean
-  class?: HTMLAttributes['class']
+  completed?: boolean;
+  class?: HTMLAttributes["class"];
 }
 
-const props = withDefaults(
-  defineProps<QueueItemIndicatorProps>(),
-  {
-    completed: false,
-  },
-)
+const props = withDefaults(defineProps<QueueItemIndicatorProps>(), {
+  completed: false,
+});
 </script>
 
 <template>

@@ -1,29 +1,30 @@
+"""Crud Data Rule."""
+
+from typing import Any, cast
 from collections.abc import Sequence
 
 from sqlalchemy import Select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.admin.model import DataRule
 from backend.app.admin.schema.data_rule import CreateDataRuleParam, UpdateDataRuleParam
 
 
 class CRUDDataRule(CRUDPlus[DataRule]):
-    """数据规则数据库操作类"""
+    """数据规则数据库操作类."""
 
     async def get(self, db: AsyncSession, pk: int) -> DataRule | None:
-        """
-        获取规则详情
+        """获取规则详情.
 
         :param db: 数据库会话
         :param pk: 规则 ID
         :return:
         """
-        return await self.select_model(db, pk)
+        return cast("DataRule | None", await self.select_model(db, pk))
 
-    async def get_select(self, name: str | None) -> Select:
-        """
-        获取规则列表查询表达式
+    async def get_select(self, name: str | None) -> Select[Any]:
+        """获取规则列表查询表达式.
 
         :param name: 规则名称
         :return:
@@ -31,32 +32,29 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         filters = {}
 
         if name is not None:
-            filters['name__like'] = f'%{name}%'
+            filters["name__like"] = f"%{name}%"
 
-        return await self.select_order('id', **filters)
+        return await cast("Any", self).select_order("id", **filters)
 
     async def get_by_name(self, db: AsyncSession, name: str) -> DataRule | None:
-        """
-        通过名称获取规则
+        """通过名称获取规则.
 
         :param db: 数据库会话
         :param name: 规则名称
         :return:
         """
-        return await self.select_model_by_column(db, name=name)
+        return cast("DataRule | None", await self.select_model_by_column(db, name=name))
 
     async def get_all(self, db: AsyncSession) -> Sequence[DataRule]:
-        """
-        获取所有规则
+        """获取所有规则.
 
         :param db: 数据库会话
         :return:
         """
-        return await self.select_models(db)
+        return cast("Sequence[DataRule]", await self.select_models(db))
 
     async def create(self, db: AsyncSession, obj: CreateDataRuleParam) -> None:
-        """
-        创建规则
+        """创建规则.
 
         :param db: 数据库会话
         :param obj: 创建规则参数
@@ -65,8 +63,7 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         await self.create_model(db, obj)
 
     async def update(self, db: AsyncSession, pk: int, obj: UpdateDataRuleParam) -> int:
-        """
-        更新规则
+        """更新规则.
 
         :param db: 数据库会话
         :param pk: 规则 ID
@@ -76,8 +73,7 @@ class CRUDDataRule(CRUDPlus[DataRule]):
         return await self.update_model(db, pk, obj)
 
     async def delete(self, db: AsyncSession, pks: list[int]) -> int:
-        """
-        批量删除规则
+        """批量删除规则.
 
         :param db: 数据库会话
         :param pks: 规则 ID 列表

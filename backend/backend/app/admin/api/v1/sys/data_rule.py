@@ -1,96 +1,106 @@
+"""Data Rule."""
+
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import Path, Query, Depends, APIRouter
 
+from backend.database.db import CurrentSession, CurrentSessionTransaction
+from backend.common.pagination import PageData, DependsPagination
+from backend.common.security.jwt import DependsJwtAuth
+from backend.common.security.rbac import DependsRBAC
 from backend.app.admin.schema.data_rule import (
+    GetDataRuleDetail,
     CreateDataRuleParam,
     DeleteDataRuleParam,
-    GetDataRuleColumnDetail,
-    GetDataRuleDetail,
     UpdateDataRuleParam,
+    GetDataRuleColumnDetail,
 )
-from backend.app.admin.service.data_rule_service import data_rule_service
-from backend.common.pagination import DependsPagination, PageData
-from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
-from backend.common.security.jwt import DependsJwtAuth
 from backend.common.security.permission import RequestPermission
-from backend.common.security.rbac import DependsRBAC
-from backend.database.db import CurrentSession, CurrentSessionTransaction
-
-router = APIRouter()
+from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
+from backend.app.admin.service.data_rule_service import data_rule_service
 
 
-@router.get('/models', summary='获取数据规则可用模型', dependencies=[DependsJwtAuth])
+router: APIRouter = APIRouter()
+
+
+@router.get("/models", summary="获取数据规则可用模型", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rule_models() -> ResponseSchemaModel[list[str]]:
+    """Get Data Rule Models."""
     models = await data_rule_service.get_models()
     return response_base.success(data=models)
 
 
-@router.get('/models/{model}/columns', summary='获取数据规则可用模型列', dependencies=[DependsJwtAuth])
+@router.get("/models/{model}/columns", summary="获取数据规则可用模型列", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rule_model_columns(
-    model: Annotated[str, Path(description='模型名称')],
+    model: Annotated[str, Path(description="模型名称")],
 ) -> ResponseSchemaModel[list[GetDataRuleColumnDetail]]:
+    """Get Data Rule Model Columns."""
     models = await data_rule_service.get_columns(model=model)
     return response_base.success(data=models)
 
 
-@router.get('/all', summary='获取所有数据规则', dependencies=[DependsJwtAuth])
+@router.get("/all", summary="获取所有数据规则", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_all_data_rules(db: CurrentSession) -> ResponseSchemaModel[list[GetDataRuleDetail]]:
+    """Get All Data Rules."""
     data = await data_rule_service.get_all(db=db)
     return response_base.success(data=data)
 
 
-@router.get('/{pk}', summary='获取数据规则详情', dependencies=[DependsJwtAuth])
+@router.get("/{pk}", summary="获取数据规则详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rule(
     db: CurrentSession,
-    pk: Annotated[int, Path(description='数据规则 ID')],
+    pk: Annotated[int, Path(description="数据规则 ID")],
 ) -> ResponseSchemaModel[GetDataRuleDetail]:
+    """Get Data Rule."""
     data = await data_rule_service.get(db=db, pk=pk)
     return response_base.success(data=data)
 
 
 @router.get(
-    '',
-    summary='分页获取所有数据规则',
+    "",
+    summary="分页获取所有数据规则",
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
     ],
-)
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def get_data_rules_paginated(
     db: CurrentSession,
-    name: Annotated[str | None, Query(description='规则名称')] = None,
+    name: Annotated[str | None, Query(description="规则名称")] = None,
 ) -> ResponseSchemaModel[PageData[GetDataRuleDetail]]:
+    """Get Data Rules Paginated."""
     page_data = await data_rule_service.get_list(db=db, name=name)
     return response_base.success(data=page_data)
 
 
 @router.post(
-    '',
-    summary='创建数据规则',
+    "",
+    summary="创建数据规则",
     dependencies=[
-        Depends(RequestPermission('data:rule:add')),
+        Depends(RequestPermission("data:rule:add")),
         DependsRBAC,
     ],
-)
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def create_data_rule(db: CurrentSessionTransaction, obj: CreateDataRuleParam) -> ResponseModel:
+    """Create Data Rule."""
     await data_rule_service.create(db=db, obj=obj)
     return response_base.success()
 
 
 @router.put(
-    '/{pk}',
-    summary='更新数据规则',
+    "/{pk}",
+    summary="更新数据规则",
     dependencies=[
-        Depends(RequestPermission('data:rule:edit')),
+        Depends(RequestPermission("data:rule:edit")),
         DependsRBAC,
     ],
-)
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def update_data_rule(
     db: CurrentSessionTransaction,
-    pk: Annotated[int, Path(description='数据规则 ID')],
+    pk: Annotated[int, Path(description="数据规则 ID")],
     obj: UpdateDataRuleParam,
 ) -> ResponseModel:
+    """Update Data Rule."""
     count = await data_rule_service.update(db=db, pk=pk, obj=obj)
     if count > 0:
         return response_base.success()
@@ -98,14 +108,15 @@ async def update_data_rule(
 
 
 @router.delete(
-    '',
-    summary='批量删除数据规则',
+    "",
+    summary="批量删除数据规则",
     dependencies=[
-        Depends(RequestPermission('data:rule:del')),
+        Depends(RequestPermission("data:rule:del")),
         DependsRBAC,
     ],
-)
+)  # pyright: ignore[reportGeneralTypeIssues]
 async def delete_data_rules(db: CurrentSessionTransaction, obj: DeleteDataRuleParam) -> ResponseModel:
+    """Delete Data Rules."""
     count = await data_rule_service.delete(db=db, obj=obj)
     if count > 0:
         return response_base.success()

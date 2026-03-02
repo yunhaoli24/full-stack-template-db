@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import type { ExtendedToolState } from '../types'
-import type { ToolUIPartApproval } from './context'
-import { Alert } from '@/components/ui/alert'
-import { cn } from '@/lib/utils'
-import { provide, toRef } from 'vue'
-import { ConfirmationKey } from './context'
+import type { HTMLAttributes } from "vue";
+import type { ExtendedToolState } from "../types";
+import type { ToolUIPartApproval } from "./context";
+import { Alert } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
+import { provide, toRef } from "vue";
+import { ConfirmationKey } from "./context";
 
 const props = defineProps<{
-  approval?: ToolUIPartApproval
-  state: ExtendedToolState
-  class?: HTMLAttributes['class']
-}>()
+  approval?: ToolUIPartApproval;
+  state: ExtendedToolState;
+  class?: HTMLAttributes["class"];
+}>();
 
 provide(ConfirmationKey, {
-  approval: toRef(props, 'approval'),
-  state: toRef(props, 'state'),
-})
+  approval: toRef(props, "approval"),
+  state: toRef(props, "state"),
+});
 </script>
 
 <template>

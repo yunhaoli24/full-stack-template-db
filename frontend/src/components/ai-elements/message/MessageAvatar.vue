@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { computed } from 'vue'
+import type { HTMLAttributes } from "vue";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { computed } from "vue";
 
 interface Props {
-  src: string
-  name?: string
-  class?: HTMLAttributes['class']
+  src: string;
+  name?: string;
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const fallbackText = computed(() => props.name?.slice(0, 2) ?? 'ME')
+const fallbackText = computed(() => props.name?.slice(0, 2) ?? "ME");
 </script>
 
 <template>

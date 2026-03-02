@@ -1,47 +1,45 @@
 <script setup lang="ts">
-import type { HTMLAttributes, VNode } from 'vue'
-import type { MessageBranchContextType } from './context'
-import { cn } from '@/lib/utils'
-import { provide, readonly, ref } from 'vue'
-import { MessageBranchKey } from './context'
+import type { HTMLAttributes, VNode } from "vue";
+import type { MessageBranchContextType } from "./context";
+import { cn } from "@/lib/utils";
+import { provide, readonly, ref } from "vue";
+import { MessageBranchKey } from "./context";
 
 interface Props {
-  defaultBranch?: number
-  class?: HTMLAttributes['class']
+  defaultBranch?: number;
+  class?: HTMLAttributes["class"];
 }
 const props = withDefaults(defineProps<Props>(), {
   defaultBranch: 0,
-})
+});
 
 const emits = defineEmits<{
-  (e: 'branchChange', branchIndex: number): void
-}>()
+  (e: "branchChange", branchIndex: number): void;
+}>();
 
-const currentBranch = ref<number>(props.defaultBranch)
-const branches = ref<VNode[]>([])
-const totalBranches = ref<number>(0)
+const currentBranch = ref<number>(props.defaultBranch);
+const branches = ref<VNode[]>([]);
+const totalBranches = ref<number>(0);
 
 function handleBranchChange(index: number) {
-  currentBranch.value = index
-  emits('branchChange', index)
+  currentBranch.value = index;
+  emits("branchChange", index);
 }
 
 function goToPrevious() {
-  if (totalBranches.value === 0)
-    return
-  const next = currentBranch.value > 0 ? currentBranch.value - 1 : totalBranches.value - 1
-  handleBranchChange(next)
+  if (totalBranches.value === 0) return;
+  const next = currentBranch.value > 0 ? currentBranch.value - 1 : totalBranches.value - 1;
+  handleBranchChange(next);
 }
 
 function goToNext() {
-  if (totalBranches.value === 0)
-    return
-  const next = currentBranch.value < totalBranches.value - 1 ? currentBranch.value + 1 : 0
-  handleBranchChange(next)
+  if (totalBranches.value === 0) return;
+  const next = currentBranch.value < totalBranches.value - 1 ? currentBranch.value + 1 : 0;
+  handleBranchChange(next);
 }
 
 function setBranches(count: number) {
-  totalBranches.value = count
+  totalBranches.value = count;
 }
 
 const contextValue: MessageBranchContextType = {
@@ -51,9 +49,9 @@ const contextValue: MessageBranchContextType = {
   goToNext,
   branches,
   setBranches,
-}
+};
 
-provide(MessageBranchKey, contextValue)
+provide(MessageBranchKey, contextValue);
 </script>
 
 <template>

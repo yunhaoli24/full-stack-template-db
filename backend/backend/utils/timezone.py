@@ -1,23 +1,24 @@
-import zoneinfo
+"""Timezone."""
 
-from datetime import datetime
-from datetime import timezone as datetime_timezone
+import zoneinfo
+from datetime import UTC, datetime
 
 from backend.core.conf import settings
 
 
 class TimeZone:
+    """Timezone Service."""
+
     def __init__(self) -> None:
-        """初始化时区转换器"""
+        """初始化时区转换器."""
         self.tz_info = zoneinfo.ZoneInfo(settings.DATETIME_TIMEZONE)
 
     def now(self) -> datetime:
-        """获取当前时区时间"""
+        """获取当前时区时间."""
         return datetime.now(self.tz_info)
 
     def from_datetime(self, t: datetime) -> datetime:
-        """
-        将 datetime 对象转换为当前时区时间
+        """将 datetime 对象转换为当前时区时间.
 
         :param t: 需要转换的 datetime 对象
         :return:
@@ -25,8 +26,7 @@ class TimeZone:
         return t.astimezone(self.tz_info)
 
     def from_str(self, t_str: str, format_str: str = settings.DATETIME_FORMAT) -> datetime:
-        """
-        将时间字符串转换为当前时区的 datetime 对象
+        """将时间字符串转换为当前时区的 datetime 对象.
 
         :param t_str: 时间字符串
         :param format_str: 时间格式字符串，默认为 settings.DATETIME_FORMAT
@@ -36,8 +36,7 @@ class TimeZone:
 
     @staticmethod
     def to_str(t: datetime, format_str: str = settings.DATETIME_FORMAT) -> str:
-        """
-        将 datetime 对象转换为指定格式的时间字符串
+        """将 datetime 对象转换为指定格式的时间字符串.
 
         :param t: datetime 对象
         :param format_str: 时间格式字符串，默认为 settings.DATETIME_FORMAT
@@ -47,15 +46,14 @@ class TimeZone:
 
     @staticmethod
     def to_utc(t: datetime | int) -> datetime:
-        """
-        将 datetime 对象或时间戳转换为 UTC 时区时间
+        """将 datetime 对象或时间戳转换为 UTC 时区时间.
 
         :param t: 需要转换的 datetime 对象或时间戳
         :return:
         """
         if isinstance(t, datetime):
-            return t.astimezone(datetime_timezone.utc)
-        return datetime.fromtimestamp(t, tz=datetime_timezone.utc)
+            return t.astimezone(UTC)
+        return datetime.fromtimestamp(t, tz=UTC)
 
 
 timezone: TimeZone = TimeZone()

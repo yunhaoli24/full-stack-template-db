@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { HtmlHTMLAttributes } from 'vue'
-import {
-  Collapsible,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { BrainIcon, ChevronDownIcon } from 'lucide-vue-next'
-import { useChainOfThought } from './context'
+import type { HtmlHTMLAttributes } from "vue";
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { BrainIcon, ChevronDownIcon } from "lucide-vue-next";
+import { useChainOfThought } from "./context";
 
 const props = defineProps<{
-  class?: HtmlHTMLAttributes['class']
-}>()
+  class?: HtmlHTMLAttributes["class"];
+}>();
 
-const { isOpen, setIsOpen } = useChainOfThought()
+const { isOpen, setIsOpen } = useChainOfThought();
 </script>
 
 <template>
@@ -31,12 +28,7 @@ const { isOpen, setIsOpen } = useChainOfThought()
         <slot>Chain of Thought</slot>
       </span>
       <ChevronDownIcon
-        :class="
-          cn(
-            'size-4 transition-transform',
-            isOpen ? 'rotate-180' : 'rotate-0',
-          )
-        "
+        :class="cn('size-4 transition-transform', isOpen ? 'rotate-180' : 'rotate-0')"
       />
     </CollapsibleTrigger>
   </Collapsible>

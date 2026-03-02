@@ -1,42 +1,58 @@
+"""Auth Service."""
+
 from fastapi import Request, Response
 from fastapi.security import HTTPBasicCredentials
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.background import BackgroundTask, BackgroundTasks
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.admin.crud.crud_menu import menu_dao
-from backend.app.admin.crud.crud_user import user_dao
-from backend.app.admin.model import User
-from backend.app.admin.schema.token import GetLoginToken, GetNewToken
-from backend.app.admin.schema.user import AuthLoginParam
-from backend.app.admin.service.login_log_service import login_log_service
-from backend.app.admin.service.user_password_history_service import password_security_service
-from backend.app.admin.utils.password_security import password_verify
-from backend.common.context import ctx
-from backend.common.enums import LoginLogStatusType
-from backend.common.exception import errors
+from backend.core.conf import settings
 from backend.common.log import log
-from backend.common.response.response_code import CustomErrorCode
+from backend.database.db import uuid4_str
+from backend.common.enums import LoginLogStatusType
+from backend.common.context import ctx
+from backend.database.redis import redis_client
+from backend.utils.timezone import timezone
+from backend.app.admin.model import User
+from backend.common.exception import errors
 from backend.common.security.jwt import (
-    create_access_token,
-    create_new_token,
-    create_refresh_token,
     get_token,
     jwt_decode,
+    create_new_token,
+    create_access_token,
+    create_refresh_token,
 )
-from backend.core.conf import settings
-from backend.database.db import uuid4_str
-from backend.database.redis import redis_client
 from backend.utils.dynamic_config import load_login_config
-from backend.utils.timezone import timezone
+from backend.app.admin.schema.user import AuthLoginParam, GetUserInfoDetail
+from backend.app.admin.schema.token import GetNewToken, GetLoginToken
+from backend.app.admin.crud.crud_menu import menu_dao
+from backend.app.admin.crud.crud_user import user_dao
+from backend.common.response.response_code import CustomErrorCode
+from backend.app.admin.utils.password_security import password_verify
+from backend.app.admin.service.login_log_service import login_log_service
+from backend.app.admin.service.user_password_history_service import password_security_service
 
 
 class AuthService:
-    """认证服务类"""
+    """认证服务类."""
+
+    @staticmethod
+    async def _validate_captcha(obj: AuthLoginParam) -> None:
+        """Validate captcha.
+
+        :param obj: Login parameters
+        """
+        if not obj.uuid or not obj.captcha:
+            raise errors.RequestError(msg="验证码不能为空")
+        captcha_code = await redis_client.get(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}")
+        if not captcha_code:
+            raise errors.RequestError(msg="验证码已过期")
+        if captcha_code.lower() != obj.captcha.lower():
+            raise errors.CustomError(error=CustomErrorCode.CAPTCHA_ERROR)
+        await redis_client.delete(f"{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}")
 
     @staticmethod
     async def user_verify(db: AsyncSession, username: str, password: str) -> tuple[User, int | None]:
-        """
-        验证用户名和密码
+        """验证用户名和密码.
 
         :param db: 数据库会话
         :param username: 用户名
@@ -45,25 +61,23 @@ class AuthService:
         """
         user = await user_dao.get_by_username(db, username)
         if not user:
-            raise errors.NotFoundError(msg='用户名或密码有误')
+            raise errors.NotFoundError(msg="用户名或密码有误")
 
         await password_security_service.check_status(user.id, user.status)
 
         if user.password is None or not password_verify(password, user.password):
             await password_security_service.handle_login_failure(db, user.id)
-            raise errors.AuthorizationError(msg='用户名或密码有误')
+            raise errors.AuthorizationError(msg="用户名或密码有误")
 
-        days_remaining = await password_security_service.check_password_expiry_status(
-            db, user.last_password_changed_time
-        )
+        last_changed_time = user.last_password_changed_time or user.join_time
+        days_remaining = await password_security_service.check_password_expiry_status(db, last_changed_time)
 
         await password_security_service.handle_login_success(user.id)
 
         return user, days_remaining
 
-    async def swagger_login(self, *, db: AsyncSession, obj: HTTPBasicCredentials) -> tuple[str, User]:
-        """
-        Swagger 文档登录
+    async def swagger_login(self, *, db: AsyncSession, obj: HTTPBasicCredentials) -> tuple[str, GetUserInfoDetail]:
+        """Swagger 文档登录.
 
         :param db: 数据库会话
         :param obj: 登录凭证
@@ -77,7 +91,7 @@ class AuthService:
             # extra info
             swagger=True,
         )
-        return access_token_data.access_token, user
+        return access_token_data.access_token, GetUserInfoDetail.model_validate(user)
 
     async def login(
         self,
@@ -87,8 +101,7 @@ class AuthService:
         obj: AuthLoginParam,
         background_tasks: BackgroundTasks,
     ) -> GetLoginToken:
-        """
-        用户登录
+        """用户登录.
 
         :param db: 数据库会话
         :param response: 响应对象
@@ -102,14 +115,7 @@ class AuthService:
 
             await load_login_config(db)
             if settings.LOGIN_CAPTCHA_ENABLED:
-                if not obj.uuid or not obj.captcha:
-                    raise errors.RequestError(msg='验证码不能为空')
-                captcha_code = await redis_client.get(f'{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}')
-                if not captcha_code:
-                    raise errors.RequestError(msg='验证码已过期')
-                if captcha_code.lower() != obj.captcha.lower():
-                    raise errors.CustomError(error=CustomErrorCode.CAPTCHA_ERROR)
-                await redis_client.delete(f'{settings.LOGIN_CAPTCHA_REDIS_PREFIX}:{obj.uuid}')
+                await self._validate_captcha(obj)
 
             await user_dao.update_login_time(db, obj.username)
             await db.refresh(user)
@@ -119,7 +125,7 @@ class AuthService:
                 # extra info
                 username=user.username,
                 nickname=user.nickname,
-                last_login_time=timezone.to_str(user.last_login_time),
+                last_login_time=timezone.to_str(user.last_login_time or timezone.now()),
                 ip=ctx.ip,
                 os=ctx.os,
                 browser=ctx.browser,
@@ -137,12 +143,11 @@ class AuthService:
                 expires=timezone.to_utc(refresh_token_data.refresh_token_expire_time),
                 httponly=True,
             )
-        except errors.NotFoundError as e:
-            log.error('登陆错误: 用户名不存在')
-            raise errors.NotFoundError(msg=e.msg or '用户名不存在')
+        except errors.NotFoundError:
+            log.error("登陆错误: 用户名不存在")
+            raise
         except (errors.RequestError, errors.CustomError) as e:
-            if not user:
-                log.error('登陆错误: 用户密码有误')
+            log.error(f"登陆错误: {e.msg or str(e)}")
             task = BackgroundTask(
                 login_log_service.create,
                 db=db,
@@ -150,11 +155,11 @@ class AuthService:
                 username=obj.username,
                 login_time=timezone.now(),
                 status=LoginLogStatusType.fail.value,
-                msg=e.msg or '用户密码有误',
+                msg=e.msg or "用户密码有误",
             )
-            raise errors.RequestError(code=e.code, msg=e.msg or '用户密码有误', background=task)
+            raise errors.RequestError(code=e.code, msg=e.msg or "用户密码有误", background=task) from e
         except Exception as e:
-            log.error(f'登陆错误: {e}')
+            log.error(f"登陆错误: {e}")
             raise
         else:
             background_tasks.add_task(
@@ -164,21 +169,19 @@ class AuthService:
                 username=obj.username,
                 login_time=timezone.now(),
                 status=LoginLogStatusType.success.value,
-                msg='登录成功',
+                msg="登录成功",
             )
-            data = GetLoginToken(
+            return GetLoginToken(
                 access_token=access_token_data.access_token,
                 access_token_expire_time=access_token_data.access_token_expire_time,
                 session_uuid=access_token_data.session_uuid,
                 password_expire_days_remaining=days_remaining,
-                user=user,
+                user=GetUserInfoDetail.model_validate(user),
             )
-            return data
 
     @staticmethod
     async def get_codes(*, db: AsyncSession, request: Request) -> list[str]:
-        """
-        获取用户权限码
+        """获取用户权限码.
 
         :param db: 数据库会话
         :param request: FastAPI 请求对象
@@ -189,21 +192,20 @@ class AuthService:
             menus = await menu_dao.get_all(db, None, None)
             for menu in menus:
                 if menu.perms:
-                    codes.add(*menu.perms.split(','))
+                    codes.add(*menu.perms.split(","))
         else:
             roles = request.user.roles
             if roles:
                 for role in roles:
                     for menu in role.menus:
                         if menu.perms:
-                            codes.add(*menu.perms.split(','))
+                            codes.add(*menu.perms.split(","))
 
         return list(codes)
 
     @staticmethod
     async def refresh_token(*, db: AsyncSession, request: Request) -> GetNewToken:
-        """
-        刷新令牌
+        """刷新令牌.
 
         :param db: 数据库会话
         :param request: FastAPI 请求对象
@@ -211,16 +213,16 @@ class AuthService:
         """
         refresh_token = request.cookies.get(settings.COOKIE_REFRESH_TOKEN_KEY)
         if not refresh_token:
-            raise errors.RequestError(msg='Refresh Token 已过期，请重新登录')
+            raise errors.RequestError(msg="Refresh Token 已过期, 请重新登录")
         token_payload = jwt_decode(refresh_token)
 
         user = await user_dao.get(db, token_payload.id)
         if not user:
-            raise errors.NotFoundError(msg='用户不存在')
+            raise errors.NotFoundError(msg="用户不存在")
         if not user.status:
-            raise errors.AuthorizationError(msg='用户已被锁定, 请联系统管理员')
-        if not user.is_multi_login and await redis_client.get_prefix(f'{settings.TOKEN_REDIS_PREFIX}:{user.id}:*'):
-            raise errors.ForbiddenError(msg='此用户已在异地登录，请重新登录并及时修改密码')
+            raise errors.AuthorizationError(msg="用户已被锁定, 请联系系统管理员")
+        if not user.is_multi_login and await redis_client.get_prefix(f"{settings.TOKEN_REDIS_PREFIX}:{user.id}:*"):
+            raise errors.ForbiddenError(msg="此用户已在异地登录, 请重新登录并及时修改密码")
         new_token = await create_new_token(
             refresh_token,
             token_payload.session_uuid,
@@ -229,23 +231,21 @@ class AuthService:
             # extra info
             username=user.username,
             nickname=user.nickname,
-            last_login_time=timezone.to_str(user.last_login_time),
+            last_login_time=timezone.to_str(user.last_login_time or timezone.now()),
             ip=ctx.ip,
             os=ctx.os,
             browser=ctx.browser,
             device_type=ctx.device,
         )
-        data = GetNewToken(
+        return GetNewToken(
             access_token=new_token.new_access_token,
             access_token_expire_time=new_token.new_access_token_expire_time,
             session_uuid=new_token.session_uuid,
         )
-        return data
 
     @staticmethod
     async def logout(*, request: Request, response: Response) -> None:
-        """
-        用户登出
+        """用户登出.
 
         :param request: FastAPI 请求对象
         :param response: FastAPI 响应对象
@@ -262,10 +262,10 @@ class AuthService:
         finally:
             response.delete_cookie(settings.COOKIE_REFRESH_TOKEN_KEY)
 
-        await redis_client.delete(f'{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}')
-        await redis_client.delete(f'{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}')
+        await redis_client.delete(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}")
+        await redis_client.delete(f"{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}")
         if refresh_token:
-            await redis_client.delete(f'{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{refresh_token}')
+            await redis_client.delete(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{refresh_token}")
 
 
 auth_service: AuthService = AuthService()

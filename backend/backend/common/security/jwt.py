@@ -1,32 +1,32 @@
+"""Jwt."""
+
 import json
 import uuid
-
-from datetime import timedelta
 from typing import Any
+from datetime import timedelta
 
+from jose import JWTError, ExpiredSignatureError, jwt
 from fastapi import Depends, Request
+from pydantic_core import from_json
 from fastapi.security import HTTPBearer
 from fastapi.security.utils import get_authorization_scheme_param
-from jose import ExpiredSignatureError, JWTError, jwt
-from pydantic_core import from_json
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.admin.model import User
-from backend.app.admin.schema.user import GetUserInfoWithRelationDetail
-from backend.common.dataclasses import AccessToken, NewToken, RefreshToken, TokenPayload
-from backend.common.exception import errors
 from backend.core.conf import settings
 from backend.database.db import async_db_session
 from backend.database.redis import redis_client
 from backend.utils.timezone import timezone
+from backend.common.exception import errors
+from backend.common.dataclasses import NewToken, AccessToken, RefreshToken, TokenPayload
+from backend.app.admin.schema.user import GetUserInfoWithRelationDetail
+
 
 # JWT dependency injection
 DependsJwtAuth = Depends(HTTPBearer())
 
 
 def jwt_encode(payload: dict[str, Any]) -> str:
-    """
-    生成 JWT token
+    """生成 JWT token.
 
     :param payload: 载荷
     :return:
@@ -35,8 +35,7 @@ def jwt_encode(payload: dict[str, Any]) -> str:
 
 
 def jwt_decode(token: str) -> TokenPayload:
-    """
-    解析 JWT token
+    """解析 JWT token.
 
     :param token: JWT token
     :return:
@@ -46,17 +45,17 @@ def jwt_decode(token: str) -> TokenPayload:
             token,
             settings.TOKEN_SECRET_KEY,
             algorithms=[settings.TOKEN_ALGORITHM],
-            options={'verify_exp': True},
+            options={"verify_exp": True},
         )
-        session_uuid = payload.get('session_uuid')
-        user_id = payload.get('sub')
-        expire = payload.get('exp')
+        session_uuid = payload.get("session_uuid")
+        user_id = payload.get("sub")
+        expire = payload.get("exp")
         if not session_uuid or not user_id or not expire:
-            raise errors.TokenError(msg='Token 无效')
-    except ExpiredSignatureError:
-        raise errors.TokenError(msg='Token 已过期')
-    except (JWTError, Exception):
-        raise errors.TokenError(msg='Token 无效')
+            raise errors.TokenError(msg="Token 无效")  # noqa: TRY301
+    except ExpiredSignatureError as e:
+        raise errors.TokenError(msg="Token 已过期") from e
+    except (JWTError, Exception) as e:
+        raise errors.TokenError(msg="Token 无效") from e
     return TokenPayload(
         id=int(user_id),
         session_uuid=session_uuid,
@@ -64,9 +63,8 @@ def jwt_decode(token: str) -> TokenPayload:
     )
 
 
-async def create_access_token(user_id: int, *, multi_login: bool, **kwargs) -> AccessToken:
-    """
-    生成加密 token
+async def create_access_token(user_id: int, *, multi_login: bool, **kwargs: Any) -> AccessToken:  # noqa: ANN401
+    """生成加密 token.
 
     :param user_id: 用户 ID
     :param multi_login: 是否允许多端登录
@@ -75,17 +73,19 @@ async def create_access_token(user_id: int, *, multi_login: bool, **kwargs) -> A
     """
     expire = timezone.now() + timedelta(seconds=settings.TOKEN_EXPIRE_SECONDS)
     session_uuid = str(uuid.uuid4())
-    access_token = jwt_encode({
-        'session_uuid': session_uuid,
-        'exp': timezone.to_utc(expire).timestamp(),
-        'sub': str(user_id),
-    })
+    access_token = jwt_encode(
+        {
+            "session_uuid": session_uuid,
+            "exp": timezone.to_utc(expire).timestamp(),
+            "sub": str(user_id),
+        }
+    )
 
     if not multi_login:
-        await redis_client.delete_prefix(f'{settings.TOKEN_REDIS_PREFIX}:{user_id}')
+        await redis_client.delete_prefix(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}")
 
     await redis_client.setex(
-        f'{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}',
+        f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}",
         settings.TOKEN_EXPIRE_SECONDS,
         access_token,
     )
@@ -93,7 +93,7 @@ async def create_access_token(user_id: int, *, multi_login: bool, **kwargs) -> A
     # Token 附加信息单独存储
     if kwargs:
         await redis_client.setex(
-            f'{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}',
+            f"{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}",
             settings.TOKEN_EXPIRE_SECONDS,
             json.dumps(kwargs, ensure_ascii=False),
         )
@@ -102,8 +102,7 @@ async def create_access_token(user_id: int, *, multi_login: bool, **kwargs) -> A
 
 
 async def create_refresh_token(session_uuid: str, user_id: int, *, multi_login: bool) -> RefreshToken:
-    """
-    生成加密刷新 token，仅用于创建新的 token
+    """生成加密刷新 token，仅用于创建新的 token.
 
     :param session_uuid: 会话 UUID
     :param user_id: 用户 ID
@@ -111,17 +110,19 @@ async def create_refresh_token(session_uuid: str, user_id: int, *, multi_login: 
     :return:
     """
     expire = timezone.now() + timedelta(seconds=settings.TOKEN_REFRESH_EXPIRE_SECONDS)
-    refresh_token = jwt_encode({
-        'session_uuid': session_uuid,
-        'exp': timezone.to_utc(expire).timestamp(),
-        'sub': str(user_id),
-    })
+    refresh_token = jwt_encode(
+        {
+            "session_uuid": session_uuid,
+            "exp": timezone.to_utc(expire).timestamp(),
+            "sub": str(user_id),
+        }
+    )
 
     if not multi_login:
-        await redis_client.delete_prefix(f'{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}')
+        await redis_client.delete_prefix(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}")
 
     await redis_client.setex(
-        f'{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}',
+        f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}",
         settings.TOKEN_REFRESH_EXPIRE_SECONDS,
         refresh_token,
     )
@@ -134,10 +135,9 @@ async def create_new_token(
     user_id: int,
     *,
     multi_login: bool,
-    **kwargs,
+    **kwargs: Any,  # noqa: ANN401
 ) -> NewToken:
-    """
-    生成新的 token
+    """生成新的 token.
 
     :param refresh_token: 刷新 token
     :param session_uuid: 会话 UUID
@@ -146,12 +146,12 @@ async def create_new_token(
     :param kwargs: token 附加信息
     :return:
     """
-    redis_refresh_token = await redis_client.get(f'{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}')
+    redis_refresh_token = await redis_client.get(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}")
     if not redis_refresh_token or redis_refresh_token != refresh_token:
-        raise errors.TokenError(msg='Refresh Token 已过期，请重新登录')
+        raise errors.TokenError(msg="Refresh Token 已过期, 请重新登录")
 
-    await redis_client.delete(f'{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}')
-    await redis_client.delete(f'{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}')
+    await redis_client.delete(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{session_uuid}")
+    await redis_client.delete(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}")
 
     new_access_token = await create_access_token(user_id, multi_login=multi_login, **kwargs)
     new_refresh_token = await create_refresh_token(new_access_token.session_uuid, user_id, multi_login=multi_login)
@@ -165,61 +165,61 @@ async def create_new_token(
 
 
 async def revoke_token(user_id: int, session_uuid: str) -> None:
-    """
-    撤销 token
+    """撤销 token.
 
     :param user_id: 用户 ID
     :param session_uuid: 会话 ID
     :return:
     """
-    await redis_client.delete(f'{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}')
-    await redis_client.delete(f'{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}')
+    await redis_client.delete(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{session_uuid}")
+    await redis_client.delete(f"{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}")
 
 
 def get_token(request: Request) -> str:
-    """
-    获取请求头中的 token
+    """获取请求头中的 token.
 
     :param request: FastAPI 请求对象
     :return:
     """
-    authorization = request.headers.get('Authorization')
+    authorization = request.headers.get("Authorization")
     scheme, token = get_authorization_scheme_param(authorization)
-    if not authorization or scheme.lower() != 'bearer':
-        raise errors.TokenError(msg='Token 无效')
+    if not authorization or scheme.lower() != "bearer":
+        raise errors.TokenError(msg="Token 无效")
     return token
 
 
-async def get_current_user(db: AsyncSession, pk: int) -> User:
-    """
-    获取当前用户
+async def get_current_user(db: AsyncSession, pk: int) -> Any:  # noqa: ANN401
+    """获取当前用户.
 
     :param db: 数据库会话
     :param pk: 用户 ID
     :return:
     """
-    from backend.app.admin.crud.crud_user import user_dao
+    from backend.app.admin.crud.crud_user import user_dao  # noqa: PLC0415
 
     user = await user_dao.get_join(db, user_id=pk)
     if not user:
-        raise errors.TokenError(msg='Token 无效')
-    if not user.status:
-        raise errors.AuthorizationError(msg='用户已被锁定，请联系系统管理员')
-    if user.dept_id:
-        if not user.dept.status:
-            raise errors.AuthorizationError(msg='用户所属部门已被锁定，请联系系统管理员')
-        if user.dept.del_flag:
-            raise errors.AuthorizationError(msg='用户所属部门已被删除，请联系系统管理员')
-    if user.roles:
-        role_status = [role.status for role in user.roles]
+        raise errors.TokenError(msg="Token 无效")
+    status = getattr(user, "status", None)
+    if not status:
+        raise errors.AuthorizationError(msg="用户已被锁定, 请联系系统管理员")
+    dept_id = getattr(user, "dept_id", None)
+    if dept_id:
+        dept = getattr(user, "dept", None)
+        if dept and not getattr(dept, "status", 1):
+            raise errors.AuthorizationError(msg="用户所属部门已被锁定, 请联系系统管理员")
+        if dept and getattr(dept, "del_flag", False):
+            raise errors.AuthorizationError(msg="用户所属部门已被删除, 请联系系统管理员")
+    roles = getattr(user, "roles", [])
+    if roles:
+        role_status = [getattr(role, "status", 1) for role in roles]
         if all(status == 0 for status in role_status):
-            raise errors.AuthorizationError(msg='用户所属角色已被锁定，请联系系统管理员')
+            raise errors.AuthorizationError(msg="用户所属角色已被锁定, 请联系系统管理员")
     return user
 
 
 def superuser_verify(request: Request, _token: str = DependsJwtAuth) -> bool:
-    """
-    验证当前用户超级管理员权限
+    """验证当前用户超级管理员权限.
 
     :param request: FastAPI 请求对象
     :param _token: JWT 令牌
@@ -232,28 +232,27 @@ def superuser_verify(request: Request, _token: str = DependsJwtAuth) -> bool:
 
 
 async def jwt_authentication(token: str) -> GetUserInfoWithRelationDetail:
-    """
-    JWT 认证
+    """JWT 认证.
 
     :param token: JWT token
     :return:
     """
     token_payload = jwt_decode(token)
     user_id = token_payload.id
-    redis_token = await redis_client.get(f'{settings.TOKEN_REDIS_PREFIX}:{user_id}:{token_payload.session_uuid}')
+    redis_token = await redis_client.get(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{token_payload.session_uuid}")
     if not redis_token:
-        raise errors.TokenError(msg='Token 已过期')
+        raise errors.TokenError(msg="Token 已过期")
 
     if token != redis_token:
-        raise errors.TokenError(msg='Token 已失效')
+        raise errors.TokenError(msg="Token 已失效")
 
-    cache_user = await redis_client.get(f'{settings.JWT_USER_REDIS_PREFIX}:{user_id}')
+    cache_user = await redis_client.get(f"{settings.JWT_USER_REDIS_PREFIX}:{user_id}")
     if not cache_user:
         async with async_db_session() as db:
             current_user = await get_current_user(db, user_id)
             user = GetUserInfoWithRelationDetail.model_validate(current_user)
             await redis_client.setex(
-                f'{settings.JWT_USER_REDIS_PREFIX}:{user_id}',
+                f"{settings.JWT_USER_REDIS_PREFIX}:{user_id}",
                 settings.TOKEN_EXPIRE_SECONDS,
                 user.model_dump_json(),
             )

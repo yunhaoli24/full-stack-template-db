@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ChevronsUpDownIcon } from 'lucide-vue-next'
+import { ChevronsUpDownIcon } from "lucide-vue-next";
 
-import type { TwoColAsideNavItem } from './types'
+import type { TwoColAsideNavItem } from "./types";
 
 const props = defineProps<{
-  nav: TwoColAsideNavItem[]
-}>()
+  nav: TwoColAsideNavItem[];
+}>();
 
-const route = useRoute()
-const currentPath = computed(() => route.path)
-const activeClass = 'text-primary font-semibold bg-primary/5'
+const route = useRoute();
+const currentPath = computed(() => route.path);
+const activeClass = "text-primary font-semibold bg-primary/5";
 
-const currentLink = computed(() => props.nav.find(link => link.url === currentPath.value))
+const currentLink = computed(() => props.nav.find((link) => link.url === currentPath.value));
 </script>
 
 <template>

@@ -1,17 +1,19 @@
 <script lang="ts" setup>
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-import type { LayoutHeaderProps } from './types'
+import type { LayoutHeaderProps } from "./types";
 
-defineProps<LayoutHeaderProps>()
+defineProps<LayoutHeaderProps>();
 </script>
 
 <template>
   <header
-    :class="cn(
-      'flex flex-col md:flex-row gap-2 justify-between py-2',
-      sticky ? 'sticky top-0 z-40 bg-background' : '',
-    )"
+    :class="
+      cn(
+        'flex flex-col md:flex-row gap-2 justify-between py-2',
+        sticky ? 'sticky top-0 z-40 bg-background' : '',
+      )
+    "
   >
     <main>
       <h1 class="text-2xl font-bold">

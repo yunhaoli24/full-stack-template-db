@@ -1,45 +1,46 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-import { useSidebar } from '@/composables/use-sidebar'
+import { useSidebar } from "@/composables/use-sidebar";
 
-import type { NavGroup, NavItem } from '../app-sidebar/types'
+import type { NavGroup, NavItem } from "../app-sidebar/types";
 
-import CommandItemHasIcon from './command-item-has-icon.vue'
+import CommandItemHasIcon from "./command-item-has-icon.vue";
 
 const emit = defineEmits<{
-  (e: 'click'): void
-}>()
+  (e: "click"): void;
+}>();
 
-const { navData, otherPages } = useSidebar()
+const { navData, otherPages } = useSidebar();
 
 function getFlatNavItems(navData: NavGroup[]): NavItem[] {
-  const flatItems: NavItem[] = []
+  const flatItems: NavItem[] = [];
   navData.forEach((group) => {
     group.items.forEach((item) => {
       if (item.items) {
-        flatItems.push(...getFlatNavItems([item as unknown as NavGroup]))
+        flatItems.push(...getFlatNavItems([item as unknown as NavGroup]));
+      } else {
+        flatItems.push(item);
       }
-      else {
-        flatItems.push(item)
-      }
-    })
-  })
-  return flatItems
+    });
+  });
+  return flatItems;
 }
 
-const commands = computed(() => getFlatNavItems([...(navData.value || []), ...(otherPages.value || [])]))
+const commands = computed(() =>
+  getFlatNavItems([...(navData.value || []), ...(otherPages.value || [])]),
+);
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 function commandItemClick(url: string, external?: boolean) {
-  emit('click')
+  emit("click");
   if (external) {
-    window.open(url, '_blank', 'noreferrer')
-    return
+    window.open(url, "_blank", "noreferrer");
+    return;
   }
   if (route.fullPath !== url) {
-    router.push(url)
+    router.push(url);
   }
 }
 </script>

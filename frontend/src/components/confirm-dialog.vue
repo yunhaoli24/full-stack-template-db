@@ -7,35 +7,35 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 
 interface ConfirmDialogProps {
-  isLoading?: boolean
-  disabled?: boolean
-  cancelButtonText?: string
-  confirmButtonText?: string
-  destructive?: boolean
+  isLoading?: boolean;
+  disabled?: boolean;
+  cancelButtonText?: string;
+  confirmButtonText?: string;
+  destructive?: boolean;
 }
 
 const {
   isLoading = false,
   disabled = false,
   destructive = false,
-  cancelButtonText = 'Cancel',
-  confirmButtonText = 'Continue',
-} = defineProps<ConfirmDialogProps>()
+  cancelButtonText = "Cancel",
+  confirmButtonText = "Continue",
+} = defineProps<ConfirmDialogProps>();
 
 const emits = defineEmits<{
-  (e: 'confirm'): void
-}>()
+  (e: "confirm"): void;
+}>();
 
-const openModel = defineModel<boolean>('open', {
+const openModel = defineModel<boolean>("open", {
   default: false,
-})
+});
 
 function handleConfirm() {
-  emits('confirm')
-  openModel.value = false
+  emits("confirm");
+  openModel.value = false;
 }
 </script>
 

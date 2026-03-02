@@ -1,34 +1,31 @@
 <script setup lang="ts">
-import type { HTMLAttributes, Ref } from 'vue'
-import { cn } from '@/lib/utils'
-import { useVModel } from '@vueuse/core'
-import { provide } from 'vue'
-import { ChainOfThoughtContextKey } from './context'
+import type { HTMLAttributes, Ref } from "vue";
+import { cn } from "@/lib/utils";
+import { useVModel } from "@vueuse/core";
+import { provide } from "vue";
+import { ChainOfThoughtContextKey } from "./context";
 
 interface ChainOfThoughtProps {
-  modelValue?: boolean
-  defaultOpen?: boolean
-  class?: HTMLAttributes['class']
+  modelValue?: boolean;
+  defaultOpen?: boolean;
+  class?: HTMLAttributes["class"];
 }
 
-const props = withDefaults(
-  defineProps<ChainOfThoughtProps>(),
-  {
-    defaultOpen: false,
-    modelValue: undefined,
-  },
-)
+const props = withDefaults(defineProps<ChainOfThoughtProps>(), {
+  defaultOpen: false,
+  modelValue: undefined,
+});
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
+  (e: "update:modelValue", value: boolean): void;
+}>();
 
-const isOpen = useVModel(props, 'modelValue', emit, {
+const isOpen = useVModel(props, "modelValue", emit, {
   defaultValue: props.defaultOpen,
   passive: true,
-})
+});
 
-provide(ChainOfThoughtContextKey, isOpen as Ref<boolean>)
+provide(ChainOfThoughtContextKey, isOpen as Ref<boolean>);
 </script>
 
 <template>

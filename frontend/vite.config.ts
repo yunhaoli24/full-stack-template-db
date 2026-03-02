@@ -5,8 +5,7 @@ import { fileURLToPath, URL } from "node:url";
 import { visualizer } from "rollup-plugin-visualizer";
 import AutoImport from "unplugin-auto-import/vite";
 import Component from "unplugin-vue-components/vite";
-import { VueRouterAutoImports } from "unplugin-vue-router";
-import VueRouter from "unplugin-vue-router/vite";
+import VueRouter from "vue-router/vite";
 import { defineConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 import Layouts from "vite-plugin-vue-layouts";
@@ -17,7 +16,7 @@ export default defineConfig({
   plugins: [
     VueRouter({
       exclude: RouteGenerateExclude,
-      dts: "src/types/typed-router.d.ts",
+      dts: "src/route-map.d.ts",
     }),
     vue(),
     vueJsx(),
@@ -29,7 +28,7 @@ export default defineConfig({
     }),
     AutoImport({
       include: [/\.[tj]sx?$/, /\.vue$/],
-      imports: ["vue", VueRouterAutoImports],
+      imports: ["vue", "vue-router"],
       dirs: ["src/composables/**/*.ts", "src/constants/**/*.ts", "src/stores/**/*.ts"],
       defaultExportByFilename: true,
       dts: "src/types/auto-import.d.ts",

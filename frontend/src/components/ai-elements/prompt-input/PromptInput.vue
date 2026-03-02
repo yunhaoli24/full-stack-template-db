@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import type { PromptInputMessage } from './types'
-import { InputGroup } from '@/components/ui/input-group'
-import { cn } from '@/lib/utils'
-import { inject, onMounted, onUnmounted, ref } from 'vue'
-import { usePromptInputProvider } from './context'
-import { PROMPT_INPUT_KEY } from './types'
+import type { HTMLAttributes } from "vue";
+import type { PromptInputMessage } from "./types";
+import { InputGroup } from "@/components/ui/input-group";
+import { cn } from "@/lib/utils";
+import { inject, onMounted, onUnmounted, ref } from "vue";
+import { usePromptInputProvider } from "./context";
+import { PROMPT_INPUT_KEY } from "./types";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-  accept?: string
-  multiple?: boolean
-  globalDrop?: boolean
-  maxFiles?: number
-  maxFileSize?: number
-  initialInput?: string
-}>()
+  class?: HTMLAttributes["class"];
+  accept?: string;
+  multiple?: boolean;
+  globalDrop?: boolean;
+  maxFiles?: number;
+  maxFileSize?: number;
+  initialInput?: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'submit', payload: PromptInputMessage): void
-  (e: 'error', payload: { code: string, message: string }): void
-}>()
+  (e: "submit", payload: PromptInputMessage): void;
+  (e: "error", payload: { code: string; message: string }): void;
+}>();
 
-const formRef = ref<HTMLFormElement | null>(null)
+const formRef = ref<HTMLFormElement | null>(null);
 
 // --- Dual-mode context handling ---
-const inheritedContext = inject(PROMPT_INPUT_KEY, null)
+const inheritedContext = inject(PROMPT_INPUT_KEY, null);
 const localContext = inheritedContext
   ? null
   : usePromptInputProvider({
@@ -33,58 +33,58 @@ const localContext = inheritedContext
       maxFiles: props.maxFiles,
       maxFileSize: props.maxFileSize,
       accept: props.accept,
-      onSubmit: msg => emit('submit', msg as any),
-      onError: err => emit('error', err),
-    })
+      onSubmit: (msg) => emit("submit", msg as any),
+      onError: (err) => emit("error", err),
+    });
 
-const context = inheritedContext || localContext
+const context = inheritedContext || localContext;
 
 if (!context) {
-  throw new Error('PromptInput context is missing.')
+  throw new Error("PromptInput context is missing.");
 }
 
-const { fileInputRef, addFiles, submitForm } = context
+const { fileInputRef, addFiles, submitForm } = context;
 
 function handleDragOver(e: DragEvent) {
-  if (e.dataTransfer?.types?.includes('Files')) {
-    e.preventDefault()
+  if (e.dataTransfer?.types?.includes("Files")) {
+    e.preventDefault();
   }
 }
 
 function handleDrop(e: DragEvent) {
-  if (e.dataTransfer?.types?.includes('Files')) {
-    e.preventDefault()
+  if (e.dataTransfer?.types?.includes("Files")) {
+    e.preventDefault();
   }
   if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-    addFiles(e.dataTransfer.files)
+    addFiles(e.dataTransfer.files);
   }
 }
 
 onMounted(() => {
   if (props.globalDrop) {
-    document.addEventListener('dragover', handleDragOver)
-    document.addEventListener('drop', handleDrop)
+    document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("drop", handleDrop);
   }
-})
+});
 
 onUnmounted(() => {
   if (props.globalDrop) {
-    document.removeEventListener('dragover', handleDragOver)
-    document.removeEventListener('drop', handleDrop)
+    document.removeEventListener("dragover", handleDragOver);
+    document.removeEventListener("drop", handleDrop);
   }
-})
+});
 
 function onFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
+  const input = e.target as HTMLInputElement;
   if (input.files) {
-    addFiles(input.files)
+    addFiles(input.files);
   }
-  input.value = ''
+  input.value = "";
 }
 
 function onSubmit(e: Event) {
-  e.preventDefault()
-  submitForm()
+  e.preventDefault();
+  submitForm();
 }
 </script>
 

@@ -1,2 +1,10 @@
-from backend.app.task.model.result import TaskExtended as TaskResult  # noqa: F401
-from backend.app.task.model.scheduler import TaskScheduler as TaskScheduler
+"""Task model exports."""
+
+from backend.app.task.model.result import TaskResult
+from backend.app.task.model.scheduler import TaskScheduler
+
+
+__all__ = [
+    "TaskResult",
+    "TaskScheduler",
+]

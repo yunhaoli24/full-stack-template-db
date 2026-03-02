@@ -1,8 +1,9 @@
-import sys
+"""Db."""
 
-from collections.abc import AsyncGenerator
-from typing import Annotated
+import sys
 from uuid import uuid4
+from typing import Annotated
+from collections.abc import AsyncGenerator
 
 from fastapi import Depends
 from sqlalchemy import URL
@@ -13,32 +14,29 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from backend.core.conf import settings
 from backend.common.log import log
 from backend.common.model import MappedBase
-from backend.core.conf import settings
 
 
 def create_database_url(*, unittest: bool = False) -> URL:
-    """
-    创建数据库链接
+    """创建数据库链接.
 
     :param unittest: 是否用于单元测试
     :return:
     """
-    url = URL.create(
-        drivername='postgresql+asyncpg',
+    return URL.create(
+        drivername="postgresql+asyncpg",
         username=settings.DATABASE_USER,
         password=settings.DATABASE_PASSWORD,
         host=settings.DATABASE_HOST,
         port=settings.DATABASE_PORT,
-        database=settings.DATABASE_SCHEMA if not unittest else f'{settings.DATABASE_SCHEMA}_test',
+        database=settings.DATABASE_SCHEMA if not unittest else f"{settings.DATABASE_SCHEMA}_test",
     )
-    return url
 
 
 def create_async_engine_and_session(url: str | URL) -> tuple[AsyncEngine, async_sessionmaker[AsyncSession]]:
-    """
-    创建数据库引擎和 Session
+    """创建数据库引擎和 Session.
 
     :param url: 数据库连接 URL
     :return:
@@ -59,7 +57,7 @@ def create_async_engine_and_session(url: str | URL) -> tuple[AsyncEngine, async_
             pool_use_lifo=False,  # 低：False 高：True
         )
     except Exception as e:
-        log.error('❌ 数据库链接失败 {}', e)
+        log.error("❌ 数据库链接失败 {}", e)
         sys.exit()
     else:
         db_session = async_sessionmaker(
@@ -71,32 +69,32 @@ def create_async_engine_and_session(url: str | URL) -> tuple[AsyncEngine, async_
         return engine, db_session
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """获取数据库会话"""
+async def get_db() -> AsyncGenerator[AsyncSession]:
+    """获取数据库会话."""
     async with async_db_session() as session:
         yield session
 
 
-async def get_db_transaction() -> AsyncGenerator[AsyncSession, None]:
-    """获取带有事务的数据库会话"""
+async def get_db_transaction() -> AsyncGenerator[AsyncSession]:
+    """获取带有事务的数据库会话."""
     async with async_db_session.begin() as session:
         yield session
 
 
 async def create_tables() -> None:
-    """创建数据库表"""
+    """创建数据库表."""
     async with async_engine.begin() as coon:
         await coon.run_sync(MappedBase.metadata.create_all)
 
 
 async def drop_tables() -> None:
-    """丢弃数据库表"""
+    """丢弃数据库表."""
     async with async_engine.begin() as conn:
         await conn.run_sync(MappedBase.metadata.drop_all)
 
 
 def uuid4_str() -> str:
-    """数据库引擎 UUID 类型兼容性解决方案"""
+    """数据库引擎 UUID 类型兼容性解决方案."""
     return str(uuid4())
 
 
@@ -107,5 +105,5 @@ SQLALCHEMY_DATABASE_URL = create_database_url()
 async_engine, async_db_session = create_async_engine_and_session(SQLALCHEMY_DATABASE_URL)
 
 # Session Annotated
-CurrentSession = Annotated[AsyncSession, Depends(get_db)]
-CurrentSessionTransaction = Annotated[AsyncSession, Depends(get_db_transaction)]
+type CurrentSession = Annotated[AsyncSession, Depends(get_db)]
+type CurrentSessionTransaction = Annotated[AsyncSession, Depends(get_db_transaction)]

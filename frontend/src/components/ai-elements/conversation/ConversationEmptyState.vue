@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props {
-  class?: HTMLAttributes['class']
-  title?: string
-  description?: string
+  class?: HTMLAttributes["class"];
+  title?: string;
+  description?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: 'No messages yet',
-  description: 'Start a conversation to see messages here',
-})
+  title: "No messages yet",
+  description: "Start a conversation to see messages here",
+});
 </script>
 
 <template>
   <div
-    :class="cn(
-      'flex size-full flex-col items-center justify-center gap-3 p-8 text-center',
-      props.class,
-    )"
+    :class="
+      cn('flex size-full flex-col items-center justify-center gap-3 p-8 text-center', props.class)
+    "
     v-bind="$attrs"
   >
     <slot>

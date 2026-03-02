@@ -1,39 +1,42 @@
+"""Enums."""
+
 from enum import Enum
 from enum import IntEnum as SourceIntEnum
 from typing import Any, TypeVar
 
-T = TypeVar('T', bound=Enum)
+
+T = TypeVar("T", bound=Enum)
 
 
 class _EnumBase:
-    """枚举基类，提供通用方法"""
+    """枚举基类，提供通用方法."""
 
     @classmethod
     def get_member_keys(cls) -> list[str]:
-        """获取枚举成员名称列表"""
+        """获取枚举成员名称列表."""
         return list(cls.__members__.keys())  # type: ignore[attr-defined]
 
     @classmethod
-    def get_member_values(cls) -> list:
-        """获取枚举成员值列表"""
+    def get_member_values(cls) -> list[Any]:
+        """获取枚举成员值列表."""
         return [item.value for item in cls.__members__.values()]  # type: ignore[attr-defined]
 
     @classmethod
     def get_member_dict(cls) -> dict[str, Any]:
-        """获取枚举成员字典"""
+        """获取枚举成员字典."""
         return {name: item.value for name, item in cls.__members__.items()}  # type: ignore[attr-defined]
 
 
 class IntEnum(_EnumBase, SourceIntEnum):
-    """整型枚举基类"""
+    """整型枚举基类."""
 
 
-class StrEnum(_EnumBase, str, Enum):
-    """字符串枚举基类"""
+class StrEnum(_EnumBase, str, Enum):  # noqa: UP042
+    """字符串枚举基类."""
 
 
 class MenuType(IntEnum):
-    """菜单类型"""
+    """菜单类型."""
 
     directory = 0
     menu = 1
@@ -43,14 +46,14 @@ class MenuType(IntEnum):
 
 
 class RoleDataRuleOperatorType(IntEnum):
-    """数据规则运算符"""
+    """数据规则运算符."""
 
     AND = 0
     OR = 1
 
 
 class RoleDataRuleExpressionType(IntEnum):
-    """数据规则表达式"""
+    """数据规则表达式."""
 
     eq = 0  # ==
     ne = 1  # !=
@@ -63,32 +66,32 @@ class RoleDataRuleExpressionType(IntEnum):
 
 
 class MethodType(StrEnum):
-    """HTTP 请求方法"""
+    """HTTP 请求方法."""
 
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    DELETE = 'DELETE'
-    PATCH = 'PATCH'
-    OPTIONS = 'OPTIONS'
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    DELETE = "DELETE"
+    PATCH = "PATCH"
+    OPTIONS = "OPTIONS"
 
 
 class LoginLogStatusType(IntEnum):
-    """登录日志状态"""
+    """登录日志状态."""
 
     fail = 0
     success = 1
 
 
 class BuildTreeType(StrEnum):
-    """构建树形结构类型"""
+    """构建树形结构类型."""
 
-    traversal = 'traversal'
-    recursive = 'recursive'
+    traversal = "traversal"
+    recursive = "recursive"
 
 
 class OperaLogCipherType(IntEnum):
-    """操作日志加密类型"""
+    """操作日志加密类型."""
 
     aes = 0
     md5 = 1
@@ -97,36 +100,36 @@ class OperaLogCipherType(IntEnum):
 
 
 class StatusType(IntEnum):
-    """状态类型"""
+    """状态类型."""
 
     disable = 0
     enable = 1
 
 
 class FileType(StrEnum):
-    """文件类型"""
+    """文件类型."""
 
-    image = 'image'
-    video = 'video'
+    image = "image"
+    video = "video"
 
 
 class PluginType(StrEnum):
-    """插件类型"""
+    """插件类型."""
 
-    zip = 'zip'
-    git = 'git'
+    zip = "zip"
+    git = "git"
 
 
 class UserPermissionType(StrEnum):
-    """用户权限类型"""
+    """用户权限类型."""
 
-    superuser = 'superuser'
-    staff = 'staff'
-    status = 'status'
-    multi_login = 'multi_login'
+    superuser = "superuser"
+    staff = "staff"
+    status = "status"
+    multi_login = "multi_login"
 
 
 class DataBaseType(StrEnum):
-    """数据库类型"""
+    """数据库类型."""
 
-    postgresql = 'postgresql'
+    postgresql = "postgresql"

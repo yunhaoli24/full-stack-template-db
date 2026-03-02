@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-import { nanoid } from 'nanoid'
-import { computed, ref } from 'vue'
-import { toast } from 'vue-sonner'
+import { nanoid } from "nanoid";
+import { computed, ref } from "vue";
+import { toast } from "vue-sonner";
 
 import {
   Conversation,
   ConversationContent,
   ConversationEmptyState,
   ConversationScrollButton,
-} from '@/components/ai-elements/conversation'
-import { Loader } from '@/components/ai-elements/loader'
-import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message'
+} from "@/components/ai-elements/conversation";
+import { Loader } from "@/components/ai-elements/loader";
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputActionAddAttachments,
@@ -25,53 +25,54 @@ import {
   PromptInputTextarea,
   PromptInputTools,
   type PromptInputMessage,
-} from '@/components/ai-elements/prompt-input'
-import { streamChatCompletion } from '@/services/api/chat/chat.api'
-import type { IMessage } from '@/services/types/chat'
+} from "@/components/ai-elements/prompt-input";
+import { streamChatCompletion } from "@/services/api/chat/chat.api";
+import type { IMessage } from "@/services/types/chat";
 
-
-type TalkStatus = 'pending' | 'streaming' | 'done' | 'error'
+type TalkStatus = "pending" | "streaming" | "done" | "error";
 type TalkMessage = IMessage & {
-  id: string
-  status?: TalkStatus
-}
+  id: string;
+  status?: TalkStatus;
+};
 
-const talks = ref<TalkMessage[]>([])
-const requestStatus = ref<'idle' | 'waiting' | 'streaming' | 'error'>('idle')
+const talks = ref<TalkMessage[]>([]);
+const requestStatus = ref<"idle" | "waiting" | "streaming" | "error">("idle");
 
-const isRequestActive = computed(() => requestStatus.value === 'waiting' || requestStatus.value === 'streaming')
+const isRequestActive = computed(
+  () => requestStatus.value === "waiting" || requestStatus.value === "streaming",
+);
 const submitStatus = computed(() => {
-  if (requestStatus.value === 'waiting') return 'submitted'
-  if (requestStatus.value === 'streaming') return 'streaming'
-  if (requestStatus.value === 'error') return 'error'
-  return undefined
-})
+  if (requestStatus.value === "waiting") return "submitted";
+  if (requestStatus.value === "streaming") return "streaming";
+  if (requestStatus.value === "error") return "error";
+  return undefined;
+});
 
 function toMessagePayload(excludeId: string): IMessage[] {
   return talks.value
-    .filter(talk => talk.id !== excludeId)
-    .map(({ role, content }) => ({ role, content }))
+    .filter((talk) => talk.id !== excludeId)
+    .map(({ role, content }) => ({ role, content }));
 }
 
 async function handleSubmit(message: PromptInputMessage) {
-  const content = message.text.trim()
-  if (!content && message.files.length === 0) return
+  const content = message.text.trim();
+  if (!content && message.files.length === 0) return;
 
   const userMessage: TalkMessage = {
     id: nanoid(),
-    role: 'user',
+    role: "user",
     content,
-    status: 'done',
-  }
+    status: "done",
+  };
   const assistantMessage: TalkMessage = {
     id: nanoid(),
-    role: 'assistant',
-    content: '',
-    status: 'pending',
-  }
+    role: "assistant",
+    content: "",
+    status: "pending",
+  };
 
-  talks.value.push(userMessage, assistantMessage)
-  requestStatus.value = 'waiting'
+  talks.value.push(userMessage, assistantMessage);
+  requestStatus.value = "waiting";
 
   try {
     await streamChatCompletion(
@@ -80,39 +81,39 @@ async function handleSubmit(message: PromptInputMessage) {
         messages: toMessagePayload(assistantMessage.id),
       },
       (chunk: string) => {
-        const target = talks.value.find(talk => talk.id === assistantMessage.id)
-        if (!target) return
-        if (target.status === 'pending') {
-          target.status = 'streaming'
+        const target = talks.value.find((talk) => talk.id === assistantMessage.id);
+        if (!target) return;
+        if (target.status === "pending") {
+          target.status = "streaming";
         }
-        target.content += chunk
-        requestStatus.value = 'streaming'
+        target.content += chunk;
+        requestStatus.value = "streaming";
       },
       (error: Error) => {
-        const target = talks.value.find(talk => talk.id === assistantMessage.id)
+        const target = talks.value.find((talk) => talk.id === assistantMessage.id);
         if (target) {
-          target.status = 'error'
-          target.content = 'Sorry, I encountered an error. Please try again.'
+          target.status = "error";
+          target.content = "Sorry, I encountered an error. Please try again.";
         }
-        requestStatus.value = 'error'
-        console.error('Chat completion error:', error)
-        toast.error('Failed to get response', {
+        requestStatus.value = "error";
+        console.error("Chat completion error:", error);
+        toast.error("Failed to get response", {
           description: error.message,
-        })
+        });
       },
-    )
+    );
 
-    const target = talks.value.find(talk => talk.id === assistantMessage.id)
-    if (target && target.status !== 'error') {
-      target.status = 'done'
+    const target = talks.value.find((talk) => talk.id === assistantMessage.id);
+    if (target && target.status !== "error") {
+      target.status = "done";
     }
   } finally {
-    requestStatus.value = 'idle'
+    requestStatus.value = "idle";
   }
 }
 
-function handleInputError(error: { code: string, message: string }) {
-  toast.error(error.message)
+function handleInputError(error: { code: string; message: string }) {
+  toast.error(error.message);
 }
 </script>
 

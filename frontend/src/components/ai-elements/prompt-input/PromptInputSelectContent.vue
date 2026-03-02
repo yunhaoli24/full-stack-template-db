@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { SelectContent } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { SelectContent } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-type SelectContentProps = InstanceType<typeof SelectContent>['$props']
+type SelectContentProps = InstanceType<typeof SelectContent>["$props"];
 
 interface Props extends /* @vue-ignore */ SelectContentProps {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 </script>
 
 <template>

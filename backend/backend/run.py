@@ -1,8 +1,11 @@
-import os
+"""Run."""
+
+from pathlib import Path
 
 import uvicorn
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # 为什么独立此启动文件：https://stackoverflow.com/questions/64003384
 
     # DEBUG:
@@ -14,9 +17,9 @@ if __name__ == '__main__':
     # 1. 按照官方文档通过 uv 安装依赖
     # 2. 命令行空间位于 backend 目录下
     uvicorn.run(
-        app='backend.main:app',
-        host='127.0.0.1',
+        app="backend.main:app",
+        host="127.0.0.1",
         port=8080,
         reload=True,
-        reload_excludes=[os.path.abspath('../.venv')],
+        reload_excludes=[str(Path("../.venv").resolve())],
     )

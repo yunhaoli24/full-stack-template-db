@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { Ellipsis, FilePenLine, Trash2 } from 'lucide-vue-next'
+import { Ellipsis, FilePenLine, Trash2 } from "lucide-vue-next";
 
-import type { DictType } from '@/services/api/plugins/dict/dict-types.api'
+import type { DictType } from "@/services/api/plugins/dict/dict-types.api";
 
 const props = defineProps<{
-  dictType: DictType
-}>()
+  dictType: DictType;
+}>();
 
 const emits = defineEmits<{
-  (e: 'edit', dictType: DictType): void
-  (e: 'delete', dictType: DictType): void
-}>()
+  (e: "edit", dictType: DictType): void;
+  (e: "delete", dictType: DictType): void;
+}>();
 
 function handleEdit() {
-  emits('edit', props.dictType)
+  emits("edit", props.dictType);
 }
 
 function handleDelete() {
-  emits('delete', props.dictType)
+  emits("delete", props.dictType);
 }
 </script>
 

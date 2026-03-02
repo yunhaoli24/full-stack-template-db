@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-prek run --all-files
+set -euo pipefail
+
+uv run prek run --all-files

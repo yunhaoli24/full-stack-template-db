@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { CardDescription } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { Shimmer } from '../shimmer'
-import { usePlan } from './context'
+import type { HTMLAttributes } from "vue";
+import { CardDescription } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Shimmer } from "../shimmer";
+import { usePlan } from "./context";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const { isStreaming } = usePlan()
+const { isStreaming } = usePlan();
 </script>
 
 <template>

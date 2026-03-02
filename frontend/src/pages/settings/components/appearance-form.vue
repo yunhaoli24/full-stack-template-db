@@ -1,30 +1,41 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
 
-import { Button } from '@/components/ui/button'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Separator } from '@/components/ui/separator'
+import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 
-import { appearanceValidator } from '../validators/appearance.validator'
+import { appearanceValidator } from "../validators/appearance.validator";
 
-const appearanceFormSchema = toTypedSchema(appearanceValidator)
+const appearanceFormSchema = toTypedSchema(appearanceValidator);
 
 const { handleSubmit } = useForm({
   validationSchema: appearanceFormSchema,
   initialValues: {
-    theme: 'light',
-    font: 'inter',
+    theme: "light",
+    font: "inter",
   },
-})
+});
 
 const onSubmit = handleSubmit((values) => {
-  toast('You submitted the following values:', {
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
-})
+  toast("You submitted the following values:", {
+    description: h(
+      "pre",
+      { class: "mt-2 w-[340px] rounded-md bg-slate-950 p-4" },
+      h("code", { class: "text-white" }, JSON.stringify(values, null, 2)),
+    ),
+  });
+});
 </script>
 
 <template>

@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 </script>
 
 <template>
   <div
     v-if="$slots.default"
-    :class="
-      cn(
-        'ml-auto flex w-fit flex-wrap items-start gap-2',
-        props.class,
-      )
-    "
+    :class="cn('ml-auto flex w-fit flex-wrap items-start gap-2', props.class)"
     v-bind="$attrs"
   >
     <slot />

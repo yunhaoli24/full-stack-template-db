@@ -1,30 +1,29 @@
 <script setup lang="ts">
-import type { ButtonVariants } from '@/components/ui/button'
-import type { LucideIcon } from 'lucide-vue-next'
-import type { HTMLAttributes } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
+import type { ButtonVariants } from "@/components/ui/button";
+import type { LucideIcon } from "lucide-vue-next";
+import type { HTMLAttributes } from "vue";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
 
 interface ArtifactActionProps {
-  class?: HTMLAttributes['class']
-  tooltip?: string
-  label?: string
-  variant?: ButtonVariants['variant']
-  size?: ButtonVariants['size']
-  icon?: LucideIcon
+  class?: HTMLAttributes["class"];
+  tooltip?: string;
+  label?: string;
+  variant?: ButtonVariants["variant"];
+  size?: ButtonVariants["size"];
+  icon?: LucideIcon;
 }
 
 const props = withDefaults(defineProps<ArtifactActionProps>(), {
-  variant: 'ghost',
-  size: 'sm',
-})
+  variant: "ghost",
+  size: "sm",
+});
 
-const classes = computed(() => cn(
-  'size-8 p-0 text-muted-foreground hover:text-foreground',
-  props.class,
-))
+const classes = computed(() =>
+  cn("size-8 p-0 text-muted-foreground hover:text-foreground", props.class),
+);
 </script>
 
 <template>

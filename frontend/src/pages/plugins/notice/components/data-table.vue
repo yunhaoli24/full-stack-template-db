@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { DataTableProps } from '@/components/data-table/types'
+import type { DataTableProps } from "@/components/data-table/types";
 
-import DataTable from '@/components/data-table/data-table.vue'
-import { generateVueTable } from '@/components/data-table/use-generate-vue-table'
+import DataTable from "@/components/data-table/data-table.vue";
+import { generateVueTable } from "@/components/data-table/use-generate-vue-table";
 
-import type { Notice } from '@/services/api/plugins/notice/notices.api'
+import type { Notice } from "@/services/api/plugins/notice/notices.api";
 
-const props = defineProps<DataTableProps<Notice>>()
-const table = generateVueTable<Notice>(props)
+const props = defineProps<DataTableProps<Notice>>();
+const table = generateVueTable<Notice>(props);
 </script>
 
 <template>

@@ -1,40 +1,33 @@
 <script setup lang="ts">
-import type { FileUIPart } from 'ai'
-import type { HTMLAttributes } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
-import { PaperclipIcon, XIcon } from 'lucide-vue-next'
-import { computed } from 'vue'
+import type { FileUIPart } from "ai";
+import type { HTMLAttributes } from "vue";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { PaperclipIcon, XIcon } from "lucide-vue-next";
+import { computed } from "vue";
 
 interface Props {
-  data: FileUIPart
-  class?: HTMLAttributes['class']
+  data: FileUIPart;
+  class?: HTMLAttributes["class"];
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emits = defineEmits<{
-  (e: 'remove'): void
-}>()
+  (e: "remove"): void;
+}>();
 
-const filename = computed(() => props.data.filename || '')
+const filename = computed(() => props.data.filename || "");
 const mediaType = computed(() =>
-  props.data.mediaType?.startsWith('image/') && props.data.url ? 'image' : 'file',
-)
-const isImage = computed(() => mediaType.value === 'image')
-const attachmentLabel = computed(() =>
-  filename.value || (isImage.value ? 'Image' : 'Attachment'),
-)
+  props.data.mediaType?.startsWith("image/") && props.data.url ? "image" : "file",
+);
+const isImage = computed(() => mediaType.value === "image");
+const attachmentLabel = computed(() => filename.value || (isImage.value ? "Image" : "Attachment"));
 </script>
 
 <template>
   <div
-    :class="
-      cn(
-        'group relative size-24 overflow-hidden rounded-lg',
-        props.class,
-      )
-    "
+    :class="cn('group relative size-24 overflow-hidden rounded-lg', props.class)"
     v-bind="$attrs"
   >
     <template v-if="isImage">

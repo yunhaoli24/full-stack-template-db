@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { BasicPage, TwoColAside, TwoColLayout } from '@/components/global-layout'
+import { BasicPage, TwoColAside, TwoColLayout } from "@/components/global-layout";
 
-const { settingsNavItems } = useSidebar()
+const { settingsNavItems } = useSidebar();
 </script>
 
 <template>

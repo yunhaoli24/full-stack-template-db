@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { CollapsibleContent } from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { CollapsibleContent } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 </script>
 
 <template>

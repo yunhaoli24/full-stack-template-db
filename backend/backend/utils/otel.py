@@ -1,29 +1,31 @@
+"""Otel."""
+
 from fastapi import FastAPI
-from opentelemetry import _logs, metrics, trace
-from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry import _logs, trace, metrics  # pyright: ignore[reportPrivateUsage]
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs._internal.export import BatchLogRecordProcessor
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 
-from backend.common.log import log, request_id_filter
+from backend import __version__
 from backend.core.conf import settings
+from backend.common.log import log, request_id_filter
 from backend.database.db import async_engine
 from backend.database.redis import redis_client
 
 
 def _init_tracer(resource: Resource) -> None:
-    """
-    初始化追踪器
+    """初始化追踪器.
 
     :param resource: 遥测资源
     :return:
@@ -36,8 +38,7 @@ def _init_tracer(resource: Resource) -> None:
 
 
 def _init_metrics(resource: Resource) -> None:
-    """
-    初始化指标
+    """初始化指标.
 
     :param resource: 遥测资源
     :return:
@@ -52,8 +53,7 @@ def _init_metrics(resource: Resource) -> None:
 
 
 def _init_logging(resource: Resource) -> None:
-    """
-    初始化日志
+    """初始化日志.
 
     :param resource: 遥测资源
     :return:
@@ -69,29 +69,26 @@ def _init_logging(resource: Resource) -> None:
         otel_logging_handler,
         level=settings.LOG_STD_LEVEL,
         format=settings.LOG_FORMAT,
-        filter=lambda record: request_id_filter(record),
+        filter=request_id_filter,  # pyright: ignore[reportUnknownArgumentType]
     )
 
 
 def init_otel(app: FastAPI) -> None:
-    """
-    初始化 OpenTelemetry
+    """初始化 OpenTelemetry.
 
     :param app: FastAPI 应用实例
     :return:
     """
-    from backend import __version__
-
     resource = Resource(
         attributes={
-            'service.name': settings.GRAFANA_APP_NAME,
-            'service.version': __version__,
-            'deployment.environment': settings.ENVIRONMENT,
+            "service.name": settings.GRAFANA_APP_NAME,
+            "service.version": __version__,
+            "deployment.environment": settings.ENVIRONMENT,
         },
     )
 
     _init_tracer(resource)
-    # _init_metrics(resource)
+    _init_metrics(resource)
     _init_logging(resource)
 
     LoggingInstrumentor().instrument(set_logging_format=True)

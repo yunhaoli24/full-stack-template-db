@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { HoverCard } from '@/components/ui/hover-card'
+import { HoverCard } from "@/components/ui/hover-card";
 
-const props = withDefaults(defineProps<{
-  closeDelay?: number
-  openDelay?: number
-}>(), {
-  closeDelay: 0,
-  openDelay: 0,
-})
+const props = withDefaults(
+  defineProps<{
+    closeDelay?: number;
+    openDelay?: number;
+  }>(),
+  {
+    closeDelay: 0,
+    openDelay: 0,
+  },
+);
 </script>
 
 <template>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { isAxiosError } from 'axios'
-import { Plus } from 'lucide-vue-next'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { isAxiosError } from "axios";
+import { Plus } from "lucide-vue-next";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import { z } from "zod";
 
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { FormField } from '@/components/ui/form'
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { FormField } from "@/components/ui/form";
 import {
   useCreateDataScopeMutation,
   useDeleteDataScopeMutation,
@@ -17,169 +17,164 @@ import {
   useUpdateDataScopeRulesMutation,
   type DataScopeDetail,
   type DataScopePayload,
-} from '@/services/api/system/data-scope/data-scopes.api'
-import { useGetDataRulesQuery } from '@/services/api/system/data-rule/data-rules.api'
+} from "@/services/api/system/data-scope/data-scopes.api";
+import { useGetDataRulesQuery } from "@/services/api/system/data-rule/data-rules.api";
 
-import { createColumns } from './components/columns'
-import DataScopeDataTable from './components/data-table.vue'
+import { createColumns } from "./components/columns";
+import DataScopeDataTable from "./components/data-table.vue";
 
-const query = useGetDataScopesQuery()
-const rulesQuery = useGetDataRulesQuery()
-const createMutation = useCreateDataScopeMutation()
-const updateMutation = useUpdateDataScopeMutation()
-const deleteMutation = useDeleteDataScopeMutation()
-const updateRulesMutation = useUpdateDataScopeRulesMutation()
+const query = useGetDataScopesQuery();
+const rulesQuery = useGetDataRulesQuery();
+const createMutation = useCreateDataScopeMutation();
+const updateMutation = useUpdateDataScopeMutation();
+const deleteMutation = useDeleteDataScopeMutation();
+const updateRulesMutation = useUpdateDataScopeRulesMutation();
 
-const dialogOpen = ref(false)
-const deleteDialogOpen = ref(false)
-const rulesDialogOpen = ref(false)
-const editingScope = ref<DataScopeDetail | null>(null)
-const deleteTarget = ref<DataScopeDetail | null>(null)
-const rulesTarget = ref<DataScopeDetail | null>(null)
+const dialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const rulesDialogOpen = ref(false);
+const editingScope = ref<DataScopeDetail | null>(null);
+const deleteTarget = ref<DataScopeDetail | null>(null);
+const rulesTarget = ref<DataScopeDetail | null>(null);
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
-const isSavingRules = computed(() => updateRulesMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
+const isSavingRules = computed(() => updateRulesMutation.isPending.value);
 
 const formSchema = toTypedSchema(
   z.object({
-    name: z.string().trim().min(1, 'Please enter a name.'),
+    name: z.string().trim().min(1, "Please enter a name."),
     status: z.boolean(),
   }),
-)
+);
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
   initialValues: {
-    name: '',
+    name: "",
     status: true,
   },
-})
+});
 
-const dataScopes = computed(() => query.data.value?.data ?? [])
-const allRules = computed(() => rulesQuery.data.value?.data ?? [])
-const isLoading = computed(() => query.isLoading.value)
+const dataScopes = computed(() => query.data.value?.data ?? []);
+const allRules = computed(() => rulesQuery.data.value?.data ?? []);
+const isLoading = computed(() => query.isLoading.value);
 
 const columns = computed(() =>
   createColumns({
-    onEdit: scope => openEdit(scope),
-    onDelete: scope => requestDelete(scope),
-    onConfigureRules: scope => openRules(scope),
+    onEdit: (scope) => openEdit(scope),
+    onDelete: (scope) => requestDelete(scope),
+    onConfigureRules: (scope) => openRules(scope),
   }),
-)
-const selectedRuleIds = ref<number[]>([])
+);
+const selectedRuleIds = ref<number[]>([]);
 
 watch(dialogOpen, (open) => {
   if (!open) {
-    editingScope.value = null
+    editingScope.value = null;
   }
-})
+});
 
 watch(rulesDialogOpen, (open) => {
   if (!open) {
-    rulesTarget.value = null
-    selectedRuleIds.value = []
+    rulesTarget.value = null;
+    selectedRuleIds.value = [];
   }
-})
+});
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function openCreate() {
-  editingScope.value = null
-  dialogOpen.value = true
+  editingScope.value = null;
+  dialogOpen.value = true;
   resetForm({
     values: {
-      name: '',
+      name: "",
       status: true,
     },
-  })
+  });
 }
 
 function openEdit(scope: DataScopeDetail) {
-  editingScope.value = scope
-  dialogOpen.value = true
+  editingScope.value = scope;
+  dialogOpen.value = true;
   resetForm({
     values: {
       name: scope.name,
       status: scope.status === 1,
     },
-  })
+  });
 }
 
 function openRules(scope: DataScopeDetail) {
-  rulesTarget.value = scope
+  rulesTarget.value = scope;
   // Get current rules for this scope
   // For simplicity, we'll let the user select rules from all available rules
-  selectedRuleIds.value = []
-  rulesDialogOpen.value = true
+  selectedRuleIds.value = [];
+  rulesDialogOpen.value = true;
 }
 
 function requestDelete(scope: DataScopeDetail) {
-  deleteTarget.value = scope
-  deleteDialogOpen.value = true
+  deleteTarget.value = scope;
+  deleteDialogOpen.value = true;
 }
 
 const onSubmit = handleSubmit(async (values) => {
   const payload: DataScopePayload = {
     name: values.name.trim(),
     status: values.status ? 1 : 0,
-  }
+  };
 
   try {
     if (editingScope.value) {
-      await updateMutation.mutateAsync({ id: editingScope.value.id, payload })
-      toast.success('Data scope updated')
+      await updateMutation.mutateAsync({ id: editingScope.value.id, payload });
+      toast.success("Data scope updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Data scope created");
     }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Data scope created')
-    }
-    dialogOpen.value = false
+    dialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-})
+});
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync([deleteTarget.value.id])
-    toast.success('Data scope deleted')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTarget.value = null
+    await deleteMutation.mutateAsync([deleteTarget.value.id]);
+    toast.success("Data scope deleted");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTarget.value = null;
   }
 }
 
 async function handleRulesSave() {
   if (!rulesTarget.value) {
-    return
+    return;
   }
   try {
     await updateRulesMutation.mutateAsync({
       id: rulesTarget.value.id,
       ruleIds: selectedRuleIds.value,
-    })
-    toast.success('Data scope rules updated')
-    rulesDialogOpen.value = false
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+    });
+    toast.success("Data scope rules updated");
+    rulesDialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 </script>
@@ -201,9 +196,9 @@ async function handleRulesSave() {
     <UiDialog v-model:open="dialogOpen">
       <UiDialogContent>
         <UiDialogHeader>
-          <UiDialogTitle>{{ editingScope ? 'Edit Data Scope' : 'New Data Scope' }}</UiDialogTitle>
+          <UiDialogTitle>{{ editingScope ? "Edit Data Scope" : "New Data Scope" }}</UiDialogTitle>
           <UiDialogDescription>
-            {{ editingScope ? 'Update data scope information.' : 'Create a new data scope.' }}
+            {{ editingScope ? "Update data scope information." : "Create a new data scope." }}
           </UiDialogDescription>
         </UiDialogHeader>
 
@@ -235,7 +230,7 @@ async function handleRulesSave() {
               Cancel
             </UiButton>
             <UiButton type="submit" :disabled="isSaving">
-              {{ editingScope ? 'Save Changes' : 'Create Scope' }}
+              {{ editingScope ? "Save Changes" : "Create Scope" }}
             </UiButton>
           </UiDialogFooter>
         </form>
@@ -269,12 +264,11 @@ async function handleRulesSave() {
                   @update:checked="
                     (checked) => {
                       if (checked) {
-                        selectedRuleIds.push(rule.id)
-                      }
-                      else {
-                        const index = selectedRuleIds.indexOf(rule.id)
+                        selectedRuleIds.push(rule.id);
+                      } else {
+                        const index = selectedRuleIds.indexOf(rule.id);
                         if (index > -1) {
-                          selectedRuleIds.splice(index, 1)
+                          selectedRuleIds.splice(index, 1);
                         }
                       }
                     }

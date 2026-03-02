@@ -114,4 +114,3 @@ values
 (5, '清理操作日志', 'backend.app.task.tasks.db_log.tasks.delete_db_opera_log', 'null', 'null', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '0 0 6 * *', false, true, 1, now(), NULL, now(), now()),
 (4, '测试传参任务', 'task_demo_params', '"[\"\u4f60\u597d\uff0c\"]"', '"{\"world\": \"\u4e16\u754c\"}"', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '1 * * * *', false, true, 37, now(), NULL, now(), now()),
 (3, '测试异步任务', 'task_demo_async', 'null', 'null', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '1 * * * *', false, true, 37, now(), NULL, now(), now());
-

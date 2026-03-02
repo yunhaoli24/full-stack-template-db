@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { X } from 'lucide-vue-next'
-import { FieldArray, useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
+import { toTypedSchema } from "@vee-validate/zod";
+import { X } from "lucide-vue-next";
+import { FieldArray, useForm } from "vee-validate";
+import { toast } from "vue-sonner";
 
-import { Button } from '@/components/ui/button'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,33 +21,34 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
-import { profileValidator } from '../validators/profile.validator'
+import { profileValidator } from "../validators/profile.validator";
 
-const verifiedEmails = ref(['m@example.com', 'm@google.com', 'm@support.com'])
+const verifiedEmails = ref(["m@example.com", "m@google.com", "m@support.com"]);
 
-const profileFormSchema = toTypedSchema(profileValidator)
+const profileFormSchema = toTypedSchema(profileValidator);
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: profileFormSchema,
   initialValues: {
-    bio: 'I own a computer.',
-    urls: [
-      { value: 'https://shadcn.com' },
-      { value: 'http://twitter.com/shadcn' },
-    ],
+    bio: "I own a computer.",
+    urls: [{ value: "https://shadcn.com" }, { value: "http://twitter.com/shadcn" }],
   },
-})
+});
 
 const onSubmit = handleSubmit((values) => {
-  toast('You submitted the following values:', {
-    description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-  })
-})
+  toast("You submitted the following values:", {
+    description: h(
+      "pre",
+      { class: "mt-2 w-[340px] rounded-md bg-slate-950 p-4" },
+      h("code", { class: "text-white" }, JSON.stringify(values, null, 2)),
+    ),
+  });
+});
 </script>
 
 <template>

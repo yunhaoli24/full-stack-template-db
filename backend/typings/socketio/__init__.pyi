@@ -1,0 +1,15 @@
+from typing import Any, TypeVar
+from collections.abc import Callable
+
+_F = TypeVar("_F", bound=Callable[..., Any])
+
+class AsyncRedisManager:
+    def __init__(self, url: str, *args: Any, **kwargs: Any) -> None: ...  # noqa: ANN401
+
+class AsyncServer:
+    def __init__(self, *args: Any, **kwargs: Any) -> None: ...  # noqa: ANN401
+    def event(self, func: _F) -> _F: ...
+    async def emit(self, event: str, *args: Any, **kwargs: Any) -> None: ...  # noqa: ANN401
+
+class ASGIApp:
+    def __init__(self, socketio_server: AsyncServer, other_asgi_app: Any = ..., **kwargs: Any) -> None: ...  # noqa: ANN401

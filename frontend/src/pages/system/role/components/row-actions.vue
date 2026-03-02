@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Pencil, Trash2 } from 'lucide-vue-next'
+import { Pencil, Trash2 } from "lucide-vue-next";
 
-import { Button } from '@/components/ui/button'
-import type { RoleDetail } from '@/services/api/system/role/roles.api'
+import { Button } from "@/components/ui/button";
+import type { RoleDetail } from "@/services/api/system/role/roles.api";
 
 defineProps<{
-  role: RoleDetail
-  onEdit: (role: RoleDetail) => void
-  onDelete: (role: RoleDetail) => void
-}>()
+  role: RoleDetail;
+  onEdit: (role: RoleDetail) => void;
+  onDelete: (role: RoleDetail) => void;
+}>();
 </script>
 
 <template>
