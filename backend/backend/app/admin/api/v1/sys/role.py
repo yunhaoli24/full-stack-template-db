@@ -23,7 +23,7 @@ from backend.app.admin.service.role_service import role_service
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/all", summary="获取所有角色", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

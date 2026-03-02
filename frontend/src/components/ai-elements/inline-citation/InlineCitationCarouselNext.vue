@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { useCarousel } from '@/components/ui/carousel'
-import { cn } from '@/lib/utils'
-import { ArrowRight } from 'lucide-vue-next'
+import type { HTMLAttributes } from "vue";
+import { useCarousel } from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-vue-next";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const { scrollNext } = useCarousel()
+const { scrollNext } = useCarousel();
 </script>
 
 <template>

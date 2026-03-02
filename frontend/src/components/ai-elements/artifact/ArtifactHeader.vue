@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const classes = computed(() => cn(
-  'flex items-center justify-between border-b bg-muted/50 px-4 py-3',
-  props.class,
-))
+const classes = computed(() =>
+  cn("flex items-center justify-between border-b bg-muted/50 px-4 py-3", props.class),
+);
 </script>
 
 <template>

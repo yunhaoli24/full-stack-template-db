@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { ref, watch } from 'vue'
-import { useWebPreviewContext } from './context'
+import type { HTMLAttributes } from "vue";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ref, watch } from "vue";
+import { useWebPreviewContext } from "./context";
 
 interface Props {
-  class?: HTMLAttributes['class']
-  placeholder?: string
+  class?: HTMLAttributes["class"];
+  placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: 'Enter URL...',
-})
+  placeholder: "Enter URL...",
+});
 
-const context = useWebPreviewContext()
+const context = useWebPreviewContext();
 
-const inputValue = ref(context.url.value)
+const inputValue = ref(context.url.value);
 
 watch(
   () => context.url.value,
   (value) => {
-    inputValue.value = value
+    inputValue.value = value;
   },
   { immediate: true },
-)
+);
 
 function handleKeydown() {
-  context.setUrl(inputValue.value)
+  context.setUrl(inputValue.value);
 }
 </script>
 

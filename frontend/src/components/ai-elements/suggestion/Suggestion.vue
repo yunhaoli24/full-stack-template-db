@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface SuggestionProps {
-  suggestion: string
-  class?: HTMLAttributes['class']
-  variant?: 'outline' | 'default' | 'destructive' | 'secondary' | 'ghost' | 'link'
-  size?: 'default' | 'sm' | 'lg' | 'icon'
+  suggestion: string;
+  class?: HTMLAttributes["class"];
+  variant?: "outline" | "default" | "destructive" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
 }
 
 const props = withDefaults(defineProps<SuggestionProps>(), {
-  variant: 'outline',
-  size: 'sm',
-})
+  variant: "outline",
+  size: "sm",
+});
 
 const emit = defineEmits<{
-  (e: 'click', suggestion: string): void
-}>()
+  (e: "click", suggestion: string): void;
+}>();
 
 function handleClick() {
-  emit('click', props.suggestion)
+  emit("click", props.suggestion);
 }
 </script>
 

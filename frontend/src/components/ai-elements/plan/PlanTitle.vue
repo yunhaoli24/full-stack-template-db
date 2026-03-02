@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { CardTitle } from '@/components/ui/card'
-import { Shimmer } from '../shimmer'
-import { usePlan } from './context'
+import { CardTitle } from "@/components/ui/card";
+import { Shimmer } from "../shimmer";
+import { usePlan } from "./context";
 
-const { isStreaming } = usePlan()
+const { isStreaming } = usePlan();
 </script>
 
 <template>

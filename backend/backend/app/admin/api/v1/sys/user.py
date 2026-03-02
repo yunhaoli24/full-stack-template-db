@@ -22,7 +22,7 @@ from backend.app.admin.service.user_service import user_service
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/me", summary="获取当前用户信息", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

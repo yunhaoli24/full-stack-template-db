@@ -1,36 +1,25 @@
 <script setup lang="ts">
-import {
-  Cpu,
-  HardDrive,
-  MemoryStick,
-  Monitor,
-  Server,
-  Settings,
-} from 'lucide-vue-next'
+import { Cpu, HardDrive, MemoryStick, Monitor, Server, Settings } from "lucide-vue-next";
 
-import { BasicPage } from '@/components/global-layout'
-import { useGetServerMonitorQuery } from '@/services/api/monitor/server/server-monitor.api'
+import { BasicPage } from "@/components/global-layout";
+import { useGetServerMonitorQuery } from "@/services/api/monitor/server/server-monitor.api";
 
-const query = useGetServerMonitorQuery()
+const query = useGetServerMonitorQuery();
 
-const serverData = computed(() => query.data.value?.data)
-const isLoading = computed(() => query.isLoading.value)
-const error = computed(() => query.error.value)
+const serverData = computed(() => query.data.value?.data);
+const isLoading = computed(() => query.isLoading.value);
+const error = computed(() => query.error.value);
 
 function getUsageColor(percentage: number) {
-  if (percentage < 50)
-    return 'text-green-600'
-  if (percentage < 80)
-    return 'text-yellow-600'
-  return 'text-red-600'
+  if (percentage < 50) return "text-green-600";
+  if (percentage < 80) return "text-yellow-600";
+  return "text-red-600";
 }
 
 function getUsageVariant(percentage: number) {
-  if (percentage < 50)
-    return 'default'
-  if (percentage < 80)
-    return 'secondary'
-  return 'destructive'
+  if (percentage < 50) return "default";
+  if (percentage < 80) return "secondary";
+  return "destructive";
 }
 </script>
 
@@ -92,16 +81,16 @@ function getUsageVariant(percentage: number) {
               <div>
                 <p class="text-sm font-medium text-muted-foreground">Disk Usage</p>
                 <p class="text-2xl font-bold">
-                  {{ serverData.disk[0]?.usage ?? '-' }}
+                  {{ serverData.disk[0]?.usage ?? "-" }}
                 </p>
               </div>
               <HardDrive class="size-8 text-muted-foreground" />
             </div>
             <div class="mt-2 space-y-1 text-xs text-muted-foreground">
               <div>
-                {{ serverData.disk[0]?.used ?? '-' }} / {{ serverData.disk[0]?.total ?? '-' }}
+                {{ serverData.disk[0]?.used ?? "-" }} / {{ serverData.disk[0]?.total ?? "-" }}
               </div>
-              <div>Free: {{ serverData.disk[0]?.free ?? '-' }}</div>
+              <div>Free: {{ serverData.disk[0]?.free ?? "-" }}</div>
             </div>
           </UiCardContent>
         </UiCard>

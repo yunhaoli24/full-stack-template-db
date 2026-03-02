@@ -12,7 +12,7 @@ from backend.app.admin.api.v1.sys.data_rule import router as data_rule_router
 from backend.app.admin.api.v1.sys.data_scope import router as data_scope_router
 
 
-router = APIRouter(prefix="/sys")
+router: APIRouter = APIRouter(prefix="/sys")
 
 router.include_router(dept_router, prefix="/depts", tags=["系统部门"])
 router.include_router(menu_router, prefix="/menus", tags=["系统菜单"])

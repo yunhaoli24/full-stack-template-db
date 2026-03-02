@@ -1,28 +1,23 @@
 <script setup lang="ts">
-import type { ButtonVariants } from '@/components/ui/button'
-import type { HTMLAttributes } from 'vue'
-import { Button } from '@/components/ui/button'
+import type { ButtonVariants } from "@/components/ui/button";
+import type { HTMLAttributes } from "vue";
+import { Button } from "@/components/ui/button";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props extends /* @vue-ignore */ HTMLAttributes {
-  size?: ButtonVariants['size']
-  variant?: ButtonVariants['variant']
-  tooltip?: string
-  disabled?: boolean
+  size?: ButtonVariants["size"];
+  variant?: ButtonVariants["variant"];
+  tooltip?: string;
+  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  tooltip: '',
+  tooltip: "",
   disabled: false,
-  size: 'sm',
-  variant: 'ghost',
-})
+  size: "sm",
+  variant: "ghost",
+});
 </script>
 
 <template>

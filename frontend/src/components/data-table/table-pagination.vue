@@ -1,105 +1,94 @@
 <script setup lang="ts" generic="T">
-import type { Table } from '@tanstack/vue-table'
+import type { Table } from "@tanstack/vue-table";
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-vue-next'
+import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeft, ChevronsRight } from "lucide-vue-next";
 
-import { PAGE_SIZES } from '@/constants/pagination'
+import { PAGE_SIZES } from "@/constants/pagination";
 
-import type { ServerPagination } from './types'
+import type { ServerPagination } from "./types";
 
 interface DataTablePaginationProps {
-  table: Table<T>
-  serverPagination?: ServerPagination
+  table: Table<T>;
+  serverPagination?: ServerPagination;
 }
-const props = defineProps<DataTablePaginationProps>()
+const props = defineProps<DataTablePaginationProps>();
 
-const isServerPagination = computed(() => !!props.serverPagination)
+const isServerPagination = computed(() => !!props.serverPagination);
 
 const currentPage = computed(() => {
   if (isServerPagination.value && props.serverPagination) {
-    return props.serverPagination.page
+    return props.serverPagination.page;
   }
-  return props.table.getState().pagination.pageIndex + 1
-})
+  return props.table.getState().pagination.pageIndex + 1;
+});
 
 const currentPageSize = computed(() => {
   if (isServerPagination.value && props.serverPagination) {
-    return props.serverPagination.pageSize
+    return props.serverPagination.pageSize;
   }
-  return props.table.getState().pagination.pageSize
-})
+  return props.table.getState().pagination.pageSize;
+});
 
 const totalPages = computed(() => {
   if (isServerPagination.value && props.serverPagination) {
-    return Math.ceil(props.serverPagination.total / props.serverPagination.pageSize)
+    return Math.ceil(props.serverPagination.total / props.serverPagination.pageSize);
   }
-  return props.table.getPageCount()
-})
+  return props.table.getPageCount();
+});
 
 const canPreviousPage = computed(() => {
   if (isServerPagination.value) {
-    return currentPage.value > 1
+    return currentPage.value > 1;
   }
-  return props.table.getCanPreviousPage()
-})
+  return props.table.getCanPreviousPage();
+});
 
 const canNextPage = computed(() => {
   if (isServerPagination.value) {
-    return currentPage.value < totalPages.value
+    return currentPage.value < totalPages.value;
   }
-  return props.table.getCanNextPage()
-})
+  return props.table.getCanNextPage();
+});
 
 function handlePageSizeChange(value: any) {
-  if (!value)
-    return
-  const newPageSize = Number(value)
+  if (!value) return;
+  const newPageSize = Number(value);
   if (isServerPagination.value && props.serverPagination?.onPageSizeChange) {
-    props.serverPagination.onPageSizeChange(newPageSize)
-  }
-  else {
-    props.table.setPageSize(newPageSize)
+    props.serverPagination.onPageSizeChange(newPageSize);
+  } else {
+    props.table.setPageSize(newPageSize);
   }
 }
 
 function goToFirstPage() {
   if (isServerPagination.value && props.serverPagination?.onPageChange) {
-    props.serverPagination.onPageChange(1)
-  }
-  else {
-    props.table.setPageIndex(0)
+    props.serverPagination.onPageChange(1);
+  } else {
+    props.table.setPageIndex(0);
   }
 }
 
 function goToPreviousPage() {
   if (isServerPagination.value && props.serverPagination?.onPageChange) {
-    props.serverPagination.onPageChange(currentPage.value - 1)
-  }
-  else {
-    props.table.previousPage()
+    props.serverPagination.onPageChange(currentPage.value - 1);
+  } else {
+    props.table.previousPage();
   }
 }
 
 function goToNextPage() {
   if (isServerPagination.value && props.serverPagination?.onPageChange) {
-    props.serverPagination.onPageChange(currentPage.value + 1)
-  }
-  else {
-    props.table.nextPage()
+    props.serverPagination.onPageChange(currentPage.value + 1);
+  } else {
+    props.table.nextPage();
   }
 }
 
 function goToLastPage() {
   if (isServerPagination.value && props.serverPagination?.onPageChange) {
-    props.serverPagination.onPageChange(totalPages.value)
-  }
-  else {
-    props.table.setPageIndex(props.table.getPageCount() - 1)
+    props.serverPagination.onPageChange(totalPages.value);
+  } else {
+    props.table.setPageIndex(props.table.getPageCount() - 1);
   }
 }
 </script>

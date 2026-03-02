@@ -14,7 +14,7 @@ from backend.common.security.permission import RequestPermission
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/registered", summary="获取已注册的任务", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

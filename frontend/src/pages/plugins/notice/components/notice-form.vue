@@ -1,51 +1,51 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { z } from "zod";
 
-import { FormField } from '@/components/ui/form'
+import { FormField } from "@/components/ui/form";
 
-import type { Notice, NoticePayload } from '@/services/api/plugins/notice/notices.api'
+import type { Notice, NoticePayload } from "@/services/api/plugins/notice/notices.api";
 
 const props = defineProps<{
-  notice: Notice | null
-  loading?: boolean
-}>()
+  notice: Notice | null;
+  loading?: boolean;
+}>();
 
 const emits = defineEmits<{
-  (e: 'submit', payload: NoticePayload): void
-}>()
+  (e: "submit", payload: NoticePayload): void;
+}>();
 
 const formSchema = toTypedSchema(
   z.object({
-    title: z.string().trim().min(1, 'Please enter a title.'),
+    title: z.string().trim().min(1, "Please enter a title."),
     type: z.number().int().min(0).max(1),
     status: z.number().int().min(0).max(1),
-    content: z.string().trim().min(1, 'Please enter content.'),
+    content: z.string().trim().min(1, "Please enter content."),
   }),
-)
+);
 
 function getInitialValues(notice: Notice | null) {
   return {
-    title: notice?.title ?? '',
+    title: notice?.title ?? "",
     type: notice?.type ?? 0,
     status: notice?.status ?? 1,
-    content: notice?.content ?? '',
-  }
+    content: notice?.content ?? "",
+  };
 }
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
   initialValues: getInitialValues(props.notice),
-})
+});
 
 watch(
   () => props.notice,
   (notice) => {
-    resetForm({ values: getInitialValues(notice) })
+    resetForm({ values: getInitialValues(notice) });
   },
   { immediate: true },
-)
+);
 
 const onSubmit = handleSubmit((values) => {
   const payload: NoticePayload = {
@@ -53,10 +53,10 @@ const onSubmit = handleSubmit((values) => {
     type: values.type as 0 | 1,
     status: values.status as 0 | 1,
     content: values.content.trim(),
-  }
+  };
 
-  emits('submit', payload)
-})
+  emits("submit", payload);
+});
 </script>
 
 <template>

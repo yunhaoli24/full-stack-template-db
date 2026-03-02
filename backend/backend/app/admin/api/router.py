@@ -10,7 +10,7 @@ from backend.app.admin.api.v1.chat import router as chat_router
 from backend.app.admin.api.v1.monitor import router as monitor_router
 
 
-v1 = APIRouter(prefix=settings.FASTAPI_API_V1_PATH)
+v1: APIRouter = APIRouter(prefix=settings.FASTAPI_API_V1_PATH)
 
 v1.include_router(auth_router)
 v1.include_router(chat_router)

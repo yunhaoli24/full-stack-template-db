@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import LoaderIcon from './LoaderIcon.vue'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import LoaderIcon from "./LoaderIcon.vue";
 
 interface Props {
-  size?: number
-  class?: HTMLAttributes['class']
+  size?: number;
+  class?: HTMLAttributes["class"];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 16,
-})
+});
 </script>
 
 <template>

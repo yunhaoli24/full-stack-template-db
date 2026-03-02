@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { isAxiosError } from 'axios'
-import { Pencil, Plus, PlusCircle, Trash2 } from 'lucide-vue-next'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { isAxiosError } from "axios";
+import { Pencil, Plus, PlusCircle, Trash2 } from "lucide-vue-next";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import { z } from "zod";
 
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { FormField } from '@/components/ui/form'
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { FormField } from "@/components/ui/form";
 import {
   useCreateMenuMutation,
   useDeleteMenuMutation,
@@ -16,46 +16,43 @@ import {
   useUpdateMenuMutation,
   type MenuPayload,
   type MenuTreeNode,
-} from '@/services/api/system/menu/menus.api'
+} from "@/services/api/system/menu/menus.api";
 
-const query = useGetMenuTreeQuery()
-const createMutation = useCreateMenuMutation()
-const updateMutation = useUpdateMenuMutation()
-const deleteMutation = useDeleteMenuMutation()
+const query = useGetMenuTreeQuery();
+const createMutation = useCreateMenuMutation();
+const updateMutation = useUpdateMenuMutation();
+const deleteMutation = useDeleteMenuMutation();
 
-const dialogOpen = ref(false)
-const deleteDialogOpen = ref(false)
-const editingMenu = ref<MenuTreeNode | null>(null)
-const deleteTarget = ref<MenuTreeNode | null>(null)
+const dialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const editingMenu = ref<MenuTreeNode | null>(null);
+const deleteTarget = ref<MenuTreeNode | null>(null);
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
 const menuTypeOptions = [
-  { label: 'Directory', value: 0 },
-  { label: 'Menu', value: 1 },
-  { label: 'Button', value: 2 },
-  { label: 'Iframe', value: 3 },
-  { label: 'External Link', value: 4 },
-] as const
-const ROOT_PARENT_VALUE = '__root__'
+  { label: "Directory", value: 0 },
+  { label: "Menu", value: 1 },
+  { label: "Button", value: 2 },
+  { label: "Iframe", value: 3 },
+  { label: "External Link", value: 4 },
+] as const;
+const ROOT_PARENT_VALUE = "__root__";
 
 const menuFormSchema = toTypedSchema(
   z.object({
-    title: z.string().trim().min(1, 'Please enter a title.'),
-    name: z.string().trim().min(1, 'Please enter a name.'),
+    title: z.string().trim().min(1, "Please enter a title."),
+    name: z.string().trim().min(1, "Please enter a name."),
     path: z.string().optional(),
-    parent_id: z.preprocess(
-      (value) => {
-        if (value === ROOT_PARENT_VALUE || value === '' || value === null || value === undefined) {
-          return null
-        }
-        const parsed = Number(value)
-        return Number.isNaN(parsed) ? null : parsed
-      },
-      z.number().nullable(),
-    ),
-    sort: z.coerce.number().min(0, 'Sort must be 0 or greater.'),
+    parent_id: z.preprocess((value) => {
+      if (value === ROOT_PARENT_VALUE || value === "" || value === null || value === undefined) {
+        return null;
+      }
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? null : parsed;
+    }, z.number().nullable()),
+    sort: z.coerce.number().min(0, "Sort must be 0 or greater."),
     icon: z.string().optional(),
     type: z.coerce.number().min(0),
     component: z.string().optional(),
@@ -66,116 +63,119 @@ const menuFormSchema = toTypedSchema(
     link: z.string().optional(),
     remark: z.string().optional(),
   }),
-)
+);
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: menuFormSchema,
   initialValues: {
-    title: '',
-    name: '',
-    path: '',
+    title: "",
+    name: "",
+    path: "",
     parent_id: ROOT_PARENT_VALUE,
     sort: 0,
-    icon: '',
-    type: '1',
-    component: '',
-    perms: '',
+    icon: "",
+    type: "1",
+    component: "",
+    perms: "",
     status: true,
     display: true,
     cache: true,
-    link: '',
-    remark: '',
+    link: "",
+    remark: "",
   },
-})
+});
 
-const menuTree = computed(() => query.data.value?.data ?? [])
+const menuTree = computed(() => query.data.value?.data ?? []);
 
-function flattenMenu(nodes: MenuTreeNode[], depth = 0): Array<{ node: MenuTreeNode; depth: number }> {
-  const result: Array<{ node: MenuTreeNode; depth: number }> = []
+function flattenMenu(
+  nodes: MenuTreeNode[],
+  depth = 0,
+): Array<{ node: MenuTreeNode; depth: number }> {
+  const result: Array<{ node: MenuTreeNode; depth: number }> = [];
   nodes.forEach((node) => {
-    result.push({ node, depth })
+    result.push({ node, depth });
     if (node.children?.length) {
-      result.push(...flattenMenu(node.children, depth + 1))
+      result.push(...flattenMenu(node.children, depth + 1));
     }
-  })
-  return result
+  });
+  return result;
 }
 
-const flatMenuList = computed(() => flattenMenu(menuTree.value))
+const flatMenuList = computed(() => flattenMenu(menuTree.value));
 
 const parentOptions = computed(() => [
-  { label: 'Root', value: ROOT_PARENT_VALUE },
+  { label: "Root", value: ROOT_PARENT_VALUE },
   ...flatMenuList.value.map(({ node, depth }) => ({
-    label: `${depth ? `${'-'.repeat(depth)} ` : ''}${node.title}`,
+    label: `${depth ? `${"-".repeat(depth)} ` : ""}${node.title}`,
     value: String(node.id),
   })),
-])
+]);
 
 watch(dialogOpen, (open) => {
   if (!open) {
-    editingMenu.value = null
+    editingMenu.value = null;
   }
-})
+});
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function openCreate(parent?: MenuTreeNode | null) {
-  editingMenu.value = null
-  dialogOpen.value = true
+  editingMenu.value = null;
+  dialogOpen.value = true;
   resetForm({
     values: {
-      title: '',
-      name: '',
-      path: '',
+      title: "",
+      name: "",
+      path: "",
       parent_id: parent?.id ? String(parent.id) : ROOT_PARENT_VALUE,
       sort: 0,
-      icon: '',
-      type: '1',
-      component: '',
-      perms: '',
+      icon: "",
+      type: "1",
+      component: "",
+      perms: "",
       status: true,
       display: true,
       cache: true,
-      link: '',
-      remark: '',
+      link: "",
+      remark: "",
     },
-  })
+  });
 }
 
 function openEdit(menu: MenuTreeNode) {
-  editingMenu.value = menu
-  dialogOpen.value = true
+  editingMenu.value = menu;
+  dialogOpen.value = true;
   resetForm({
     values: {
       title: menu.title,
       name: menu.name,
-      path: menu.path ?? '',
+      path: menu.path ?? "",
       parent_id: menu.parent_id ? String(menu.parent_id) : ROOT_PARENT_VALUE,
       sort: menu.sort ?? 0,
-      icon: menu.icon ?? '',
+      icon: menu.icon ?? "",
       type: String(menu.type ?? 1),
-      component: menu.component ?? '',
-      perms: menu.perms ?? '',
+      component: menu.component ?? "",
+      perms: menu.perms ?? "",
       status: menu.status === 1,
       display: menu.display === 1,
       cache: menu.cache === 1,
-      link: menu.link ?? '',
-      remark: menu.remark ?? '',
+      link: menu.link ?? "",
+      remark: menu.remark ?? "",
     },
-  })
+  });
 }
 
 function requestDelete(menu: MenuTreeNode) {
-  deleteTarget.value = menu
-  deleteDialogOpen.value = true
+  deleteTarget.value = menu;
+  deleteDialogOpen.value = true;
 }
 
 const onSubmit = handleSubmit(async (values) => {
@@ -194,43 +194,39 @@ const onSubmit = handleSubmit(async (values) => {
     cache: values.cache ? 1 : 0,
     link: values.link?.trim() || null,
     remark: values.remark?.trim() || null,
-  }
+  };
 
   try {
     if (editingMenu.value) {
-      await updateMutation.mutateAsync({ id: editingMenu.value.id, payload })
-      toast.success('Menu updated')
+      await updateMutation.mutateAsync({ id: editingMenu.value.id, payload });
+      toast.success("Menu updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Menu created");
     }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Menu created')
-    }
-    dialogOpen.value = false
+    dialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-})
+});
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync(deleteTarget.value.id)
-    toast.success('Menu deleted')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTarget.value = null
+    await deleteMutation.mutateAsync(deleteTarget.value.id);
+    toast.success("Menu deleted");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTarget.value = null;
   }
 }
 
 function formatType(type: number) {
-  return menuTypeOptions.find((option) => option.value === type)?.label || `Type ${type}`
+  return menuTypeOptions.find((option) => option.value === type)?.label || `Type ${type}`;
 }
 </script>
 
@@ -262,16 +258,16 @@ function formatType(type: number) {
               <UiTableCell>
                 <span :style="{ paddingLeft: `${item.depth * 16}px` }">{{ item.node.title }}</span>
               </UiTableCell>
-              <UiTableCell>{{ item.node.path || '-' }}</UiTableCell>
+              <UiTableCell>{{ item.node.path || "-" }}</UiTableCell>
               <UiTableCell>{{ formatType(item.node.type) }}</UiTableCell>
               <UiTableCell>
                 <UiBadge :variant="item.node.display === 1 ? 'default' : 'secondary'">
-                  {{ item.node.display === 1 ? 'Shown' : 'Hidden' }}
+                  {{ item.node.display === 1 ? "Shown" : "Hidden" }}
                 </UiBadge>
               </UiTableCell>
               <UiTableCell>
                 <UiBadge :variant="item.node.status === 1 ? 'default' : 'secondary'">
-                  {{ item.node.status === 1 ? 'Active' : 'Disabled' }}
+                  {{ item.node.status === 1 ? "Active" : "Disabled" }}
                 </UiBadge>
               </UiTableCell>
               <UiTableCell>{{ item.node.sort }}</UiTableCell>
@@ -304,7 +300,7 @@ function formatType(type: number) {
     <UiDialog v-model:open="dialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
-          <UiDialogTitle>{{ editingMenu ? 'Edit Menu' : 'New Menu' }}</UiDialogTitle>
+          <UiDialogTitle>{{ editingMenu ? "Edit Menu" : "New Menu" }}</UiDialogTitle>
           <UiDialogDescription> Configure navigation entries and permissions. </UiDialogDescription>
         </UiDialogHeader>
 
@@ -518,7 +514,7 @@ function formatType(type: number) {
               Cancel
             </UiButton>
             <UiButton type="submit" :disabled="isSaving">
-              {{ editingMenu ? 'Save Changes' : 'Create Menu' }}
+              {{ editingMenu ? "Save Changes" : "Create Menu" }}
             </UiButton>
           </UiDialogFooter>
         </form>

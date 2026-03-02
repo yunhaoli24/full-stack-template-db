@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { computed } from 'vue'
+import type { HTMLAttributes } from "vue";
+import { computed } from "vue";
 
 interface Props {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const classes = computed(() => [
-  'flex flex-col gap-8 p-4',
-  props.class,
-])
+const classes = computed(() => ["flex flex-col gap-8 p-4", props.class]);
 </script>
 
 <template>

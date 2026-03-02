@@ -1,53 +1,58 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { z } from "zod";
 
-import { FormField } from '@/components/ui/form'
+import { FormField } from "@/components/ui/form";
 
-import type { SystemConfig, SystemConfigPayload } from '@/services/api/system/config/system-configs.api'
+import type {
+  SystemConfig,
+  SystemConfigPayload,
+} from "@/services/api/system/config/system-configs.api";
 
 const props = defineProps<{
-  config: SystemConfig | null
-  loading?: boolean
-}>()
+  config: SystemConfig | null;
+  loading?: boolean;
+}>();
 
 const emits = defineEmits<{
-  (e: 'submit', payload: SystemConfigPayload): void
-}>()
+  (e: "submit", payload: SystemConfigPayload): void;
+}>();
 
-const formSchema = toTypedSchema(z.object({
-  name: z.string().trim().min(1, 'Please enter a name.'),
-  type: z.string().optional(),
-  key: z.string().trim().min(1, 'Please enter a key.'),
-  value: z.string().trim().min(1, 'Please enter a value.'),
-  is_frontend: z.boolean(),
-  remark: z.string().optional(),
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    name: z.string().trim().min(1, "Please enter a name."),
+    type: z.string().optional(),
+    key: z.string().trim().min(1, "Please enter a key."),
+    value: z.string().trim().min(1, "Please enter a value."),
+    is_frontend: z.boolean(),
+    remark: z.string().optional(),
+  }),
+);
 
 function getInitialValues(config: SystemConfig | null) {
   return {
-    name: config?.name ?? '',
-    type: config?.type ?? '',
-    key: config?.key ?? '',
-    value: config?.value ?? '',
+    name: config?.name ?? "",
+    type: config?.type ?? "",
+    key: config?.key ?? "",
+    value: config?.value ?? "",
     is_frontend: config?.is_frontend ?? false,
-    remark: config?.remark ?? '',
-  }
+    remark: config?.remark ?? "",
+  };
 }
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
   initialValues: getInitialValues(props.config),
-})
+});
 
 watch(
   () => props.config,
   (config) => {
-    resetForm({ values: getInitialValues(config) })
+    resetForm({ values: getInitialValues(config) });
   },
   { immediate: true },
-)
+);
 
 const onSubmit = handleSubmit((values) => {
   const payload: SystemConfigPayload = {
@@ -57,10 +62,10 @@ const onSubmit = handleSubmit((values) => {
     is_frontend: values.is_frontend,
     type: values.type?.trim() ? values.type.trim() : null,
     remark: values.remark?.trim() ? values.remark.trim() : null,
-  }
+  };
 
-  emits('submit', payload)
-})
+  emits("submit", payload);
+});
 </script>
 
 <template>

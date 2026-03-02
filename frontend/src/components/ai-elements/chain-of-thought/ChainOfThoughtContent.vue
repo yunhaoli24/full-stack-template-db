@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import {
-  Collapsible,
-  CollapsibleContent,
-} from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { useChainOfThought } from './context'
+import type { HTMLAttributes } from "vue";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { useChainOfThought } from "./context";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const { isOpen } = useChainOfThought()
+const { isOpen } = useChainOfThought();
 </script>
 
 <template>

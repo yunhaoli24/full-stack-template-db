@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import AuthTitle from './components/auth-title.vue'
+import AuthTitle from "./components/auth-title.vue";
 
-const value = ref<string[]>([])
+const value = ref<string[]>([]);
 function handleComplete(e: string[]) {
   // eslint-disable-next-line no-alert
-  alert(e.join(''))
+  alert(e.join(""));
 }
 </script>
 

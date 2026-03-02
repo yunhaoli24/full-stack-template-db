@@ -15,7 +15,7 @@ from backend.app.admin.schema.captcha import GetCaptchaDetail
 from backend.common.response.response_schema import ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get(

@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { Ellipsis, FilePenLine, Trash2 } from 'lucide-vue-next'
+import { Ellipsis, FilePenLine, Trash2 } from "lucide-vue-next";
 
-import type { Notice } from '@/services/api/plugins/notice/notices.api'
+import type { Notice } from "@/services/api/plugins/notice/notices.api";
 
 const props = defineProps<{
-  notice: Notice
-}>()
+  notice: Notice;
+}>();
 
 const emits = defineEmits<{
-  (e: 'edit', notice: Notice): void
-  (e: 'delete', notice: Notice): void
-}>()
+  (e: "edit", notice: Notice): void;
+  (e: "delete", notice: Notice): void;
+}>();
 
 function handleEdit() {
-  emits('edit', props.notice)
+  emits("edit", props.notice);
 }
 
 function handleDelete() {
-  emits('delete', props.notice)
+  emits("delete", props.notice);
 }
 </script>
 

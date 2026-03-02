@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
-import { Plus, RefreshCcw } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { isAxiosError } from "axios";
+import { Plus, RefreshCcw } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
-import type { ServerPagination } from '@/components/data-table/types'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import type { ServerPagination } from "@/components/data-table/types";
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import {
   useCreateSystemConfigMutation,
   useDeleteSystemConfigMutation,
@@ -14,167 +14,163 @@ import {
   useUpdateSystemConfigMutation,
   type SystemConfig,
   type SystemConfigPayload,
-} from '@/services/api/system/config/system-configs.api'
+} from "@/services/api/system/config/system-configs.api";
 
-import ConfigForm from './components/config-form.vue'
-import { createColumns } from './components/columns'
-import ConfigDataTable from './components/data-table.vue'
+import ConfigForm from "./components/config-form.vue";
+import { createColumns } from "./components/columns";
+import ConfigDataTable from "./components/data-table.vue";
 
-const page = ref(1)
-const pageSize = ref(DEFAULT_PAGE_SIZE)
+const page = ref(1);
+const pageSize = ref(DEFAULT_PAGE_SIZE);
 const filters = reactive({
-  name: '',
-  type: '',
-})
+  name: "",
+  type: "",
+});
 const appliedFilters = reactive({
-  name: '',
-  type: '',
-})
+  name: "",
+  type: "",
+});
 
 const queryParams = computed(() => ({
   page: page.value,
   size: pageSize.value,
   name: appliedFilters.name || undefined,
   type: appliedFilters.type || undefined,
-}))
+}));
 
-const query = useGetSystemConfigsQuery(queryParams)
+const query = useGetSystemConfigsQuery(queryParams);
 
-const configs = computed(() => query.data.value?.data?.items ?? [])
-const total = computed(() => query.data.value?.data?.total ?? 0)
-const isLoading = computed(() => query.isLoading.value)
-const isFetching = computed(() => query.isFetching.value)
-const isError = computed(() => query.isError.value)
+const configs = computed(() => query.data.value?.data?.items ?? []);
+const total = computed(() => query.data.value?.data?.total ?? 0);
+const isLoading = computed(() => query.isLoading.value);
+const isFetching = computed(() => query.isFetching.value);
+const isError = computed(() => query.isError.value);
 
 const serverPagination = computed<ServerPagination>(() => ({
   page: page.value,
   pageSize: pageSize.value,
   total: total.value,
   onPageChange: (nextPage) => {
-    page.value = nextPage
+    page.value = nextPage;
   },
   onPageSizeChange: (nextSize) => {
-    pageSize.value = nextSize
-    page.value = 1
+    pageSize.value = nextSize;
+    page.value = 1;
   },
-}))
+}));
 
-const dialogOpen = ref(false)
-const editingConfig = ref<SystemConfig | null>(null)
+const dialogOpen = ref(false);
+const editingConfig = ref<SystemConfig | null>(null);
 
-const deleteDialogOpen = ref(false)
-const deleteTarget = ref<SystemConfig | null>(null)
+const deleteDialogOpen = ref(false);
+const deleteTarget = ref<SystemConfig | null>(null);
 
-const createMutation = useCreateSystemConfigMutation()
-const updateMutation = useUpdateSystemConfigMutation()
-const deleteMutation = useDeleteSystemConfigMutation()
+const createMutation = useCreateSystemConfigMutation();
+const updateMutation = useUpdateSystemConfigMutation();
+const deleteMutation = useDeleteSystemConfigMutation();
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
 const columns = computed(() =>
   createColumns({
     onEdit: (config) => openEdit(config),
     onDelete: (config) => requestDelete(config),
   }),
-)
+);
 
-const deleteTargetName = computed(() => deleteTarget.value?.name ?? '')
+const deleteTargetName = computed(() => deleteTarget.value?.name ?? "");
 
 const listErrorMessage = computed(() => {
   if (!query.error.value) {
-    return ''
+    return "";
   }
-  return getErrorMessage(query.error.value)
-})
+  return getErrorMessage(query.error.value);
+});
 
 function applyFilters() {
-  appliedFilters.name = filters.name.trim()
-  appliedFilters.type = filters.type.trim()
-  page.value = 1
+  appliedFilters.name = filters.name.trim();
+  appliedFilters.type = filters.type.trim();
+  page.value = 1;
 }
 
 function resetFilters() {
-  filters.name = ''
-  filters.type = ''
-  applyFilters()
+  filters.name = "";
+  filters.type = "";
+  applyFilters();
 }
 
 function refreshList() {
-  void query.refetch()
+  void query.refetch();
 }
 
 function openCreate() {
-  editingConfig.value = null
-  dialogOpen.value = true
+  editingConfig.value = null;
+  dialogOpen.value = true;
 }
 
 function openEdit(config: SystemConfig) {
-  editingConfig.value = config
-  dialogOpen.value = true
+  editingConfig.value = config;
+  dialogOpen.value = true;
 }
 
 function requestDelete(config: SystemConfig) {
-  deleteTarget.value = config
-  deleteDialogOpen.value = true
+  deleteTarget.value = config;
+  deleteDialogOpen.value = true;
 }
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 watch(dialogOpen, (open) => {
   if (!open) {
-    editingConfig.value = null
+    editingConfig.value = null;
   }
-})
+});
 
 watch(deleteDialogOpen, (open) => {
   if (!open) {
-    deleteTarget.value = null
+    deleteTarget.value = null;
   }
-})
+});
 
 async function handleSubmit(payload: SystemConfigPayload, close?: () => void) {
   try {
     if (editingConfig.value) {
-      await updateMutation.mutateAsync({ id: editingConfig.value.id, payload })
-      toast.success('Config updated')
-    }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Config created')
+      await updateMutation.mutateAsync({ id: editingConfig.value.id, payload });
+      toast.success("Config updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Config created");
     }
     if (close) {
-      close()
+      close();
+    } else {
+      dialogOpen.value = false;
     }
-    else {
-      dialogOpen.value = false
-    }
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
 
   try {
-    await deleteMutation.mutateAsync([deleteTarget.value.id])
-    toast.success('Config deleted')
-    deleteDialogOpen.value = false
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+    await deleteMutation.mutateAsync([deleteTarget.value.id]);
+    toast.success("Config deleted");
+    deleteDialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 </script>
@@ -233,10 +229,10 @@ async function handleDeleteConfirm() {
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
           <UiDialogTitle>
-            {{ editingConfig ? 'Edit Config' : 'New Config' }}
+            {{ editingConfig ? "Edit Config" : "New Config" }}
           </UiDialogTitle>
           <UiDialogDescription>
-            {{ editingConfig ? 'Update system parameter values.' : 'Add a new system parameter.' }}
+            {{ editingConfig ? "Update system parameter values." : "Add a new system parameter." }}
           </UiDialogDescription>
         </UiDialogHeader>
         <ConfigForm

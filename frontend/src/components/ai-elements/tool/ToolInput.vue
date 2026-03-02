@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import type { ToolUIPart } from 'ai'
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
-import { CodeBlock } from '../code-block'
+import type { ToolUIPart } from "ai";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
+import { CodeBlock } from "../code-block";
 
 const props = defineProps<{
-  input: ToolUIPart['input']
-  class?: HTMLAttributes['class']
-}>()
+  input: ToolUIPart["input"];
+  class?: HTMLAttributes["class"];
+}>();
 
 const formattedInput = computed(() => {
-  return JSON.stringify(props.input, null, 2)
-})
+  return JSON.stringify(props.input, null, 2);
+});
 </script>
 
 <template>

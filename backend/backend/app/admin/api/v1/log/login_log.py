@@ -14,7 +14,7 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 from backend.app.admin.service.login_log_service import login_log_service
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get(

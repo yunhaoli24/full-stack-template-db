@@ -15,7 +15,7 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 from backend.app.admin.service.plugin_service import plugin_service
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("", summary="获取所有插件", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

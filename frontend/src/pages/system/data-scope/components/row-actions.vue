@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Pencil, Settings, Trash2 } from 'lucide-vue-next'
+import { Pencil, Settings, Trash2 } from "lucide-vue-next";
 
-import { Button } from '@/components/ui/button'
-import type { DataScopeDetail } from '@/services/api/system/data-scope/data-scopes.api'
+import { Button } from "@/components/ui/button";
+import type { DataScopeDetail } from "@/services/api/system/data-scope/data-scopes.api";
 
 defineProps<{
-  scope: DataScopeDetail
-  onEdit: (scope: DataScopeDetail) => void
-  onDelete: (scope: DataScopeDetail) => void
-  onConfigureRules: (scope: DataScopeDetail) => void
-}>()
+  scope: DataScopeDetail;
+  onEdit: (scope: DataScopeDetail) => void;
+  onDelete: (scope: DataScopeDetail) => void;
+  onConfigureRules: (scope: DataScopeDetail) => void;
+}>();
 </script>
 
 <template>

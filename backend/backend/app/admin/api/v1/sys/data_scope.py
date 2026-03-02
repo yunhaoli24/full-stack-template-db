@@ -21,7 +21,7 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 from backend.app.admin.service.data_scope_service import data_scope_service
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/all", summary="获取所有数据范围", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

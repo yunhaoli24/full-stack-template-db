@@ -15,7 +15,7 @@ from backend.app.admin.service.auth_service import auth_service
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.post("/login/swagger", summary="swagger 调试专用", description="用于快捷获取 token 进行 swagger 认证")  # pyright: ignore[reportArgumentType]

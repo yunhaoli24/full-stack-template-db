@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import type { LanguageModelUsage } from 'ai'
-import type { ModelId } from './context'
-import { HoverCard } from '@/components/ui/hover-card'
-import { computed, provide } from 'vue'
-import { ContextKey } from './context'
+import type { LanguageModelUsage } from "ai";
+import type { ModelId } from "./context";
+import { HoverCard } from "@/components/ui/hover-card";
+import { computed, provide } from "vue";
+import { ContextKey } from "./context";
 
 interface Props {
-  usedTokens: number
-  maxTokens: number
-  usage?: LanguageModelUsage
-  modelId?: ModelId
+  usedTokens: number;
+  maxTokens: number;
+  usage?: LanguageModelUsage;
+  modelId?: ModelId;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 provide(ContextKey, {
   usedTokens: computed(() => props.usedTokens),
   maxTokens: computed(() => props.maxTokens),
   usage: computed(() => props.usage),
   modelId: computed(() => props.modelId),
-})
+});
 </script>
 
 <template>

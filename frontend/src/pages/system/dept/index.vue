@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/zod'
-import { isAxiosError } from 'axios'
-import { Plus, Trash2, Pencil, PlusCircle } from 'lucide-vue-next'
-import { useForm } from 'vee-validate'
-import { toast } from 'vue-sonner'
-import { z } from 'zod'
+import { toTypedSchema } from "@vee-validate/zod";
+import { isAxiosError } from "axios";
+import { Plus, Trash2, Pencil, PlusCircle } from "lucide-vue-next";
+import { useForm } from "vee-validate";
+import { toast } from "vue-sonner";
+import { z } from "zod";
 
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { FormField } from '@/components/ui/form'
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { FormField } from "@/components/ui/form";
 import {
   useCreateDeptMutation,
   useDeleteDeptMutation,
@@ -16,130 +16,130 @@ import {
   useUpdateDeptMutation,
   type DeptPayload,
   type DeptTreeNode,
-} from '@/services/api/system/dept/depts.api'
+} from "@/services/api/system/dept/depts.api";
 
-const query = useGetDeptTreeQuery()
-const createMutation = useCreateDeptMutation()
-const updateMutation = useUpdateDeptMutation()
-const deleteMutation = useDeleteDeptMutation()
+const query = useGetDeptTreeQuery();
+const createMutation = useCreateDeptMutation();
+const updateMutation = useUpdateDeptMutation();
+const deleteMutation = useDeleteDeptMutation();
 
-const dialogOpen = ref(false)
-const deleteDialogOpen = ref(false)
-const editingDept = ref<DeptTreeNode | null>(null)
-const deleteTarget = ref<DeptTreeNode | null>(null)
-const ROOT_PARENT_VALUE = '__root__'
+const dialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const editingDept = ref<DeptTreeNode | null>(null);
+const deleteTarget = ref<DeptTreeNode | null>(null);
+const ROOT_PARENT_VALUE = "__root__";
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
 const deptFormSchema = toTypedSchema(
   z.object({
-    name: z.string().trim().min(1, 'Please enter a department name.'),
-    parent_id: z.preprocess(
-      (value) => {
-        if (value === ROOT_PARENT_VALUE || value === '' || value === null || value === undefined) {
-          return null
-        }
-        const parsed = Number(value)
-        return Number.isNaN(parsed) ? null : parsed
-      },
-      z.number().nullable(),
-    ),
-    sort: z.coerce.number().min(0, 'Sort must be 0 or greater.'),
+    name: z.string().trim().min(1, "Please enter a department name."),
+    parent_id: z.preprocess((value) => {
+      if (value === ROOT_PARENT_VALUE || value === "" || value === null || value === undefined) {
+        return null;
+      }
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? null : parsed;
+    }, z.number().nullable()),
+    sort: z.coerce.number().min(0, "Sort must be 0 or greater."),
     leader: z.string().optional(),
     phone: z.string().optional(),
     email: z.string().optional(),
     status: z.boolean(),
   }),
-)
+);
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: deptFormSchema,
   initialValues: {
-    name: '',
+    name: "",
     parent_id: ROOT_PARENT_VALUE,
     sort: 0,
-    leader: '',
-    phone: '',
-    email: '',
+    leader: "",
+    phone: "",
+    email: "",
     status: true,
   },
-})
+});
 
-const deptTree = computed(() => query.data.value?.data ?? [])
+const deptTree = computed(() => query.data.value?.data ?? []);
 
-function flattenDept(nodes: DeptTreeNode[], depth = 0): Array<{ node: DeptTreeNode; depth: number }> {
-  const result: Array<{ node: DeptTreeNode; depth: number }> = []
+function flattenDept(
+  nodes: DeptTreeNode[],
+  depth = 0,
+): Array<{ node: DeptTreeNode; depth: number }> {
+  const result: Array<{ node: DeptTreeNode; depth: number }> = [];
   nodes.forEach((node) => {
-    result.push({ node, depth })
+    result.push({ node, depth });
     if (node.children?.length) {
-      result.push(...flattenDept(node.children, depth + 1))
+      result.push(...flattenDept(node.children, depth + 1));
     }
-  })
-  return result
+  });
+  return result;
 }
 
-const flatDeptList = computed(() => flattenDept(deptTree.value))
+const flatDeptList = computed(() => flattenDept(deptTree.value));
 
 const parentOptions = computed(() => [
-  { label: 'Root', value: ROOT_PARENT_VALUE },
+  { label: "Root", value: ROOT_PARENT_VALUE },
   ...flatDeptList.value.map(({ node, depth }) => ({
-    label: `${depth ? `${'-'.repeat(depth)} ` : ''}${node.name}`,
+    label: `${depth ? `${"-".repeat(depth)} ` : ""}${node.name}`,
     value: String(node.id),
   })),
-])
+]);
 
 watch(dialogOpen, (open) => {
   if (!open) {
-    editingDept.value = null
+    editingDept.value = null;
   }
-})
+});
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function openCreate(parent?: DeptTreeNode | null) {
-  editingDept.value = null
-  dialogOpen.value = true
+  editingDept.value = null;
+  dialogOpen.value = true;
   resetForm({
     values: {
-      name: '',
+      name: "",
       parent_id: parent?.id ? String(parent.id) : ROOT_PARENT_VALUE,
       sort: 0,
-      leader: '',
-      phone: '',
-      email: '',
+      leader: "",
+      phone: "",
+      email: "",
       status: true,
     },
-  })
+  });
 }
 
 function openEdit(dept: DeptTreeNode) {
-  editingDept.value = dept
-  dialogOpen.value = true
+  editingDept.value = dept;
+  dialogOpen.value = true;
   resetForm({
     values: {
       name: dept.name,
       parent_id: dept.parent_id ? String(dept.parent_id) : ROOT_PARENT_VALUE,
       sort: dept.sort ?? 0,
-      leader: dept.leader ?? '',
-      phone: dept.phone ?? '',
-      email: dept.email ?? '',
+      leader: dept.leader ?? "",
+      phone: dept.phone ?? "",
+      email: dept.email ?? "",
       status: dept.status === 1,
     },
-  })
+  });
 }
 
 function requestDelete(dept: DeptTreeNode) {
-  deleteTarget.value = dept
-  deleteDialogOpen.value = true
+  deleteTarget.value = dept;
+  deleteDialogOpen.value = true;
 }
 
 const onSubmit = handleSubmit(async (values) => {
@@ -151,38 +151,34 @@ const onSubmit = handleSubmit(async (values) => {
     phone: values.phone?.trim() || null,
     email: values.email?.trim() || null,
     status: values.status ? 1 : 0,
-  }
+  };
 
   try {
     if (editingDept.value) {
-      await updateMutation.mutateAsync({ id: editingDept.value.id, payload })
-      toast.success('Department updated')
+      await updateMutation.mutateAsync({ id: editingDept.value.id, payload });
+      toast.success("Department updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Department created");
     }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Department created')
-    }
-    dialogOpen.value = false
+    dialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-})
+});
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync(deleteTarget.value.id)
-    toast.success('Department deleted')
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTarget.value = null
+    await deleteMutation.mutateAsync(deleteTarget.value.id);
+    toast.success("Department deleted");
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTarget.value = null;
   }
 }
 </script>
@@ -216,12 +212,12 @@ async function handleDeleteConfirm() {
                   <span :style="{ paddingLeft: `${item.depth * 16}px` }">{{ item.node.name }}</span>
                 </div>
               </UiTableCell>
-              <UiTableCell>{{ item.node.leader || '-' }}</UiTableCell>
-              <UiTableCell>{{ item.node.phone || '-' }}</UiTableCell>
-              <UiTableCell>{{ item.node.email || '-' }}</UiTableCell>
+              <UiTableCell>{{ item.node.leader || "-" }}</UiTableCell>
+              <UiTableCell>{{ item.node.phone || "-" }}</UiTableCell>
+              <UiTableCell>{{ item.node.email || "-" }}</UiTableCell>
               <UiTableCell>
                 <UiBadge :variant="item.node.status === 1 ? 'default' : 'secondary'">
-                  {{ item.node.status === 1 ? 'Active' : 'Disabled' }}
+                  {{ item.node.status === 1 ? "Active" : "Disabled" }}
                 </UiBadge>
               </UiTableCell>
               <UiTableCell class="text-right space-x-2">
@@ -255,7 +251,7 @@ async function handleDeleteConfirm() {
     <UiDialog v-model:open="dialogOpen">
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
-          <UiDialogTitle>{{ editingDept ? 'Edit Department' : 'New Department' }}</UiDialogTitle>
+          <UiDialogTitle>{{ editingDept ? "Edit Department" : "New Department" }}</UiDialogTitle>
           <UiDialogDescription> Update department details and hierarchy. </UiDialogDescription>
         </UiDialogHeader>
 
@@ -369,7 +365,7 @@ async function handleDeleteConfirm() {
               Cancel
             </UiButton>
             <UiButton type="submit" :disabled="isSaving">
-              {{ editingDept ? 'Save Changes' : 'Create Department' }}
+              {{ editingDept ? "Save Changes" : "Create Department" }}
             </UiButton>
           </UiDialogFooter>
         </form>

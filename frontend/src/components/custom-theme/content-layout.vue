@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from "pinia";
 
-import { CONTENT_LAYOUTS } from '@/constants/themes'
-import { useThemeStore } from '@/stores/theme'
+import { CONTENT_LAYOUTS } from "@/constants/themes";
+import { useThemeStore } from "@/stores/theme";
 
-const themeStore = useThemeStore()
-const { setContentLayout } = themeStore
-const { contentLayout } = storeToRefs(themeStore)
+const themeStore = useThemeStore();
+const { setContentLayout } = themeStore;
+const { contentLayout } = storeToRefs(themeStore);
 </script>
 
 <template>

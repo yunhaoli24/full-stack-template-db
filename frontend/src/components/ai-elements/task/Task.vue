@@ -1,28 +1,26 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import {
-  Collapsible,
-} from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
-import { provide, ref } from 'vue'
+import type { HTMLAttributes } from "vue";
+import { Collapsible } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import { provide, ref } from "vue";
 
 interface TaskProps {
-  defaultOpen?: boolean
-  class?: HTMLAttributes['class']
+  defaultOpen?: boolean;
+  class?: HTMLAttributes["class"];
 }
 
 const props = withDefaults(defineProps<TaskProps>(), {
   defaultOpen: true,
-})
+});
 
-const isOpen = ref(props.defaultOpen)
+const isOpen = ref(props.defaultOpen);
 
 function toggleOpen() {
-  isOpen.value = !isOpen.value
+  isOpen.value = !isOpen.value;
 }
 
-provide('isOpen', isOpen)
-provide('toggle', toggleOpen)
+provide("isOpen", isOpen);
+provide("toggle", toggleOpen);
 </script>
 
 <template>

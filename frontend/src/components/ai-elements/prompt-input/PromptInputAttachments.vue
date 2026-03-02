@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { usePromptInput } from './context'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { usePromptInput } from "./context";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const { files } = usePromptInput()
+const { files } = usePromptInput();
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthTitle from './components/auth-title.vue'
+import AuthTitle from "./components/auth-title.vue";
 </script>
 
 <template>

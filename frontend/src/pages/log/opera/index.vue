@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
-import { Trash2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { isAxiosError } from "axios";
+import { Trash2 } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
-import type { ServerPagination } from '@/components/data-table/types'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/constants/pagination'
+import type { ServerPagination } from "@/components/data-table/types";
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "@/constants/pagination";
 import {
   useDeleteAllOperaLogsMutation,
   useDeleteOperaLogsMutation,
   useGetOperaLogsQuery,
   type OperaLog,
-} from '@/services/api/log/opera/opera-logs.api'
+} from "@/services/api/log/opera/opera-logs.api";
 
-import { createColumns } from './components/columns'
-import OperaLogDataTable from './components/data-table.vue'
+import { createColumns } from "./components/columns";
+import OperaLogDataTable from "./components/data-table.vue";
 
-const page = ref(1)
-const pageSize = ref(DEFAULT_PAGE_SIZE)
-const searchUsername = ref('')
-const searchStatus = ref<number | undefined>(undefined)
-const searchIp = ref('')
+const page = ref(1);
+const pageSize = ref(DEFAULT_PAGE_SIZE);
+const searchUsername = ref("");
+const searchStatus = ref<number | undefined>(undefined);
+const searchIp = ref("");
 
 const query = useGetOperaLogsQuery(
   computed(() => ({
@@ -31,36 +31,38 @@ const query = useGetOperaLogsQuery(
     status: searchStatus.value,
     ip: searchIp.value || undefined,
   })),
-)
-const deleteMutation = useDeleteOperaLogsMutation()
-const deleteAllMutation = useDeleteAllOperaLogsMutation()
+);
+const deleteMutation = useDeleteOperaLogsMutation();
+const deleteAllMutation = useDeleteAllOperaLogsMutation();
 
-const deleteDialogOpen = ref(false)
-const deleteAllDialogOpen = ref(false)
-const deleteTargets = ref<number[]>([])
-const selectedIds = ref<Set<number>>(new Set())
+const deleteDialogOpen = ref(false);
+const deleteAllDialogOpen = ref(false);
+const deleteTargets = ref<number[]>([]);
+const selectedIds = ref<Set<number>>(new Set());
 
-const isDeleting = computed(() => deleteMutation.isPending.value || deleteAllMutation.isPending.value)
+const isDeleting = computed(
+  () => deleteMutation.isPending.value || deleteAllMutation.isPending.value,
+);
 
-const logs = computed(() => query.data.value?.data?.items ?? [])
-const total = computed(() => query.data.value?.data?.total ?? 0)
-const totalPages = computed(() => query.data.value?.data?.total_pages ?? 0)
-const isLoading = computed(() => query.isLoading.value)
+const logs = computed(() => query.data.value?.data?.items ?? []);
+const total = computed(() => query.data.value?.data?.total ?? 0);
+const totalPages = computed(() => query.data.value?.data?.total_pages ?? 0);
+const isLoading = computed(() => query.isLoading.value);
 
 const serverPagination = computed<ServerPagination>(() => ({
   page: page.value,
   pageSize: pageSize.value,
   total: total.value,
-  onPageChange: nextPage => {
-    page.value = nextPage
-    selectedIds.value.clear()
+  onPageChange: (nextPage) => {
+    page.value = nextPage;
+    selectedIds.value.clear();
   },
-  onPageSizeChange: nextSize => {
-    pageSize.value = nextSize
-    page.value = 1
-    selectedIds.value.clear()
+  onPageSizeChange: (nextSize) => {
+    pageSize.value = nextSize;
+    page.value = 1;
+    selectedIds.value.clear();
   },
-}))
+}));
 
 const columns = computed(() =>
   createColumns({
@@ -68,132 +70,124 @@ const columns = computed(() =>
     onSelect: (id: number) => toggleSelect(id),
     onSelectAll: () => toggleSelectAll(),
   }),
-)
+);
 
 const statusOptions = [
-  { label: 'All', value: undefined },
-  { label: 'Success', value: 1 },
-  { label: 'Failed', value: 0 },
-] as const
+  { label: "All", value: undefined },
+  { label: "Success", value: 1 },
+  { label: "Failed", value: 0 },
+] as const;
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function getStatusVariant(status: number) {
-  return status === 1 ? 'default' : 'destructive'
+  return status === 1 ? "default" : "destructive";
 }
 
 function getStatusText(status: number) {
-  return status === 1 ? 'Success' : 'Failed'
+  return status === 1 ? "Success" : "Failed";
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleString()
+  return new Date(dateStr).toLocaleString();
 }
 
 function getLocation(log: OperaLog) {
-  const parts = [log.country, log.region, log.city].filter(Boolean)
-  return parts.length > 0 ? parts.join(' - ') : '-'
+  const parts = [log.country, log.region, log.city].filter(Boolean);
+  return parts.length > 0 ? parts.join(" - ") : "-";
 }
 
 function formatCostTime(time: number) {
-  return `${time.toFixed(2)}ms`
+  return `${time.toFixed(2)}ms`;
 }
 
 function handleSearch() {
-  page.value = 1
+  page.value = 1;
 }
 
 function toggleSelect(id: number) {
   if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id)
-  }
-  else {
-    selectedIds.value.add(id)
+    selectedIds.value.delete(id);
+  } else {
+    selectedIds.value.add(id);
   }
 }
 
 function toggleSelectAll() {
   if (selectedIds.value.size === logs.value.length) {
-    selectedIds.value.clear()
-  }
-  else {
-    selectedIds.value = new Set(logs.value.map(l => l.id))
+    selectedIds.value.clear();
+  } else {
+    selectedIds.value = new Set(logs.value.map((l) => l.id));
   }
 }
 
 function requestDelete(ids: number[]) {
-  deleteTargets.value = ids
-  deleteDialogOpen.value = true
+  deleteTargets.value = ids;
+  deleteDialogOpen.value = true;
 }
 
 function requestDeleteSelected() {
   if (selectedIds.value.size === 0) {
-    toast.error('Please select at least one record')
-    return
+    toast.error("Please select at least one record");
+    return;
   }
-  requestDelete(Array.from(selectedIds.value))
+  requestDelete(Array.from(selectedIds.value));
 }
 
 function requestDeleteAll() {
-  deleteAllDialogOpen.value = true
+  deleteAllDialogOpen.value = true;
 }
 
 async function handleDeleteConfirm() {
   if (!deleteTargets.value.length) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync(deleteTargets.value)
-    toast.success(`${deleteTargets.value.length} record(s) deleted`)
-    selectedIds.value.clear()
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTargets.value = []
+    await deleteMutation.mutateAsync(deleteTargets.value);
+    toast.success(`${deleteTargets.value.length} record(s) deleted`);
+    selectedIds.value.clear();
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTargets.value = [];
   }
 }
 
 async function handleDeleteAllConfirm() {
   try {
-    await deleteAllMutation.mutateAsync()
-    toast.success('All operation logs deleted')
-    selectedIds.value.clear()
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteAllDialogOpen.value = false
+    await deleteAllMutation.mutateAsync();
+    toast.success("All operation logs deleted");
+    selectedIds.value.clear();
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteAllDialogOpen.value = false;
   }
 }
 
-const detailDialogOpen = ref(false)
-const selectedLog = ref<OperaLog | null>(null)
+const detailDialogOpen = ref(false);
+const selectedLog = ref<OperaLog | null>(null);
 
 function showDetail(log: OperaLog) {
-  selectedLog.value = log
-  detailDialogOpen.value = true
+  selectedLog.value = log;
+  detailDialogOpen.value = true;
 }
 
 function formatData(data: Record<string, unknown> | null) {
-  if (!data)
-    return '-'
+  if (!data) return "-";
   try {
-    return JSON.stringify(data, null, 2)
-  }
-  catch {
-    return String(data)
+    return JSON.stringify(data, null, 2);
+  } catch {
+    return String(data);
   }
 }
 </script>
@@ -263,7 +257,7 @@ function formatData(data: Record<string, unknown> | null) {
           <div class="grid gap-4 md:grid-cols-2">
             <div>
               <div class="text-sm font-medium text-muted-foreground">Username</div>
-              <div class="text-sm">{{ selectedLog.username || '-' }}</div>
+              <div class="text-sm">{{ selectedLog.username || "-" }}</div>
             </div>
             <div>
               <div class="text-sm font-medium text-muted-foreground">Operation</div>
@@ -311,15 +305,15 @@ function formatData(data: Record<string, unknown> | null) {
           <div class="grid gap-4 md:grid-cols-3">
             <div>
               <div class="text-sm font-medium text-muted-foreground">OS</div>
-              <div class="text-sm">{{ selectedLog.os || '-' }}</div>
+              <div class="text-sm">{{ selectedLog.os || "-" }}</div>
             </div>
             <div>
               <div class="text-sm font-medium text-muted-foreground">Browser</div>
-              <div class="text-sm">{{ selectedLog.browser || '-' }}</div>
+              <div class="text-sm">{{ selectedLog.browser || "-" }}</div>
             </div>
             <div>
               <div class="text-sm font-medium text-muted-foreground">Device</div>
-              <div class="text-sm">{{ selectedLog.device || '-' }}</div>
+              <div class="text-sm">{{ selectedLog.device || "-" }}</div>
             </div>
           </div>
 

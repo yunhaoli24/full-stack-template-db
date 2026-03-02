@@ -1,21 +1,14 @@
 <script setup lang="ts">
-import {
-  BadgeCheck,
-  ChevronsUpDown,
-  LogOut,
-  UserRoundCog,
-} from 'lucide-vue-next'
+import { BadgeCheck, ChevronsUpDown, LogOut, UserRoundCog } from "lucide-vue-next";
 
-import { useSidebar } from '@/components/ui/sidebar'
+import { useSidebar } from "@/components/ui/sidebar";
 
-import type { User } from './types'
+import type { User } from "./types";
 
-const { user } = defineProps<
-  { user: User }
->()
+const { user } = defineProps<{ user: User }>();
 
-const { logout } = useAuth()
-const { isMobile, open } = useSidebar()
+const { logout } = useAuth();
+const { isMobile, open } = useSidebar();
 </script>
 
 <template>
@@ -40,7 +33,7 @@ const { isMobile, open } = useSidebar()
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent
           class="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-          :side="(isMobile || open) ? 'bottom' : 'right'"
+          :side="isMobile || open ? 'bottom' : 'right'"
           align="start"
           :side-offset="4"
         >

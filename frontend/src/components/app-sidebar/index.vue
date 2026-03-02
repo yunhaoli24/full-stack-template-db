@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import { useDark } from '@vueuse/core'
+import { useDark } from "@vueuse/core";
 
-import { useSidebar } from '@/composables/use-sidebar'
+import { useSidebar } from "@/composables/use-sidebar";
 
-import NavFooter from './nav-footer.vue'
-import NavTeam from './nav-team.vue'
+import NavFooter from "./nav-footer.vue";
+import NavTeam from "./nav-team.vue";
 
-const { navData, user } = useSidebar()
-const navMain = computed(() => navData.value || [])
-const isDark = useDark()
+const { navData, user } = useSidebar();
+const navMain = computed(() => navData.value || []);
+const isDark = useDark();
 </script>
 
 <template>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
-import { Plus, RefreshCcw } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { isAxiosError } from "axios";
+import { Plus, RefreshCcw } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
-import type { ServerPagination } from '@/components/data-table/types'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import type { ServerPagination } from "@/components/data-table/types";
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import {
   useCreateDictTypeMutation,
   useDeleteDictTypeMutation,
@@ -14,175 +14,171 @@ import {
   useUpdateDictTypeMutation,
   type DictType,
   type DictTypePayload,
-} from '@/services/api/plugins/dict/dict-types.api'
+} from "@/services/api/plugins/dict/dict-types.api";
 
-import DictTypeForm from './components/dict-type-form.vue'
-import { createDictTypeColumns } from './components/dict-type-columns'
-import DictTypeDataTable from './components/dict-type-data-table.vue'
+import DictTypeForm from "./components/dict-type-form.vue";
+import { createDictTypeColumns } from "./components/dict-type-columns";
+import DictTypeDataTable from "./components/dict-type-data-table.vue";
 
-const activeTab = ref<'types' | 'data'>('types')
+const activeTab = ref<"types" | "data">("types");
 
-const page = ref(1)
-const pageSize = ref(DEFAULT_PAGE_SIZE)
+const page = ref(1);
+const pageSize = ref(DEFAULT_PAGE_SIZE);
 const filters = reactive({
-  name: '',
-  code: '',
-})
+  name: "",
+  code: "",
+});
 const appliedFilters = reactive({
-  name: '',
-  code: '',
-})
+  name: "",
+  code: "",
+});
 
 const queryParams = computed(() => ({
   page: page.value,
   size: pageSize.value,
   name: appliedFilters.name || undefined,
   code: appliedFilters.code || undefined,
-}))
+}));
 
-const query = useGetDictTypesQuery(queryParams)
+const query = useGetDictTypesQuery(queryParams);
 
-const dictTypes = computed(() => query.data.value?.data?.items ?? [])
-const total = computed(() => query.data.value?.data?.total ?? 0)
-const isLoading = computed(() => query.isLoading.value)
-const isFetching = computed(() => query.isFetching.value)
-const isError = computed(() => query.isError.value)
+const dictTypes = computed(() => query.data.value?.data?.items ?? []);
+const total = computed(() => query.data.value?.data?.total ?? 0);
+const isLoading = computed(() => query.isLoading.value);
+const isFetching = computed(() => query.isFetching.value);
+const isError = computed(() => query.isError.value);
 
 const serverPagination = computed<ServerPagination>(() => ({
   page: page.value,
   pageSize: pageSize.value,
   total: total.value,
-  onPageChange: nextPage => {
-    page.value = nextPage
+  onPageChange: (nextPage) => {
+    page.value = nextPage;
   },
-  onPageSizeChange: nextSize => {
-    pageSize.value = nextSize
-    page.value = 1
+  onPageSizeChange: (nextSize) => {
+    pageSize.value = nextSize;
+    page.value = 1;
   },
-}))
+}));
 
-const dialogOpen = ref(false)
-const editingDictType = ref<DictType | null>(null)
+const dialogOpen = ref(false);
+const editingDictType = ref<DictType | null>(null);
 
-const deleteDialogOpen = ref(false)
-const deleteTarget = ref<DictType | null>(null)
+const deleteDialogOpen = ref(false);
+const deleteTarget = ref<DictType | null>(null);
 
-const createMutation = useCreateDictTypeMutation()
-const updateMutation = useUpdateDictTypeMutation()
-const deleteMutation = useDeleteDictTypeMutation()
+const createMutation = useCreateDictTypeMutation();
+const updateMutation = useUpdateDictTypeMutation();
+const deleteMutation = useDeleteDictTypeMutation();
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
 const columns = computed(() =>
   createDictTypeColumns({
-    onEdit: dictType => openEdit(dictType),
-    onDelete: dictType => requestDelete(dictType),
+    onEdit: (dictType) => openEdit(dictType),
+    onDelete: (dictType) => requestDelete(dictType),
   }),
-)
+);
 
-const deleteTargetName = computed(() => deleteTarget.value?.name ?? '')
+const deleteTargetName = computed(() => deleteTarget.value?.name ?? "");
 
 const listErrorMessage = computed(() => {
   if (!query.error.value) {
-    return ''
+    return "";
   }
-  return getErrorMessage(query.error.value)
-})
+  return getErrorMessage(query.error.value);
+});
 
 function applyFilters() {
-  appliedFilters.name = filters.name.trim()
-  appliedFilters.code = filters.code.trim()
-  page.value = 1
+  appliedFilters.name = filters.name.trim();
+  appliedFilters.code = filters.code.trim();
+  page.value = 1;
 }
 
 function resetFilters() {
-  filters.name = ''
-  filters.code = ''
-  applyFilters()
+  filters.name = "";
+  filters.code = "";
+  applyFilters();
 }
 
 function refreshList() {
-  void query.refetch()
+  void query.refetch();
 }
 
 function openCreate() {
-  editingDictType.value = null
-  dialogOpen.value = true
+  editingDictType.value = null;
+  dialogOpen.value = true;
 }
 
 function openEdit(dictType: DictType) {
-  editingDictType.value = dictType
-  dialogOpen.value = true
+  editingDictType.value = dictType;
+  dialogOpen.value = true;
 }
 
 function requestDelete(dictType: DictType) {
-  deleteTarget.value = dictType
-  deleteDialogOpen.value = true
+  deleteTarget.value = dictType;
+  deleteDialogOpen.value = true;
 }
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
-watch(dialogOpen, open => {
+watch(dialogOpen, (open) => {
   if (!open) {
-    editingDictType.value = null
+    editingDictType.value = null;
   }
-})
+});
 
-watch(deleteDialogOpen, open => {
+watch(deleteDialogOpen, (open) => {
   if (!open) {
-    deleteTarget.value = null
+    deleteTarget.value = null;
   }
-})
+});
 
 watch(activeTab, (newTab) => {
-  if (newTab === 'data') {
+  if (newTab === "data") {
     // TODO: Load dict data
   }
-})
+});
 
 async function handleSubmit(payload: DictTypePayload, close?: () => void) {
   try {
     if (editingDictType.value) {
-      await updateMutation.mutateAsync({ id: editingDictType.value.id, payload })
-      toast.success('Dict type updated')
-    }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Dict type created')
+      await updateMutation.mutateAsync({ id: editingDictType.value.id, payload });
+      toast.success("Dict type updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Dict type created");
     }
     if (close) {
-      close()
+      close();
+    } else {
+      dialogOpen.value = false;
     }
-    else {
-      dialogOpen.value = false
-    }
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
 
   try {
-    await deleteMutation.mutateAsync([deleteTarget.value.id])
-    toast.success('Dict type deleted')
-    deleteDialogOpen.value = false
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+    await deleteMutation.mutateAsync([deleteTarget.value.id]);
+    toast.success("Dict type deleted");
+    deleteDialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 </script>
@@ -272,17 +268,21 @@ async function handleDeleteConfirm() {
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
           <UiDialogTitle>
-            {{ editingDictType ? 'Edit Dict Type' : 'New Dict Type' }}
+            {{ editingDictType ? "Edit Dict Type" : "New Dict Type" }}
           </UiDialogTitle>
           <UiDialogDescription>
-            {{ editingDictType ? 'Update dictionary type information.' : 'Create a new dictionary type.' }}
+            {{
+              editingDictType
+                ? "Update dictionary type information."
+                : "Create a new dictionary type."
+            }}
           </UiDialogDescription>
         </UiDialogHeader>
         <DictTypeForm
           class="mt-4"
           :dict-type="editingDictType"
           :loading="isSaving"
-          @submit="payload => handleSubmit(payload, close)"
+          @submit="(payload) => handleSubmit(payload, close)"
         />
       </UiDialogContent>
     </UiDialog>

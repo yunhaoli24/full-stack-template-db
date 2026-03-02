@@ -1,23 +1,24 @@
 <script setup lang="ts" generic="T">
-import type { Column } from '@tanstack/vue-table'
+import type { Column } from "@tanstack/vue-table";
 
-import { Check, CirclePlus } from 'lucide-vue-next'
+import { Check, CirclePlus } from "lucide-vue-next";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-import type { FacetedFilterOption } from './types'
+import type { FacetedFilterOption } from "./types";
 
 interface DataTableFacetedFilter {
-  column?: Column<T, any>
-  title?: string
-  options: FacetedFilterOption[]
+  column?: Column<T, any>;
+  title?: string;
+  options: FacetedFilterOption[];
 }
 
-const props = defineProps<DataTableFacetedFilter>()
+const props = defineProps<DataTableFacetedFilter>();
 
-const facets = computed(() => props.column?.getFacetedUniqueValues())
-const selectedValues = computed(() => new Set(props.column?.getFilterValue() as string[]))
-const filterFunction = (list: DataTableFacetedFilter['options'], term: string) => list.filter(i => i.label.toLowerCase()?.includes(term))
+const facets = computed(() => props.column?.getFacetedUniqueValues());
+const selectedValues = computed(() => new Set(props.column?.getFilterValue() as string[]));
+const filterFunction = (list: DataTableFacetedFilter["options"], term: string) =>
+  list.filter((i) => i.label.toLowerCase()?.includes(term));
 </script>
 
 <template>
@@ -42,8 +43,7 @@ const filterFunction = (list: DataTableFacetedFilter['options'], term: string) =
 
             <template v-else>
               <UiBadge
-                v-for="option in options
-                  .filter((option) => selectedValues.has(option.value))"
+                v-for="option in options.filter((option) => selectedValues.has(option.value))"
                 :key="option.value"
                 variant="secondary"
                 class="px-1 font-normal rounded-sm"
@@ -65,31 +65,34 @@ const filterFunction = (list: DataTableFacetedFilter['options'], term: string) =
               v-for="option in options"
               :key="option.value"
               :value="option"
-              @select="(e) => {
-                console.log(e.detail.value)
-                const isSelected = selectedValues.has(option.value)
-                if (isSelected) {
-                  selectedValues.delete(option.value)
+              @select="
+                (e) => {
+                  console.log(e.detail.value);
+                  const isSelected = selectedValues.has(option.value);
+                  if (isSelected) {
+                    selectedValues.delete(option.value);
+                  } else {
+                    selectedValues.add(option.value);
+                  }
+                  const filterValues = Array.from(selectedValues);
+                  column?.setFilterValue(filterValues.length ? filterValues : undefined);
                 }
-                else {
-                  selectedValues.add(option.value)
-                }
-                const filterValues = Array.from(selectedValues)
-                column?.setFilterValue(
-                  filterValues.length ? filterValues : undefined,
-                )
-              }"
+              "
             >
               <div
-                :class="cn(
-                  'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                  selectedValues.has(option.value)
-                    ? 'bg-primary'
-                    : 'opacity-50 [&_svg]:invisible',
-                )"
+                :class="
+                  cn(
+                    'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                    selectedValues.has(option.value)
+                      ? 'bg-primary'
+                      : 'opacity-50 [&_svg]:invisible',
+                  )
+                "
               >
                 <Check
-                  :class="cn('h-4 w-4', selectedValues.has(option.value) ? 'text-primary-foreground' : '')"
+                  :class="
+                    cn('h-4 w-4', selectedValues.has(option.value) ? 'text-primary-foreground' : '')
+                  "
                 />
               </div>
               <component

@@ -1,26 +1,32 @@
 <script setup lang="ts">
-import { useEventListener } from '@vueuse/core'
-import { MenuIcon, SearchIcon } from 'lucide-vue-next'
+import { useEventListener } from "@vueuse/core";
+import { MenuIcon, SearchIcon } from "lucide-vue-next";
 
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
-import CommandChangeTheme from './command-change-theme.vue'
-import CommandToPage from './command-to-page.vue'
+import CommandChangeTheme from "./command-change-theme.vue";
+import CommandToPage from "./command-to-page.vue";
 
-const open = ref(false)
+const open = ref(false);
 
-useEventListener('keydown', (event: KeyboardEvent) => {
-  if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
-    event.preventDefault()
-    handleOpenChange()
+useEventListener("keydown", (event: KeyboardEvent) => {
+  if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+    event.preventDefault();
+    handleOpenChange();
   }
-})
+});
 
 function handleOpenChange() {
-  open.value = !open.value
+  open.value = !open.value;
 }
 
-const firstKey = computed(() => navigator?.userAgent.includes('Mac OS') ? '⌘' : 'Ctrl')
+const firstKey = computed(() => (navigator?.userAgent.includes("Mac OS") ? "⌘" : "Ctrl"));
 </script>
 
 <template>

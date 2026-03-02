@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useConfirmationContext } from './context'
+import { useConfirmationContext } from "./context";
 
-const { state } = useConfirmationContext()
+const { state } = useConfirmationContext();
 </script>
 
 <template>

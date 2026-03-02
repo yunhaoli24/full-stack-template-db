@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface QueueItemContentProps {
-  completed?: boolean
-  class?: HTMLAttributes['class']
+  completed?: boolean;
+  class?: HTMLAttributes["class"];
 }
 
-const props = withDefaults(
-  defineProps<QueueItemContentProps>(),
-  {
-    completed: false,
-  },
-)
+const props = withDefaults(defineProps<QueueItemContentProps>(), {
+  completed: false,
+});
 </script>
 
 <template>
@@ -20,9 +17,7 @@ const props = withDefaults(
     :class="
       cn(
         'line-clamp-1 grow break-words',
-        props.completed
-          ? 'text-muted-foreground/50 line-through'
-          : 'text-muted-foreground',
+        props.completed ? 'text-muted-foreground/50 line-through' : 'text-muted-foreground',
         props.class,
       )
     "

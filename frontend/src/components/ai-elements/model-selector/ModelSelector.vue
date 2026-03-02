@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Dialog } from '@/components/ui/dialog'
+import { Dialog } from "@/components/ui/dialog";
 </script>
 
 <template>

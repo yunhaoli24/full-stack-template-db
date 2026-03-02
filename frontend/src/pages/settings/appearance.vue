@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppearanceForm from './components/appearance-form.vue'
-import SettingsLayout from './components/settings-layout.vue'
+import AppearanceForm from "./components/appearance-form.vue";
+import SettingsLayout from "./components/settings-layout.vue";
 </script>
 
 <template>

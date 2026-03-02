@@ -1,33 +1,27 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import type { AttachmentFile } from './types'
-import { Button } from '@/components/ui/button'
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card'
-import { cn } from '@/lib/utils'
-import { PaperclipIcon, XIcon } from 'lucide-vue-next'
-import { computed } from 'vue'
-import { usePromptInput } from './context'
+import type { HTMLAttributes } from "vue";
+import type { AttachmentFile } from "./types";
+import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { cn } from "@/lib/utils";
+import { PaperclipIcon, XIcon } from "lucide-vue-next";
+import { computed } from "vue";
+import { usePromptInput } from "./context";
 
 const props = defineProps<{
-  file: AttachmentFile
-  class?: HTMLAttributes['class']
-}>()
+  file: AttachmentFile;
+  class?: HTMLAttributes["class"];
+}>();
 
-const { removeFile } = usePromptInput()
+const { removeFile } = usePromptInput();
 
-const filename = computed(() => props.file.filename || '')
-const isImage = computed(() =>
-  props.file.mediaType?.startsWith('image/') && props.file.url,
-)
-const label = computed(() => filename.value || (isImage.value ? 'Image' : 'Attachment'))
+const filename = computed(() => props.file.filename || "");
+const isImage = computed(() => props.file.mediaType?.startsWith("image/") && props.file.url);
+const label = computed(() => filename.value || (isImage.value ? "Image" : "Attachment"));
 
 function handleRemove(e: Event) {
-  e.stopPropagation()
-  removeFile(props.file.id)
+  e.stopPropagation();
+  removeFile(props.file.id);
 }
 </script>
 
@@ -35,10 +29,12 @@ function handleRemove(e: Event) {
   <HoverCard :open-delay="0" :close-delay="0">
     <HoverCardTrigger as-child>
       <div
-        :class="cn(
-          'group relative flex h-8 cursor-pointer select-none items-center gap-1.5 rounded-md border border-border px-1.5 font-medium text-sm transition-all hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-          props.class,
-        )"
+        :class="
+          cn(
+            'group relative flex h-8 cursor-pointer select-none items-center gap-1.5 rounded-md border border-border px-1.5 font-medium text-sm transition-all hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+            props.class,
+          )
+        "
       >
         <div class="relative size-5 shrink-0">
           <div

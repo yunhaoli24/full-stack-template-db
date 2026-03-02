@@ -9,7 +9,7 @@ from backend.app.admin.schema.chat import ChatCompletionPayload
 from backend.app.admin.service.chat_service import chat_service
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.post("/completions", summary="Chat completions (SSE)", response_model=None)  # pyright: ignore[reportGeneralTypeIssues]

@@ -14,7 +14,7 @@ from backend.app.task.service.result_service import task_result_service
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/{pk}", summary="获取任务结果详情", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

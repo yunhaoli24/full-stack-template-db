@@ -13,7 +13,7 @@ from backend.app.admin.schema.token import GetTokenDetail
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("", summary="获取在线用户", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

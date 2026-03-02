@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { BookIcon } from 'lucide-vue-next'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { BookIcon } from "lucide-vue-next";
 
 const props = defineProps<{
-  href: string
-  title: string
-  class?: HTMLAttributes['class']
-}>()
+  href: string;
+  title: string;
+  class?: HTMLAttributes["class"];
+}>();
 </script>
 
 <template>

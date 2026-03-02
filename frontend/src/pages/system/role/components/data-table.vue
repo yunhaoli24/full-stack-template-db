@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { DataTableProps } from '@/components/data-table/types'
+import type { DataTableProps } from "@/components/data-table/types";
 
-import DataTable from '@/components/data-table/data-table.vue'
-import { generateVueTable } from '@/components/data-table/use-generate-vue-table'
+import DataTable from "@/components/data-table/data-table.vue";
+import { generateVueTable } from "@/components/data-table/use-generate-vue-table";
 
-import type { RoleDetail } from '@/services/api/system/role/roles.api'
+import type { RoleDetail } from "@/services/api/system/role/roles.api";
 
-const props = defineProps<DataTableProps<RoleDetail>>()
-const table = generateVueTable<RoleDetail>(props)
+const props = defineProps<DataTableProps<RoleDetail>>();
+const table = generateVueTable<RoleDetail>(props);
 </script>
 
 <template>

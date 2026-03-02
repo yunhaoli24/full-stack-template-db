@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { Ellipsis, FilePenLine, Trash2 } from 'lucide-vue-next'
+import { Ellipsis, FilePenLine, Trash2 } from "lucide-vue-next";
 
-import type { SystemConfig } from '@/services/api/system/config/system-configs.api'
+import type { SystemConfig } from "@/services/api/system/config/system-configs.api";
 
 const props = defineProps<{
-  config: SystemConfig
-}>()
+  config: SystemConfig;
+}>();
 
 const emits = defineEmits<{
-  (e: 'edit', config: SystemConfig): void
-  (e: 'delete', config: SystemConfig): void
-}>()
+  (e: "edit", config: SystemConfig): void;
+  (e: "delete", config: SystemConfig): void;
+}>();
 
 function handleEdit() {
-  emits('edit', props.config)
+  emits("edit", props.config);
 }
 
 function handleDelete() {
-  emits('delete', props.config)
+  emits("delete", props.config);
 }
 </script>
 

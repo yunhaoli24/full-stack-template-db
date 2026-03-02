@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
-import { Trash2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { isAxiosError } from "axios";
+import { Trash2 } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
-import type { ServerPagination } from '@/components/data-table/types'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/constants/pagination'
+import type { ServerPagination } from "@/components/data-table/types";
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from "@/constants/pagination";
 import {
   useDeleteTaskResultsMutation,
   useGetTaskResultsQuery,
   type TaskResult,
-} from '@/services/api/scheduler/record/task-results.api'
+} from "@/services/api/scheduler/record/task-results.api";
 
-import { createColumns } from './components/columns'
-import RecordDataTable from './components/data-table.vue'
+import { createColumns } from "./components/columns";
+import RecordDataTable from "./components/data-table.vue";
 
-const page = ref(1)
-const pageSize = ref(DEFAULT_PAGE_SIZE)
-const searchName = ref('')
-const searchTaskId = ref('')
+const page = ref(1);
+const pageSize = ref(DEFAULT_PAGE_SIZE);
+const searchName = ref("");
+const searchTaskId = ref("");
 
 const query = useGetTaskResultsQuery(
   computed(() => ({
@@ -28,34 +28,34 @@ const query = useGetTaskResultsQuery(
     name: searchName.value || undefined,
     task_id: searchTaskId.value || undefined,
   })),
-)
-const deleteMutation = useDeleteTaskResultsMutation()
+);
+const deleteMutation = useDeleteTaskResultsMutation();
 
-const deleteDialogOpen = ref(false)
-const deleteTargets = ref<number[]>([])
-const selectedIds = ref<Set<number>>(new Set())
+const deleteDialogOpen = ref(false);
+const deleteTargets = ref<number[]>([]);
+const selectedIds = ref<Set<number>>(new Set());
 
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
-const results = computed(() => query.data.value?.data?.items ?? [])
-const total = computed(() => query.data.value?.data?.total ?? 0)
-const totalPages = computed(() => query.data.value?.data?.total_pages ?? 0)
-const isLoading = computed(() => query.isLoading.value)
+const results = computed(() => query.data.value?.data?.items ?? []);
+const total = computed(() => query.data.value?.data?.total ?? 0);
+const totalPages = computed(() => query.data.value?.data?.total_pages ?? 0);
+const isLoading = computed(() => query.isLoading.value);
 
 const serverPagination = computed<ServerPagination>(() => ({
   page: page.value,
   pageSize: pageSize.value,
   total: total.value,
-  onPageChange: nextPage => {
-    page.value = nextPage
-    selectedIds.value.clear()
+  onPageChange: (nextPage) => {
+    page.value = nextPage;
+    selectedIds.value.clear();
   },
-  onPageSizeChange: nextSize => {
-    pageSize.value = nextSize
-    page.value = 1
-    selectedIds.value.clear()
+  onPageSizeChange: (nextSize) => {
+    pageSize.value = nextSize;
+    page.value = 1;
+    selectedIds.value.clear();
   },
-}))
+}));
 
 const columns = computed(() =>
   createColumns({
@@ -65,108 +65,101 @@ const columns = computed(() =>
     onViewDetail: (result: TaskResult) => showDetail(result),
     onDelete: (ids: number[]) => requestDelete(ids),
   }),
-)
+);
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
 function getStatusVariant(status: string) {
   switch (status.toLowerCase()) {
-    case 'success':
-      return 'default'
-    case 'failure':
-    case 'error':
-      return 'destructive'
-    case 'pending':
-      return 'secondary'
+    case "success":
+      return "default";
+    case "failure":
+    case "error":
+      return "destructive";
+    case "pending":
+      return "secondary";
     default:
-      return 'outline'
+      return "outline";
   }
 }
 
 function formatDate(dateStr: string | null) {
-  if (!dateStr)
-    return '-'
-  return new Date(dateStr).toLocaleString()
+  if (!dateStr) return "-";
+  return new Date(dateStr).toLocaleString();
 }
 
 function formatData(data: unknown) {
-  if (data === null || data === undefined)
-    return '-'
+  if (data === null || data === undefined) return "-";
   try {
-    return JSON.stringify(data, null, 2)
-  }
-  catch {
-    return String(data)
+    return JSON.stringify(data, null, 2);
+  } catch {
+    return String(data);
   }
 }
 
 function handleSearch() {
-  page.value = 1
+  page.value = 1;
 }
 
 function toggleSelect(id: number) {
   if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id)
-  }
-  else {
-    selectedIds.value.add(id)
+    selectedIds.value.delete(id);
+  } else {
+    selectedIds.value.add(id);
   }
 }
 
 function toggleSelectAll() {
   if (selectedIds.value.size === results.value.length) {
-    selectedIds.value.clear()
-  }
-  else {
-    selectedIds.value = new Set(results.value.map(r => r.id))
+    selectedIds.value.clear();
+  } else {
+    selectedIds.value = new Set(results.value.map((r) => r.id));
   }
 }
 
 function requestDelete(ids: number[]) {
-  deleteTargets.value = ids
-  deleteDialogOpen.value = true
+  deleteTargets.value = ids;
+  deleteDialogOpen.value = true;
 }
 
 function requestDeleteSelected() {
   if (selectedIds.value.size === 0) {
-    toast.error('Please select at least one record')
-    return
+    toast.error("Please select at least one record");
+    return;
   }
-  requestDelete(Array.from(selectedIds.value))
+  requestDelete(Array.from(selectedIds.value));
 }
 
 async function handleDeleteConfirm() {
   if (!deleteTargets.value.length) {
-    return
+    return;
   }
   try {
-    await deleteMutation.mutateAsync(deleteTargets.value)
-    toast.success(`${deleteTargets.value.length} record(s) deleted`)
-    selectedIds.value.clear()
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
-  }
-  finally {
-    deleteDialogOpen.value = false
-    deleteTargets.value = []
+    await deleteMutation.mutateAsync(deleteTargets.value);
+    toast.success(`${deleteTargets.value.length} record(s) deleted`);
+    selectedIds.value.clear();
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  } finally {
+    deleteDialogOpen.value = false;
+    deleteTargets.value = [];
   }
 }
 
-const detailDialogOpen = ref(false)
-const selectedResult = ref<TaskResult | null>(null)
+const detailDialogOpen = ref(false);
+const selectedResult = ref<TaskResult | null>(null);
 
 function showDetail(result: TaskResult) {
-  selectedResult.value = result
-  detailDialogOpen.value = true
+  selectedResult.value = result;
+  detailDialogOpen.value = true;
 }
 </script>
 
@@ -221,7 +214,7 @@ function showDetail(result: TaskResult) {
             </div>
             <div>
               <div class="text-sm font-medium text-muted-foreground">Name</div>
-              <div class="text-sm">{{ selectedResult.name || '-' }}</div>
+              <div class="text-sm">{{ selectedResult.name || "-" }}</div>
             </div>
           </div>
 
@@ -236,11 +229,11 @@ function showDetail(result: TaskResult) {
             </div>
             <div>
               <div class="text-sm font-medium text-muted-foreground">Worker</div>
-              <div class="text-sm">{{ selectedResult.worker || '-' }}</div>
+              <div class="text-sm">{{ selectedResult.worker || "-" }}</div>
             </div>
             <div>
               <div class="text-sm font-medium text-muted-foreground">Queue</div>
-              <div class="text-sm">{{ selectedResult.queue || '-' }}</div>
+              <div class="text-sm">{{ selectedResult.queue || "-" }}</div>
             </div>
           </div>
 

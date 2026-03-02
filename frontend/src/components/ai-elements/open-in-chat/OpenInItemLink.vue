@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { ExternalLinkIcon } from 'lucide-vue-next'
+import type { Component } from "vue";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ExternalLinkIcon } from "lucide-vue-next";
 
 interface Props {
-  href: string
-  title: string
-  icon: Component
+  href: string;
+  title: string;
+  icon: Component;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 </script>
 
 <template>

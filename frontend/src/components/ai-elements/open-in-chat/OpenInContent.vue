@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { DropdownMenuContent } from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
+import type { HTMLAttributes } from "vue";
+import { DropdownMenuContent } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 interface Props {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes["class"];
 }
 
 defineOptions({
   inheritAttrs: false,
-})
+});
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 </script>
 
 <template>

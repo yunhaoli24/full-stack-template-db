@@ -1,9 +1,9 @@
 <script setup lang="ts">
 defineProps<{
-  code: number
-  subtitle: string
-  error: string
-}>()
+  code: number;
+  subtitle: string;
+  error: string;
+}>();
 </script>
 
 <template>

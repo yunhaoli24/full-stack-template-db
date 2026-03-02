@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import Card from '@/components/ui/card/Card.vue'
-import { cn } from '@/lib/utils'
-import { Handle, Position } from '@vue-flow/core'
-import { reactiveOmit } from '@vueuse/core'
+import type { HTMLAttributes } from "vue";
+import Card from "@/components/ui/card/Card.vue";
+import { cn } from "@/lib/utils";
+import { Handle, Position } from "@vue-flow/core";
+import { reactiveOmit } from "@vueuse/core";
 
 interface NodeHandles {
-  target?: boolean
-  source?: boolean
+  target?: boolean;
+  source?: boolean;
 }
 
 interface NodeProps {
-  class?: HTMLAttributes['class']
-  handles?: NodeHandles
+  class?: HTMLAttributes["class"];
+  handles?: NodeHandles;
 }
 
-const props = defineProps<NodeProps>()
-const delegatedProps = reactiveOmit(props, 'class')
+const props = defineProps<NodeProps>();
+const delegatedProps = reactiveOmit(props, "class");
 </script>
 
 <template>

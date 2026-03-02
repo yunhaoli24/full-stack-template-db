@@ -20,7 +20,7 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 from backend.app.admin.service.data_rule_service import data_rule_service
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/models", summary="获取数据规则可用模型", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

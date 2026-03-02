@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { isAxiosError } from 'axios'
-import { Plus, RefreshCcw } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { isAxiosError } from "axios";
+import { Plus, RefreshCcw } from "lucide-vue-next";
+import { toast } from "vue-sonner";
 
-import type { ServerPagination } from '@/components/data-table/types'
-import ConfirmDialog from '@/components/confirm-dialog.vue'
-import { BasicPage } from '@/components/global-layout'
-import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import type { ServerPagination } from "@/components/data-table/types";
+import ConfirmDialog from "@/components/confirm-dialog.vue";
+import { BasicPage } from "@/components/global-layout";
+import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import {
   useCreateNoticeMutation,
   useDeleteNoticeMutation,
@@ -14,24 +14,24 @@ import {
   useUpdateNoticeMutation,
   type Notice,
   type NoticePayload,
-} from '@/services/api/plugins/notice/notices.api'
+} from "@/services/api/plugins/notice/notices.api";
 
-import NoticeForm from './components/notice-form.vue'
-import { createColumns } from './components/columns'
-import NoticeDataTable from './components/data-table.vue'
+import NoticeForm from "./components/notice-form.vue";
+import { createColumns } from "./components/columns";
+import NoticeDataTable from "./components/data-table.vue";
 
-const page = ref(1)
-const pageSize = ref(DEFAULT_PAGE_SIZE)
+const page = ref(1);
+const pageSize = ref(DEFAULT_PAGE_SIZE);
 const filters = reactive({
-  title: '',
+  title: "",
   type: undefined as number | undefined,
   status: undefined as number | undefined,
-})
+});
 const appliedFilters = reactive({
-  title: '',
+  title: "",
   type: undefined as number | undefined,
   status: undefined as number | undefined,
-})
+});
 
 const queryParams = computed(() => ({
   page: page.value,
@@ -39,147 +39,143 @@ const queryParams = computed(() => ({
   title: appliedFilters.title || undefined,
   type: appliedFilters.type,
   status: appliedFilters.status,
-}))
+}));
 
-const query = useGetNoticesQuery(queryParams)
+const query = useGetNoticesQuery(queryParams);
 
-const notices = computed(() => query.data.value?.data?.items ?? [])
-const total = computed(() => query.data.value?.data?.total ?? 0)
-const isLoading = computed(() => query.isLoading.value)
-const isFetching = computed(() => query.isFetching.value)
-const isError = computed(() => query.isError.value)
+const notices = computed(() => query.data.value?.data?.items ?? []);
+const total = computed(() => query.data.value?.data?.total ?? 0);
+const isLoading = computed(() => query.isLoading.value);
+const isFetching = computed(() => query.isFetching.value);
+const isError = computed(() => query.isError.value);
 
 const serverPagination = computed<ServerPagination>(() => ({
   page: page.value,
   pageSize: pageSize.value,
   total: total.value,
-  onPageChange: nextPage => {
-    page.value = nextPage
+  onPageChange: (nextPage) => {
+    page.value = nextPage;
   },
-  onPageSizeChange: nextSize => {
-    pageSize.value = nextSize
-    page.value = 1
+  onPageSizeChange: (nextSize) => {
+    pageSize.value = nextSize;
+    page.value = 1;
   },
-}))
+}));
 
-const dialogOpen = ref(false)
-const editingNotice = ref<Notice | null>(null)
+const dialogOpen = ref(false);
+const editingNotice = ref<Notice | null>(null);
 
-const deleteDialogOpen = ref(false)
-const deleteTarget = ref<Notice | null>(null)
+const deleteDialogOpen = ref(false);
+const deleteTarget = ref<Notice | null>(null);
 
-const createMutation = useCreateNoticeMutation()
-const updateMutation = useUpdateNoticeMutation()
-const deleteMutation = useDeleteNoticeMutation()
+const createMutation = useCreateNoticeMutation();
+const updateMutation = useUpdateNoticeMutation();
+const deleteMutation = useDeleteNoticeMutation();
 
-const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value)
-const isDeleting = computed(() => deleteMutation.isPending.value)
+const isSaving = computed(() => createMutation.isPending.value || updateMutation.isPending.value);
+const isDeleting = computed(() => deleteMutation.isPending.value);
 
 const columns = computed(() =>
   createColumns({
-    onEdit: notice => openEdit(notice),
-    onDelete: notice => requestDelete(notice),
+    onEdit: (notice) => openEdit(notice),
+    onDelete: (notice) => requestDelete(notice),
   }),
-)
+);
 
-const deleteTargetTitle = computed(() => deleteTarget.value?.title ?? '')
+const deleteTargetTitle = computed(() => deleteTarget.value?.title ?? "");
 
 const listErrorMessage = computed(() => {
   if (!query.error.value) {
-    return ''
+    return "";
   }
-  return getErrorMessage(query.error.value)
-})
+  return getErrorMessage(query.error.value);
+});
 
 function applyFilters() {
-  appliedFilters.title = filters.title.trim()
-  appliedFilters.type = filters.type
-  appliedFilters.status = filters.status
-  page.value = 1
+  appliedFilters.title = filters.title.trim();
+  appliedFilters.type = filters.type;
+  appliedFilters.status = filters.status;
+  page.value = 1;
 }
 
 function resetFilters() {
-  filters.title = ''
-  filters.type = undefined
-  filters.status = undefined
-  applyFilters()
+  filters.title = "";
+  filters.type = undefined;
+  filters.status = undefined;
+  applyFilters();
 }
 
 function refreshList() {
-  void query.refetch()
+  void query.refetch();
 }
 
 function openCreate() {
-  editingNotice.value = null
-  dialogOpen.value = true
+  editingNotice.value = null;
+  dialogOpen.value = true;
 }
 
 function openEdit(notice: Notice) {
-  editingNotice.value = notice
-  dialogOpen.value = true
+  editingNotice.value = notice;
+  dialogOpen.value = true;
 }
 
 function requestDelete(notice: Notice) {
-  deleteTarget.value = notice
-  deleteDialogOpen.value = true
+  deleteTarget.value = notice;
+  deleteDialogOpen.value = true;
 }
 
 function getErrorMessage(error: unknown) {
   if (isAxiosError(error)) {
-    return error.response?.data?.msg || error.message
+    return error.response?.data?.msg || error.message;
   }
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return 'Request failed'
+  return "Request failed";
 }
 
-watch(dialogOpen, open => {
+watch(dialogOpen, (open) => {
   if (!open) {
-    editingNotice.value = null
+    editingNotice.value = null;
   }
-})
+});
 
-watch(deleteDialogOpen, open => {
+watch(deleteDialogOpen, (open) => {
   if (!open) {
-    deleteTarget.value = null
+    deleteTarget.value = null;
   }
-})
+});
 
 async function handleSubmit(payload: NoticePayload, close?: () => void) {
   try {
     if (editingNotice.value) {
-      await updateMutation.mutateAsync({ id: editingNotice.value.id, payload })
-      toast.success('Notice updated')
-    }
-    else {
-      await createMutation.mutateAsync(payload)
-      toast.success('Notice created')
+      await updateMutation.mutateAsync({ id: editingNotice.value.id, payload });
+      toast.success("Notice updated");
+    } else {
+      await createMutation.mutateAsync(payload);
+      toast.success("Notice created");
     }
     if (close) {
-      close()
+      close();
+    } else {
+      dialogOpen.value = false;
     }
-    else {
-      dialogOpen.value = false
-    }
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 
 async function handleDeleteConfirm() {
   if (!deleteTarget.value) {
-    return
+    return;
   }
 
   try {
-    await deleteMutation.mutateAsync([deleteTarget.value.id])
-    toast.success('Notice deleted')
-    deleteDialogOpen.value = false
-  }
-  catch (error) {
-    toast.error(getErrorMessage(error))
+    await deleteMutation.mutateAsync([deleteTarget.value.id]);
+    toast.success("Notice deleted");
+    deleteDialogOpen.value = false;
+  } catch (error) {
+    toast.error(getErrorMessage(error));
   }
 }
 </script>
@@ -258,17 +254,19 @@ async function handleDeleteConfirm() {
       <UiDialogContent class="max-h-[90vh] overflow-y-auto">
         <UiDialogHeader>
           <UiDialogTitle>
-            {{ editingNotice ? 'Edit Notice' : 'New Notice' }}
+            {{ editingNotice ? "Edit Notice" : "New Notice" }}
           </UiDialogTitle>
           <UiDialogDescription>
-            {{ editingNotice ? 'Update notice information.' : 'Create a new notice or announcement.' }}
+            {{
+              editingNotice ? "Update notice information." : "Create a new notice or announcement."
+            }}
           </UiDialogDescription>
         </UiDialogHeader>
         <NoticeForm
           class="mt-4"
           :notice="editingNotice"
           :loading="isSaving"
-          @submit="payload => handleSubmit(payload, close)"
+          @submit="(payload) => handleSubmit(payload, close)"
         />
       </UiDialogContent>
     </UiDialog>

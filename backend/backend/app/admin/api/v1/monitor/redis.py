@@ -9,7 +9,7 @@ from backend.common.security.jwt import DependsJwtAuth
 from backend.common.response.response_schema import ResponseModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 class RedisMonitorData(TypedDict):

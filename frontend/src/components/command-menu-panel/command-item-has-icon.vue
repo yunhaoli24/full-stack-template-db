@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import type { Component } from "vue";
 
-import { Milestone } from 'lucide-vue-next'
+import { Milestone } from "lucide-vue-next";
 
 const { icon } = defineProps<{
-  name: string
-  icon?: Component
-}>()
+  name: string;
+  icon?: Component;
+}>();
 </script>
 
 <template>

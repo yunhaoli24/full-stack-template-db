@@ -18,7 +18,7 @@ from backend.common.response.response_schema import ResponseModel, ResponseSchem
 from backend.app.task.service.scheduler_service import task_scheduler_service
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.get("/all", summary="获取所有任务调度", dependencies=[DependsJwtAuth])  # pyright: ignore[reportGeneralTypeIssues]

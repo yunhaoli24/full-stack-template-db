@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Trash2 } from 'lucide-vue-next'
+import { Trash2 } from "lucide-vue-next";
 
-import { Button } from '@/components/ui/button'
-import type { TaskResult } from '@/services/api/scheduler/record/task-results.api'
+import { Button } from "@/components/ui/button";
+import type { TaskResult } from "@/services/api/scheduler/record/task-results.api";
 
 defineProps<{
-  result: TaskResult
-  onViewDetail: (result: TaskResult) => void
-  onDelete: (ids: number[]) => void
-}>()
+  result: TaskResult;
+  onViewDetail: (result: TaskResult) => void;
+  onDelete: (ids: number[]) => void;
+}>();
 </script>
 
 <template>

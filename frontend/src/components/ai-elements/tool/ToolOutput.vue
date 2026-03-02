@@ -1,29 +1,27 @@
 <script setup lang="ts">
-import type { ToolUIPart } from 'ai'
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
-import { CodeBlock } from '../code-block'
+import type { ToolUIPart } from "ai";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
+import { CodeBlock } from "../code-block";
 
 const props = defineProps<{
-  output: ToolUIPart['output']
-  errorText: ToolUIPart['errorText']
-  class?: HTMLAttributes['class']
-}>()
+  output: ToolUIPart["output"];
+  errorText: ToolUIPart["errorText"];
+  class?: HTMLAttributes["class"];
+}>();
 
-const showOutput = computed(() => props.output || props.errorText)
+const showOutput = computed(() => props.output || props.errorText);
 
-const isObjectOutput = computed(
-  () => typeof props.output === 'object' && props.output !== null,
-)
-const isStringOutput = computed(() => typeof props.output === 'string')
+const isObjectOutput = computed(() => typeof props.output === "object" && props.output !== null);
+const isStringOutput = computed(() => typeof props.output === "string");
 
 const formattedOutput = computed(() => {
   if (isObjectOutput.value) {
-    return JSON.stringify(props.output, null, 2)
+    return JSON.stringify(props.output, null, 2);
   }
-  return props.output as string
-})
+  return props.output as string;
+});
 </script>
 
 <template>
@@ -35,9 +33,7 @@ const formattedOutput = computed(() => {
       :class="
         cn(
           'overflow-x-auto rounded-md text-xs [&_table]:w-full',
-          props.errorText
-            ? 'bg-destructive/10 text-destructive'
-            : 'bg-muted/50 text-foreground',
+          props.errorText ? 'bg-destructive/10 text-destructive' : 'bg-muted/50 text-foreground',
         )
       "
     >

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { ChevronDownIcon } from 'lucide-vue-next'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { ChevronDownIcon } from "lucide-vue-next";
 
 interface QueueSectionLabelProps {
-  count?: number
-  label: string
-  class?: HTMLAttributes['class']
+  count?: number;
+  label: string;
+  class?: HTMLAttributes["class"];
 }
 
-const props = defineProps<QueueSectionLabelProps>()
+const props = defineProps<QueueSectionLabelProps>();
 </script>
 
 <template>

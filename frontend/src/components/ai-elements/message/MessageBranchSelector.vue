@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { UIMessage } from 'ai'
-import { ButtonGroup } from '@/components/ui/button-group'
-import { useMessageBranchContext } from './context'
+import type { UIMessage } from "ai";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { useMessageBranchContext } from "./context";
 
 interface Props {
-  from: UIMessage['role']
+  from: UIMessage["role"];
 }
-defineProps<Props>()
+defineProps<Props>();
 
-const { totalBranches } = useMessageBranchContext()
+const { totalBranches } = useMessageBranchContext();
 </script>
 
 <template>

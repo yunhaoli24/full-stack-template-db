@@ -27,6 +27,8 @@ repos:
         entry: uv run mypy
         language: system
         types_or: [python]
+        pass_filenames: false
+        args: [backend]
 
   - repo: local
     hooks:

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Loading from '@/components/loading.vue'
-import { Toaster } from '@/components/ui/sonner'
-import { useSystemTheme } from '@/composables/use-system-theme'
+import Loading from "@/components/loading.vue";
+import { Toaster } from "@/components/ui/sonner";
+import { useSystemTheme } from "@/composables/use-system-theme";
 
-useSystemTheme()
+useSystemTheme();
 </script>
 
 <template>

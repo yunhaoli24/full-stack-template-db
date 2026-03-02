@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { PanelPositionType } from '@vue-flow/core'
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { Panel as PanelPrimitive } from '@vue-flow/core'
-import { reactiveOmit } from '@vueuse/core'
+import type { PanelPositionType } from "@vue-flow/core";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { Panel as PanelPrimitive } from "@vue-flow/core";
+import { reactiveOmit } from "@vueuse/core";
 
 interface PanelProps {
-  class?: HTMLAttributes['class']
-  position?: PanelPositionType
+  class?: HTMLAttributes["class"];
+  position?: PanelPositionType;
 }
 
 const props = withDefaults(defineProps<PanelProps>(), {
-  position: 'top-right',
-})
+  position: "top-right",
+});
 
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, "class");
 </script>
 
 <template>

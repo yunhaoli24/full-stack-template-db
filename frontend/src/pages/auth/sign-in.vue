@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AuthTitle from './components/auth-title.vue'
-import LoginForm from './components/login-form.vue'
+import AuthTitle from "./components/auth-title.vue";
+import LoginForm from "./components/login-form.vue";
 </script>
 
 <template>

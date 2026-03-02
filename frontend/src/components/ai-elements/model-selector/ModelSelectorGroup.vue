@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CommandGroup } from '@/components/ui/command'
+import { CommandGroup } from "@/components/ui/command";
 </script>
 
 <template>

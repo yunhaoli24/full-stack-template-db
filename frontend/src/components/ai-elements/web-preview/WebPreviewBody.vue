@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import type { IframeHTMLAttributes, VNodeChild } from 'vue'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
-import { useWebPreviewContext } from './context'
+import type { IframeHTMLAttributes, VNodeChild } from "vue";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
+import { useWebPreviewContext } from "./context";
 
 interface Props extends /* @vue-ignore */ IframeHTMLAttributes {
-  class?: IframeHTMLAttributes['class']
-  src?: string
+  class?: IframeHTMLAttributes["class"];
+  src?: string;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 defineSlots<{
-  loading: () => VNodeChild
-}>()
+  loading: () => VNodeChild;
+}>();
 
-const { url } = useWebPreviewContext()
+const { url } = useWebPreviewContext();
 
-const frameSrc = computed(() => (props.src ?? url.value) || undefined)
+const frameSrc = computed(() => (props.src ?? url.value) || undefined);
 </script>
 
 <template>

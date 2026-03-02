@@ -1,24 +1,23 @@
 {
   "name": "后台管理系统",
-  "type": "module",
   "version": "0.7.7",
   "private": false,
-  "packageManager": "pnpm@10.25.0",
   "description": "Admin Dashboard UI crafted with Shadcn-vue, Vue3 and Vite. Built with responsiveness and accessibility in mind.",
-  "author": "Whbbit1999",
-  "license": "MIT",
   "keywords": [
-    "vue",
-    "vue-router",
-    "vite",
-    "typescript",
-    "tailwindcss",
-    "shadcn-vue",
-    "tanstack-vue-query",
-    "tanstack-table",
     "pinia",
-    "pnpm"
+    "pnpm",
+    "shadcn-vue",
+    "tailwindcss",
+    "tanstack-table",
+    "tanstack-vue-query",
+    "typescript",
+    "vite",
+    "vue",
+    "vue-router"
   ],
+  "license": "MIT",
+  "author": "Whbbit1999",
+  "type": "module",
   "scripts": {
     "postinstall": "simple-git-hooks",
     "dev": "vite --host",
@@ -117,6 +116,7 @@
   "lint-staged": {
     "*": "oxlint --type-aware --fix && oxfmt"
   },
+  "packageManager": "pnpm@10.25.0",
   "pnpm": {
     "overrides": {
       "vite": "8.0.0-beta.4"

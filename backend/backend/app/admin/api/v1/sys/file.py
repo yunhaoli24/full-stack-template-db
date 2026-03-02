@@ -11,7 +11,7 @@ from backend.common.security.permission import RequestPermission
 from backend.common.response.response_schema import ResponseSchemaModel, response_base
 
 
-router = APIRouter()
+router: APIRouter = APIRouter()
 
 
 @router.post(

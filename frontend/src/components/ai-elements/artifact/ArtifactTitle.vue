@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { computed } from 'vue'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { computed } from "vue";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const classes = computed(() => cn('font-medium text-foreground text-sm', props.class))
+const classes = computed(() => cn("font-medium text-foreground text-sm", props.class));
 </script>
 
 <template>

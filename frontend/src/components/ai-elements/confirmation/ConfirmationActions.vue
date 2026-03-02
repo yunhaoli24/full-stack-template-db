@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { useConfirmationContext } from './context'
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
+import { useConfirmationContext } from "./context";
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const { state } = useConfirmationContext()
+const { state } = useConfirmationContext();
 </script>
 
 <template>
   <div
     v-if="state === 'approval-requested'"
-    :class="
-      cn('flex items-center justify-end gap-2 self-end', props.class)
-    "
+    :class="cn('flex items-center justify-end gap-2 self-end', props.class)"
     v-bind="$attrs"
   >
     <slot />
